@@ -36,7 +36,7 @@
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 	<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0">
-	<title>A-Line 관리자2</title>
+	<title>A-Line 관리자1</title>
 	<Link rel="stylesheet" type="text/css" href="js/css/global.css">
 	<script src="js/jquery/jquery.min.js"></script>
 	<script type="text/javascript">
