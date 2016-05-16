@@ -88,14 +88,6 @@
 				<div style='clear:both'></div>
 			</div>
 		</div>
-<!--		
-		<div class='ui-block-a'>참여 설명</div>
-		<div class='ui-block-b'>
-			<div style='width:300px; display: inline-block; height: 20px; padding-top: 5px'>
-				<input type="text" id="app-exec-desc" name="app-exec-desc" />
-			</div>
-		</div>
--->		
 		<div class='ui-block-a' style='height:100px'>참여 설명</div>
 		<div class='ui-block-b' style='height:100px' id='app-exec-desc-wrapper'>
 			<div style='width:400px; display: inline-block; padding-top: 5px'>
