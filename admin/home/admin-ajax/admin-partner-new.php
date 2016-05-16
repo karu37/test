@@ -32,5 +32,4 @@
 
 	$ar_data['partnerid'] = $partner_id;
 	return_die(true, $ar_data);
-
 ?>
