@@ -120,8 +120,7 @@
 	</form>
 	<hr>
 	<div style='text-align:right; padding-top:10px'>
-		<a href='#' onclick='<?=$js_page_id?>.action.on_btn_new_app_campaign()' data-role='button' data-theme='e' data-transition="none" data-inline='true' data-mini='true'>APP형 광고 등록</a>
-		<a href='#' onclick='<?=$js_page_id?>.action.on_btn_new_web_campaign()' data-role='button' data-theme='e' data-transition="none" data-inline='true' data-mini='true'>WEB형 광고 등록</a>
+		<a href='#' onclick='<?=$js_page_id?>.action.on_btn_new_app_campaign()' data-role='button' data-theme='e' data-transition="none" data-inline='true' data-mini='true'>새 광고 등록</a>
 	</div>
 	<div style="display:block; padding-top:20px; padding-left: 10px; font-size:22px; color: blue; font-weight: bold"><?=$row_merchant['name']?> - 총 : <?=number_format($pages->total_items)?> 건</div>
 	<div class='ui-grid-a' style='padding:5px 10px; <?=$pages->num_pages <= 1 ? "display:none" : ""?>'>
@@ -138,6 +137,7 @@
 			<th>제목</th>
 			<th>원가</th>
 			<th>공개모드</th>
+			<th width=1px></th>
 		</tr>	
 	</thead>
 	<tbody>
@@ -166,6 +166,9 @@
 				<td <?=$td_onclick?>><?=$row['app_title']?></td>
 				<td <?=$td_onclick?>><?=number_format($row['app_merchant_fee'])?></td>
 				<td <?=$td_onclick?>><?=$row['is_public_mode']?></td>
+				<td>
+					<a href='#' onclick='mvPage("merchant-campaign-app-modify", null, {partnerid: "<?=$partner_id?>", mcode: "<?=$row_merchant['mcode']?>", appkey:"<?=$row['app_key']?>"})' data-theme='<?=$ar_btn_theme[0]?>' data-role='button' data-mini='true' data-inline='true'>앱 수정</a>
+				</td>
 			</tr>
 			<?
 		}
@@ -179,8 +182,7 @@
 	</div>
 
 	<div style='text-align:right; padding-top:10px'>
-		<a href='#' onclick='<?=$js_page_id?>.action.on_btn_new_app_campaign()' data-role='button' data-theme='e' data-transition="none" data-inline='true' data-mini='true'>[APP]형 광고 등록</a>
-		<a href='#' onclick='<?=$js_page_id?>.action.on_btn_new_web_campaign()' data-role='button' data-theme='e' data-transition="none" data-inline='true' data-mini='true'>[WEB]형 광고 등록</a>
+		<a href='#' onclick='<?=$js_page_id?>.action.on_btn_new_app_campaign()' data-role='button' data-theme='e' data-transition="none" data-inline='true' data-mini='true'>새 광고 등록</a>
 	</div>
 	
 

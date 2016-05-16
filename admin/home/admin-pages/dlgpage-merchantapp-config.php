@@ -46,7 +46,7 @@
 		.list .btn-td .btn-wrapper					{width: 46px}
 		.list .btn-td a								{padding:7px 4px; font-size: 10px; letter-spacing:0px; margin: 2px -2px 2px -1px; box-shadow:none;}
 	</style>
-<div style='width:700px'>	
+<div style='width:800px'>	
 	<t4 style='line-height: 40px'><b3 style='color:darkred'><?=$row_app['app_title']?></b3> 의 광고 설정</t4>
 	<hr>
 
