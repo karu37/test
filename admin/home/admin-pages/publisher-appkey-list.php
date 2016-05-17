@@ -71,7 +71,9 @@
 		.list .mactive-N 			{background:#999}
 		.list .mactive-N td			{color: #ddd}
 		
-		.list tr:hover td 	{background:#dff}
+		.list tr:hover td 			{background:#dff}
+		.list tr.mactive-N:hover td {background:#888}
+		
 		.list tr			{line-height:25px}
 		.list th			{padding: 2px 4px}
 		.list td			{padding: 2px 4px}

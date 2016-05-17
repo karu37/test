@@ -62,7 +62,9 @@
 		.list .mactive-N 			{background:#999}
 		.list .mactive-N td			{color: #ddd}
 		
-		.list tr:hover td 	{background:#dff}
+		.list tr:hover td 			{background:#dff}
+		.list tr.mactive-N:hover td {background:#888}
+		
 		.list tr			{line-height:25px}
 		.list th			{padding: 2px 4px}
 		.list td			{padding: 2px 4px}
@@ -152,7 +154,7 @@
 			
 			$url_mcode = urlencode($mcode);
 			$url_appkey = urlencode($row['app_key']);
-			$td_onclick = "onclick=\"mvPage('dlgpage-merchantapp-config', null, {mcode:'{$mcode}', appkey: '{$row['app_key']}'})\"";
+			$td_onclick = "onclick=\"mvPage('merchant-campaign-app-modify', null, {partnerid: '{$partner_id}', mcode:'{$mcode}', appkey: '{$row['app_key']}'})\"";
 			?>
 			<tr id='list-<?=$row['id']?>' class='mactive-<?=$row['is_mactive']?>' style='cursor:pointer'>
 				<td <?=$td_onclick?>><?=$row['id']?></td>
@@ -167,7 +169,7 @@
 				<td <?=$td_onclick?>><?=number_format($row['app_merchant_fee'])?></td>
 				<td <?=$td_onclick?>><?=$row['is_public_mode']?></td>
 				<td>
-					<a href='#' onclick='mvPage("merchant-campaign-app-modify", null, {partnerid: "<?=$partner_id?>", mcode: "<?=$row_merchant['mcode']?>", appkey:"<?=$row['app_key']?>"})' data-theme='<?=$ar_btn_theme[0]?>' data-role='button' data-mini='true' data-inline='true'>앱 수정</a>
+					<a href='#' onclick='mvPage("dlgpage-merchantapp-config", null, {partnerid: "<?=$partner_id?>", mcode: "<?=$row_merchant['mcode']?>", appkey:"<?=$row['app_key']?>"})' data-theme='<?=$ar_btn_theme[0]?>' data-role='button' data-mini='true' data-inline='true'>Publisher별 설정</a>
 				</td>
 			</tr>
 			<?

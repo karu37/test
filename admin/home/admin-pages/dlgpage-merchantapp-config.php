@@ -47,7 +47,7 @@
 		.list .btn-td a								{padding:7px 4px; font-size: 10px; letter-spacing:0px; margin: 2px -2px 2px -1px; box-shadow:none;}
 	</style>
 <div style='width:800px'>	
-	<t4 style='line-height: 40px'><b3 style='color:darkred'><?=$row_app['app_title']?></b3> 의 광고 설정</t4>
+	<t4 style='line-height: 40px'><b3 style='color:darkred'><?=$row_app['app_title']?></b3> 의 Publisher별 설정</t4>
 	<hr>
 
 	<form onsubmit='return <?=$js_page_id?>.action.on_btn_search()'>

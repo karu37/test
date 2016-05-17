@@ -28,6 +28,7 @@
 ?>
 	<style>
 		#ctl-main-list tr:not(:last-child):hover td 			{background:#dff}
+		#ctl-main-list tr.mactive-D:hover td 					{background:#888}
 		
 		#ctl-main-list tr	{line-height:25px}
 		#ctl-main-list th	{padding: 2px 4px}
@@ -106,7 +107,7 @@
 		?>
 			<tr id='list-<?=$row['id']?>' class='mactive-<?=$row['is_mactive']?>'>
 				<td <?=$td_click?>><?=$row['id']?></td>
-				<td <?=$td_click?> id='user-status-<?=$row['id']?>'><t3><?=$arr_mactive[$row['is_mactive']]?></t3></td>
+				<td <?=$td_click?> id='user-status-<?=$row['id']?>'><?=$arr_mactive[$row['is_mactive']]?></td>
 				<td class='btn'>
 					<a class='btn-delete' href='#' onclick='<?=$js_page_id?>.action.on_btn_delete("<?=$row['partner_id']?>", "<?=$row['id']?>")'  style='padding: 5px 4px'data-role='button' data-mini='true' data-inline='true'>삭제</a>
 					<a class='btn-restore' href='#' onclick='<?=$js_page_id?>.action.on_btn_restore("<?=$row['partner_id']?>", "<?=$row['id']?>")'  style='padding: 5px 4px'data-role='button' data-mini='true' data-inline='true'>복구</a>
