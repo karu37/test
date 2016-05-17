@@ -414,7 +414,7 @@ var <?=$js_page_id?> = function()
 				
 				_$("#app-title").val(title);
 				_$("#app-packageid").val(packageid);
-				_$("#img-app-icon").data('type', 'base64');
+				_$("#img-app-icon").data('type', 'base64');	// base64 데이터형식인지, URL인지 구별
 				_$("#img-app-icon").attr('src', 'data:image/png;base64,' + base64_image);
 				_$("#app-image-url").val(base64_image);			
 				
@@ -446,7 +446,7 @@ var <?=$js_page_id?> = function()
 					'appexecurl' : _$("#app-execurl").val(),
 					'apptitle' : _$("#app-title").val(),
 					'appimageurl' : _$("#app-image-url").val(),
-					'appimagetype' : _$("#img-app-icon").data('type'),
+					'appimagetype' : _$("#img-app-icon").data('type'),		// base64 데이터형식인지, URL인지 구별
 					'appexecdesc' : _$("#app-exec-desc").val(),
 					'appmarket' : 'P',
 					'appcontent' : _$("#app-content").val(),
@@ -473,7 +473,7 @@ var <?=$js_page_id?> = function()
 					var js_data = util.to_json(sz_data);
 					if (js_data['result']) {
 						util.Alert('알림', '등록되었습니다.', function() {
-							window.location.href = "?id=campaign-modify&appkey=" + js_data['app_key'];
+							mvPage('merchant-campaign-app-modify', null, {mcode:'<?$=$mcode?>', appkey:js_data['app_key']});
 						});	
 					} else util.Alert(js_data['msg']);
 				});
@@ -509,7 +509,7 @@ var <?=$js_page_id?> = function()
 					contentType: false,
 					success: function(sz_data, textStatus, jqXHR) {
 						var js_data = util.to_json(sz_data);
-						_$("#img-app-icon").data('type', 'url');
+						_$("#img-app-icon").data('type', 'url');		// base64 데이터형식인지, URL인지 구별
 						_$("#img-app-icon").attr('src', js_data['url']);
 						_$("#app-image-url").val(js_data['url']);
 					}, 

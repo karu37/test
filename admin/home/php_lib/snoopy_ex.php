@@ -68,7 +68,7 @@ class SnoopyEx extends Snoopy
 		$this->set_Connection('close');
 		
 		if ($rawheaders) foreach($rawheaders as $key => $val) {$this->set_Header($key, $val);}
-		
+
 		//echo "<br>  request summary ----------------------------- <br>";
 		//echo "referer : " . $this->referer	. "<br>";
 		//echo "user-agent: " . $this->_agent	. "<br>";

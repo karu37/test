@@ -362,7 +362,7 @@ var <?=$js_page_id?> = function()
 							util.request(get_ajax_url('get-base64-img', ar_param), function(sz_data) {
 								var js_data = util.to_json(sz_data);
 								if (js_data['result']) {
-									_$("#img-app-icon").data('type', 'base64');
+									_$("#img-app-icon").data('type', 'base64');		// base64 데이터형식인지, URL인지 구별
 									_$("#img-app-icon").attr('src', 'data:image/png;base64,' + js_data['base64']);
 									_$("#app-image-url").val(js_data['base64']);			
 								}
@@ -391,37 +391,17 @@ var <?=$js_page_id?> = function()
 			},
 			on_btn_addcampaign: function()
 			{
-				var review_star = "";
 				var app_type = _$("#app-type").val();
 
-				// 검색형 / Review형인 경우 키워드,마켓링크 모두 사용 불가
-				if (util.in_array(app_type, ['S', 'R'])) {
-					if (_$("#app-execurl").val() && _$("#app-keyword").val()) {
-						alert('[마켓링크]와 [검색 키워드] 모두 설정해서 사용할 수 없습니다.\n두개 중 하나만 입력하세요');
-						return;
-					}
-				}
-				
-				// 검색형 / Review형이 아닌 경우 Keyword Clear
-				if (!util.in_array(app_type, ['S', 'R'])) {
-					_$("#app-keyword").val("");
-				}
-				
-				// 리뷰형인 경우 review_star 설정함
-				review_star = util.intval(_$("#review-star-1").val()) + ',' +
-							util.intval(_$("#review-star-2").val()) + ',' +
-							util.intval(_$("#review-star-3").val()) + ',' +
-							util.intval(_$("#review-star-4").val()) + ',' +
-							util.intval(_$("#review-star-5").val());
-				
 				var ar_param = {
+					'mcode' : '<?=$mcode?>',
 					'appplatform' : util.get_item_value(_$("#app-platform")),
 					'apptype' : _$("#app-type").val(),
 					'apphomeurl' : _$("#app-homeurl").val(),
 					'appexecurl' : _$("#app-execurl").val(),
 					'apptitle' : _$("#app-title").val(),
 					'appimageurl' : _$("#app-image-url").val(),
-					'appimagetype' : _$("#img-app-icon").data('type'),
+					'appimagetype' : _$("#img-app-icon").data('type'),		// base64 데이터형식인지, URL인지 구별
 					'appexecdesc' : _$("#app-exec-desc").val(),
 					'appmarket' : 'W',
 					'appcontent' : _$("#app-content").val(),
@@ -433,9 +413,16 @@ var <?=$js_page_id?> = function()
 					'appexecedate' : _$("#app-exec-edate").val(),
 					'appexecstime' : _$("#app-exec-stime").val(),
 					'appexecetime' : _$("#app-exec-etime").val(),
+					'appexechourlycnt': util.intval(_$("#app-exec-hourly-cnt").val()),
 					'appexecdailycnt' : util.intval(_$("#app-exec-daily-cnt").val()),
 					'appexectotalcnt' : util.intval(_$("#app-exec-total-cnt").val()),
-					'autolaunchhourlylimit' : util.intval(_$("#autolaunch-hourly-limit").val())
+
+					'apppublisherlevel': util.get_item_value(_$("#app-publisher-level")),
+					
+					'level1activedate': _$("#level-1-active-date").val() + " " + util.get_item_value(_$("#level-1-active-time")),
+					'level2activedate': _$("#level-2-active-date").val() + " " + util.get_item_value(_$("#level-2-active-time")),
+					'level3activedate': _$("#level-3-active-date").val() + " " + util.get_item_value(_$("#level-3-active-time")),
+					'level4activedate': _$("#level-4-active-date").val() + " " + util.get_item_value(_$("#level-4-active-time"))
 				};
 				
 				if (ar_param.apphomeurl.indexOf('https://m.facebook.com') != 0) {
@@ -447,11 +434,11 @@ var <?=$js_page_id?> = function()
 					return false;
 				}
 				
-				util.post(get_ajax_url('admin-campaign-add'), ar_param, function(sz_data) {
+				util.post(get_ajax_url('admin-campaign-app-add'), ar_param, function(sz_data) {
 					var js_data = util.to_json(sz_data);
 					if (js_data['result']) {
 						util.Alert('알림', '등록되었습니다.', function() {
-							window.location.href = "?id=campaign-modify&appkey=" + js_data['app_key'];
+							mvPage('merchant-campaign-web-modify', null, {mcode:'<?$=$mcode?>', appkey:js_data['app_key']});
 						});	
 					} else util.Alert(js_data['msg']);
 				});
@@ -476,7 +463,7 @@ var <?=$js_page_id?> = function()
 					contentType: false,
 					success: function(sz_data, textStatus, jqXHR) {
 						var js_data = util.to_json(sz_data);
-						_$("#img-app-icon").data('type', 'url');
+						_$("#img-app-icon").data('type', 'url');		// base64 데이터형식인지, URL인지 구별
 						_$("#img-app-icon").attr('src', js_data['url']);
 						_$("#app-image-url").val(js_data['url']);
 					}, 

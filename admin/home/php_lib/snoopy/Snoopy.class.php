@@ -100,7 +100,7 @@ class Snoopy
 												// under Windows, this should be C:\temp
 
 	var	$curl_path		=	"/usr/bin/curl";
-//	var	$curl_path		=	"c:/AutoSet8/server/curl/curl.exe";
+	var	$curl_path_win	=	"c:/AutoSet8/server/curl/curl.exe";
 												// Snoopy will use cURL for fetching
 												// SSL content if a full system path to
 												// the cURL binary is supplied here.
@@ -221,6 +221,7 @@ class Snoopy
 				return true;
 				break;
 			case "https":
+				if (file_exists($this->curl_path_win)) $this->curl_path = $this->curl_path_win;
 				if(!$this->curl_path)
 					return false;
 				if(function_exists("is_executable"))
@@ -382,6 +383,7 @@ class Snoopy
 				return true;
 				break;
 			case "https":
+				if (file_exists($this->curl_path_win)) $this->curl_path = $this->curl_path_win;
 				if(!$this->curl_path)
 					return false;
 				if(function_exists("is_executable"))
