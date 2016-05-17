@@ -1,4 +1,9 @@
 <?
+function admin_date($p1, $p2, $empty_txt = "") {
+	if ($p2 == "") return $empty_txt;
+	return date($p1, $p2);
+}
+
 function admin_date_period($start_date, $end_date) {
 	if (!$start_date && !$end_date) return "-";
 	if ($start_date == "00-00-00" && $end_date == "00-00-00") return "-";
@@ -64,9 +69,9 @@ function admin_substr($txt, $start, $length) {
 	if (mb_strlen($txt, "UTF-8") > $start + $length) $ret .= "..";
 	return $ret;
 }
-function admin_number($num, $max_num) {
-	if (!$num) return "-";
-	if ($max_num && $num >= $max_num) return "-";
+function admin_number($num, $max_num, $empty_txt = "-") {
+	if (!$num) return $empty_txt;
+	if ($max_num && $num >= $max_num) return $empty_txt;
 	return number_format($num);	
 }
 // user 정보 표시 관련

@@ -24,7 +24,6 @@
 
 */
 	$partner_id = $_REQUEST['partnerid'];	// this'll be used for go back to partnerid's appkey list page.
-		
 	$mcode = $_REQUEST['mcode'];
 	$db_mcode = mysql_real_escape_string($mcode);
 	

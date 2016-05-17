@@ -5,6 +5,11 @@ include "util_for_admin.php";
 include "util_of_session_login.php";
 include "util_of_manager_action.php";
 
+// if empty then return ""
+function ifempty($p1, $p2) {
+	return $p1 == "" ? $p2 : $p1;
+}
+
 // 6.18(목) 13:54, 6.3(금) 9:30 (YmdHis vs YnjGis)
 function to_displaytime($datetime, $type = 0){
 	$time = strtotime($datetime);

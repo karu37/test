@@ -261,11 +261,23 @@ var util = {
 		str_num = str_num.replace(/,/g, '');
 		return parseInt(str_num);
 	},
-	number_format: function(num){
-		if (typeof num == 'undefined' || num === null) num = 0;
-		else if (typeof num == 'string') num = util.intval(num);
-		
-		return (num).toFixed(0).replace(/(\d)(?=(\d{3})+$)/g, "$1,");
+	number_format: function(num, empty_string){
+		if (typeof empty_string == 'undefined') empty_string = 0;
+		if (typeof num == 'undefined' || num === null || num === "") num = empty_string;
+		else if (typeof num == 'string') {
+			num = util.intval(num);
+			num = (num).toFixed(0).replace(/(\d)(?=(\d{3})+$)/g, "$1,");
+		}
+		return num;
+	},
+	number_format_ex: function(num, empty_string){
+		if (typeof empty_string == 'undefined') empty_string = 0;
+		if (typeof num == 'undefined' || num === null || num === "") num = empty_string;
+		else if (typeof num == 'string') {
+			num = util.intval(num);
+			num = (num).toFixed(0).replace(/(\d)(?=(\d{3})+$)/g, "$1,");
+		}
+		return num;
 	},
 	trim: function(txt) {
     	return txt.replace(/(^\s*)|(\s*$)/gi, "");
@@ -288,13 +300,18 @@ var util = {
 	  }
 	  return false;
 	},
-	set_event_for_input_number: function(sp_element) {
+	set_event_for_input_number: function(sp_element, empty_string) {
 		$(sp_element).attr('type', 'tel');
 		$(sp_element).off('focusout').off('focusin');
-		$(sp_element).val( util.number_format($(sp_element).val()) );
+		$(sp_element).val( util.number_format($(sp_element).val(), empty_string) );
 		
-		$(sp_element).on('focusout', function(){ $(sp_element).val( util.number_format($(sp_element).val())); });
-		$(sp_element).on('focusin', function(){ $(sp_element).val( $(sp_element).val().replace(/,/gi,'') ); });
+		$(sp_element).on('focusout', function(){ $(sp_element).val( util.number_format($(sp_element).val(), empty_string)); });
+		$(sp_element).on('focusin', function(){ 
+			if (typeof empty_string != 'undefined' && empty_string == $(sp_element).val())
+				$(sp_element).val("");
+			else
+				$(sp_element).val($(sp_element).val().replace(/,/gi,'')); 
+		});
 	},
 	set_event_for_input_money: function(sp_element) {
 		$(sp_element).attr('type', 'tel');	// 원을 사용하기 위해 tel타입으로 변경

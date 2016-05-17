@@ -1,4 +1,5 @@
 <?
+	$partner_id = $_REQUEST['partnerid'];
 	$mcode = $_REQUEST['mcode'];
 ?>
 <div>
@@ -15,7 +16,6 @@
 		#app-info	#app-content-wrapper	.cleditorMain iframe	{height: 232px !important}
 
 		.app-keyword-wrapper					{background-color: lightgreen}
-
 	</style>
 	<div id='app-info' class='ui-grid-a'>
 		<div class='ui-block-a'>플랫폼</div>
@@ -118,12 +118,9 @@
 		<div class='ui-block-a'>실행기간</div>
 		<div class='ui-block-b'>
 			<div style='width:100px; display: inline-block; height: 20px; padding-top: 2px; float:left'>
-				<input type="text" data-role="date" class='td-2-item' name="app-exec-sdate" id="app-exec-sdate" value="<?=date("Y-m-d")?>" />
+				<input type="text" data-role="date" class='td-2-item' name="app-exec-edate" id="app-exec-edate" data-clear-btn=true placeholder='기간없음' value="" />
 			</div>
-			<div style='float:left; padding: 15px 10px'> ~ </div>
-			<div style='width:100px; display: inline-block; height: 20px; padding-top: 2px; float:left'>
-				<input type="text" data-role="date" class='td-2-item' name="app-exec-sdate" id="app-exec-edate" value="<?=date("Y-m-d", strtotime("+1 year"))?>" />
-			</div>
+			<div style='float:left; padding: 15px 10px'> 까지 (설정하지 않으면 기간제한 없음)</div>
 			<div style='clear:both'></div>
 		</div>
 		<div class='ui-block-a'>실행시간</div>
@@ -170,11 +167,11 @@
 		<div class='ui-block-a'>나이 필터</div>
 		<div class='ui-block-b'>
 			<div style='width:60px; display: inline-block; height: 20px; padding-top: 6px; float:left'>
-				<input type="number" class='td-2-item' name="app-agefrom" id="app-agefrom" value="0" />
+				<input type="number" class='td-2-item' name="app-agefrom" id="app-agefrom" data-clear-btn=true value="0" />
 			</div>
 			<div style='float:left; padding: 14px 10px'>세 부터 </div>
-			<div style='width:60px; display: inline-block; height: 20px; padding-top: 6px; float:left'>
-				<input type="number" class='td-2-item' name="app-ageto" id="app-ageto" value="10000" />
+			<div style='width:90px; display: inline-block; height: 20px; padding-top: 6px; float:left'>
+				<input type="number" class='td-2-item' name="app-ageto" id="app-ageto" data-clear-btn=true value="100" />
 			</div>
 			<div style='float:left; padding: 14px 10px'>세 까지 </div>
 			<div style='clear:both'></div>
@@ -183,7 +180,7 @@
 		<div class='ui-block-a'>시간 최대 실행</div>
 		<div class='ui-block-b'>
 			<div style='width:100px; display: inline-block; height: 20px; padding-top: 5px; float:left'>
-				<input type="text" id="app-exec-hourly-cnt" name="app-exec-hourly-cnt"  init-value='100,000,000' />
+				<input type="text" id="app-exec-hourly-cnt" name="app-exec-hourly-cnt" data-clear-btn=true  init-value='100,000,000' />
 			</div>
 			<div style='float:left; padding: 15px 10px'>회</div>
 			<div style='clear:both'></div>
@@ -192,7 +189,7 @@
 		<div class='ui-block-a'>일일 최대 실행</div>
 		<div class='ui-block-b'>
 			<div style='width:100px; display: inline-block; height: 20px; padding-top: 5px; float:left'>
-				<input type="text" id="app-exec-daily-cnt" name="app-exec-daily-cnt" init-value='100,000,000' />
+				<input type="text" id="app-exec-daily-cnt" name="app-exec-daily-cnt" data-clear-btn=true init-value='100,000,000' />
 			</div>
 			<div style='float:left; padding: 15px 10px'>회</div>
 			<div style='clear:both'></div>
@@ -210,7 +207,8 @@
 		<div class='ui-block-b'>
 			<div style='padding-top: 2px'>
 	        	<div style='width:160px; display: inline-block; float:left'>
-					<select name="app-publisher-level" id="app-publisher-level" init-value='4'>
+					<select name="app-publisher-level" id="app-publisher-level" init-value='9'>
+				        <option value="9">전체</option>
 				        <option value="1">1 (자체서비스)</option>
 				        <option value="2">2 (전략적 제휴사)</option>
 				        <option value="3">3 (제휴사)</option>
@@ -229,11 +227,12 @@
 					레벨 1
 				</div>
 				<div style='width:100px; display: inline-block; height: 20px; padding-top: 4px; float:left'>
-					<input type="text" data-role="date" class='td-2-item' name="level-1-active-date" id="level-1-active-date" value="<?=date("Y-m-d")?>" />
+					<input type="text" data-role="date" class='td-2-item' name="level-1-active-date" id="level-1-active-date" data-clear-btn=true value="" />
 				</div>
 				<div data-role="fieldcontain" style='display: inline-block; padding-top: 2px; border: 0; margin: 0'>
-					<select name="level-1-active-time" id="level-1-active-time" data-inline='true' data-mini='true' data-native-menu="true" data-theme='c' init-value='00'>
+					<select name="level-1-active-time" id="level-1-active-time" data-inline='true' data-mini='true' data-native-menu="true" data-theme='c' init-value=''>
 						<?
+							echo "<option></option>\n";
 							for ($i=0; $i < 24; $i++) {
 								$hour = sprintf("%02d", $i);
 								echo "<option value='{$hour}'>{$i}시</option>\n";
@@ -248,11 +247,12 @@
 					레벨 2
 				</div>
 				<div style='width:100px; display: inline-block; height: 20px; padding-top: 4px; float:left'>
-					<input type="text" data-role="date" class='td-2-item' name="level-2-active-date" id="level-2-active-date" value="<?=date("Y-m-d")?>" />
+					<input type="text" data-role="date" class='td-2-item' name="level-2-active-date" id="level-2-active-date" data-clear-btn=true value="" />
 				</div>
 				<div data-role="fieldcontain" style='display: inline-block; padding-top: 2px; border: 0; margin: 0'>
-					<select name="level-2-active-time" id="level-2-active-time" data-inline='true' data-mini='true' data-native-menu="true" data-theme='c' init-value='00'>
+					<select name="level-2-active-time" id="level-2-active-time" data-inline='true' data-mini='true' data-native-menu="true" data-theme='c' init-value=''>
 						<?
+							echo "<option></option>\n";
 							for ($i=0; $i < 25; $i++) {
 								$hour = sprintf("%02d", $i);
 								echo "<option value='{$hour}'>{$i}시</option>\n";
@@ -267,11 +267,12 @@
 					레벨 3
 				</div>
 				<div style='width:100px; display: inline-block; height: 20px; padding-top: 4px; float:left'>
-					<input type="text" data-role="date" class='td-2-item' name="level-3-active-date" id="level-3-active-date" value="<?=date("Y-m-d")?>" />
+					<input type="text" data-role="date" class='td-2-item' name="level-3-active-date" id="level-3-active-date" data-clear-btn=true value="" />
 				</div>
 				<div data-role="fieldcontain" style='display: inline-block; padding-top: 2px; border: 0; margin: 0'>
-					<select name="level-3-active-time" id="level-3-active-time" data-inline='true' data-mini='true' data-native-menu="true" data-theme='c' init-value='00'>
+					<select name="level-3-active-time" id="level-3-active-time" data-inline='true' data-mini='true' data-native-menu="true" data-theme='c' init-value=''>
 						<?
+							echo "<option></option>\n";
 							for ($i=0; $i < 25; $i++) {
 								$hour = sprintf("%02d", $i);
 								echo "<option value='{$hour}'>{$i}시</option>\n";
@@ -286,11 +287,12 @@
 					레벨 4
 				</div>
 				<div style='width:100px; display: inline-block; height: 20px; padding-top: 4px; float:left'>
-					<input type="text" data-role="date" class='td-2-item' name="level-4-active-date" id="level-4-active-date" value="<?=date("Y-m-d")?>" />
+					<input type="text" data-role="date" class='td-2-item' name="level-4-active-date" id="level-4-active-date" data-clear-btn=true value="" />
 				</div>
 				<div data-role="fieldcontain" style='display: inline-block; padding-top: 2px; border: 0; margin: 0'>
-					<select name="level-4-active-time" id="level-4-active-time" data-inline='true' data-mini='true' data-native-menu="true" data-theme='c' init-value='00'>
+					<select name="level-4-active-time" id="level-4-active-time" data-inline='true' data-mini='true' data-native-menu="true" data-theme='c' init-value=''>
 						<?
+							echo "<option></option>\n";
 							for ($i=0; $i < 25; $i++) {
 								$hour = sprintf("%02d", $i);
 								echo "<option value='{$hour}'>{$i}시</option>\n";
@@ -454,7 +456,6 @@ var <?=$js_page_id?> = function()
 					'appagefrom' : util.intval(_$("#app-agefrom").val()),
 					'appageto' : util.intval(_$("#app-ageto").val()),
 					'appmerchantfee' : util.intval(_$("#app-merchant-fee").val()),
-					'appexecsdate' : _$("#app-exec-sdate").val(),
 					'appexecedate' : _$("#app-exec-edate").val(),
 					'appexecstime' : _$("#app-exec-stime").val(),
 					'appexecetime' : _$("#app-exec-etime").val(),
@@ -464,16 +465,16 @@ var <?=$js_page_id?> = function()
 					
 					'apppublisherlevel': util.get_item_value(_$("#app-publisher-level")),
 					
-					'level1activedate': _$("#level-1-active-date").val() + " " + util.get_item_value(_$("#level-1-active-time")),
-					'level2activedate': _$("#level-2-active-date").val() + " " + util.get_item_value(_$("#level-2-active-time")),
-					'level3activedate': _$("#level-3-active-date").val() + " " + util.get_item_value(_$("#level-3-active-time")),
-					'level4activedate': _$("#level-4-active-date").val() + " " + util.get_item_value(_$("#level-4-active-time"))
+					'level1activedate': _$("#level-1-active-date").val() ? _$("#level-1-active-date").val() + " " + util.get_item_value(_$("#level-1-active-time")) : "",
+					'level2activedate': _$("#level-2-active-date").val() ? _$("#level-2-active-date").val() + " " + util.get_item_value(_$("#level-2-active-time")) : "",
+					'level3activedate': _$("#level-3-active-date").val() ? _$("#level-3-active-date").val() + " " + util.get_item_value(_$("#level-3-active-time")) : "",
+					'level4activedate': _$("#level-4-active-date").val() ? _$("#level-4-active-date").val() + " " + util.get_item_value(_$("#level-4-active-time")) : ""
 				};
 				util.post(get_ajax_url('admin-campaign-app-add'), ar_param, function(sz_data) {
 					var js_data = util.to_json(sz_data);
 					if (js_data['result']) {
 						util.Alert('알림', '등록되었습니다.', function() {
-							mvPage('merchant-campaign-app-modify', null, {mcode:'<?$=$mcode?>', appkey:js_data['app_key']});
+							mvPage('merchant-campaign-app-modify', null, {partnerid:'<?=$partner_id?>', mcode:'<?=$mcode?>', appkey:js_data['app_key']});
 						});	
 					} else util.Alert(js_data['msg']);
 				});
@@ -528,9 +529,13 @@ var <?=$js_page_id?> = function()
 		_$("#upload-image-file").change(page.upload.on_change_file);
 
 		util.set_event_for_input_number(_$("#app-merchant-fee"));
-		util.set_event_for_input_number(_$("#app-exec-hourly-cnt"));
-		util.set_event_for_input_number(_$("#app-exec-daily-cnt"));
-		util.set_event_for_input_number(_$("#app-exec-total-cnt"));
+		
+		util.set_event_for_input_number(_$("#app-agefrom"), '0');
+		util.set_event_for_input_number(_$("#app-ageto"), '100');
+				
+		util.set_event_for_input_number(_$("#app-exec-hourly-cnt"), '100,000,000');
+		util.set_event_for_input_number(_$("#app-exec-daily-cnt"), '100,000,000');
+		util.set_event_for_input_number(_$("#app-exec-total-cnt"), '100,000,000');
 		
 		
 		_$("#level-1-active-date").change(function(){ page.action.on_change_active_date(this, 1); });

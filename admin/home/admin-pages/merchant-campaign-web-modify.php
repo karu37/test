@@ -22,8 +22,6 @@
 		
 		#app-info	#app-content-wrapper	.cleditorMain	{height: 285px !important}
 		#app-info	#app-content-wrapper	.cleditorMain iframe	{height: 232px !important}
-
-		.app-keyword-wrapper					{background-color: lightgreen}
 	</style>
 	<div style='padding: 10px'>
 		<a href='#' onclick='<?=$js_page_id?>.action.on_btn_modifycampaign()' data-role='button' data-theme='b' data-inline='true' data-mini='true' >변경사항 적용하기</a>
@@ -54,57 +52,46 @@
 		</div>
 		<div class='ui-block-a'>플랫폼</div>
 		<div class='ui-block-b'>
-			<fieldset id="app-platform" class='td-2-item' data-role="controlgroup" data-type="horizontal" data-mini=true init-value="A" readonly >
-		        <input name="app-platform" id="app-platform-android" value="A" type="radio" />
-		        <label for="app-platform-android">Android App</label>
+			<fieldset id="app-platform" class='td-2-item' data-role="controlgroup" data-type="horizontal" data-mini=true init-value="W" readonly >
+		        <input name="app-platform" id="app-platform-android" value="W" type="radio" />
+		        <label for="app-platform-android">WEB</label>
 		    </fieldset>									
 		</div>
 		<div class='ui-block-a' style='height:50px'>실행 타입</div>
 		<div class='ui-block-b' style='height:50px; padding-top:3px'>
         	<div data-role="fieldcontain" style='padding: 0px 0px; border: 0; margin: 0'>
 				<select name="app-type" id="app-type" onchange="<?=$js_page_id?>.action.on_change_app_type()" data-inline='true' data-mini='true' data-native-menu="true" data-theme='c'>
-					<option value="I" <?=$row['app_exec_type'] == 'I' ? 'selected' : ''?>>설치형</option>
-					<option value="E" <?=$row['app_exec_type'] == 'E' ? 'selected' : ''?>>실행형</option>
-					<option value="S" <?=$row['app_exec_type'] == 'S' ? 'selected' : ''?>>검색설치형</option>
+					<option value="F" <?=$row['app_exec_type'] == 'F' ? 'selected' : ''?>>페이스북 좋아요</option>
 				</select>
         	</div>
 		</div>
-		<div class='ui-block-a'>앱 이름</div>
+		
+		<div class='ui-block-a'>홈 URL</div>
+		<div class='ui-block-b'>
+			<div style='width:300px; display: block; height: 20px; padding-top: 5px'>
+				<form onsubmit="return <?=$js_page_id?>.action.on_btn_search_info()">
+				<div style='width:230px; display: inline-block; height: 20px'>
+					<input type="text" id="app-homeurl" name="app-homeurl" value='<?=$row['app_homeurl']?>'/>
+				</div>
+				<input type=submit data-role="button" data-theme='c' data-theme="b" data-inline='true' data-mini='true' style="margin-top: 15px; margin:0px 5px" value="검색" />
+				</form>
+				
+			</div>
+		</div>		
+		<div class='ui-block-a'>실행 URL</div>
+		<div class='ui-block-b'>
+			<div style='width:300px; display: block; height: 20px; padding-top: 5px'>
+				<input type="text" id="app-execurl" name="app-execurl" value='<?=$row['app_execurl']?>' />
+			</div>
+		</div>		
+		
+		<div class='ui-block-a'>제목</div>
 		<div class='ui-block-b'>
 			<div style='width:300px; display: inline-block; height: 20px; padding-top: 5px'>
-				<input type="text" id="app-title" name="app-title" value='<?=addslashes($row['app_title'])?>'/>
+				<input type="text" id="app-title" name="app-title" value='<?=$row['app_title']?>' />
 			</div>
 		</div>
-		<div class='ui-block-a'>Package ID</div>
-		<div class='ui-block-b'>
-			<div style='width:450px; display: inline-block; height: 20px; padding-top: 5px'>
 				
-				<div style='float:left; width:330px'>
-					<input type="text" id="app-packageid" name="app-packageid" value='<?=addslashes($row['app_packageid'])?>' />
-				</div>
-				<? if ($row['app_packageid']) { ?>
-				<a data-role='button' data-inline='true' data-mini='true' href='https://play.google.com/store/apps/details?id=<?=$row['app_packageid']?>' target=_blank style='float:right'>구글확인</a>
-				<? } ?>
-				<div style='clear:both'></div>
-				
-			</div>
-		</div>
-		<div class='ui-block-a app-keyword-wrapper' style='height: 55px'>검색 키워드</div>
-		<div class='ui-block-b app-keyword-wrapper' style='height: 55px'>
-			<div style='width:300px; display: block; height: 20px; padding-top: 5px'>
-				<input type="text" id="app-keyword" name="app-keyword" value='<?=addslashes($row['app_keyword'])?>' />
-			</div>
-			<br>
-			(리뷰형의 경우 앱에 연령제한이 있는 꼭 입력)
-		</div>		
-		<div class='ui-block-a' style='height: 55px'>마켓 링크</div>
-		<div class='ui-block-b' style='height: 55px'>
-			<div style='width:300px; display: block; height: 20px; padding-top: 5px'>
-				<input type="text" id="app-execurl" name="app-execurl" value='<?=addslashes($row['app_execurl'])?>' />
-			</div>
-			<br>
-			(고객이 요청한 URL을 꼭 경우해야하는 경우에만 사용 - 사용시 검색키워드 사용불가)
-		</div>	
 		<div class='ui-block-a' style='height: 100px'>아이콘</div>
 		<div class='ui-block-b' style='height: 100px'>
 			<div style='width:400px; display: inline-block; height: 20px; padding-top: 5px'>
@@ -223,7 +210,7 @@
 		<div class='ui-block-a'>총 실행 수</div>
 		<div class='ui-block-b'>
 			<div style='width:100px; display: inline-block; height: 20px; padding-top: 5px; float:left'>
-				<input type="text" id="app-exec-total-cnt" name="app-exec-total-cnt"  init-value='<?=number_format($row['exec_tot_max_cnt'])?>' />
+				<input type="text" id="app-exec-total-cnt" name="app-exec-total-cnt" init-value='<?=number_format($row['exec_tot_max_cnt'])?>' />
 			</div>
 			<div style='float:left; padding: 15px 10px'>회</div>
 			<div style='clear:both'></div>
@@ -361,40 +348,23 @@ var <?=$js_page_id?> = function()
 			},
 			on_change_app_type: function()
 			{
-				_$(".app-keyword-wrapper").hide();
-				if (_$("#app-type").val() == 'S') {
-					_$(".app-keyword-wrapper").show();
-				}
 			},
 			on_btn_modifycampaign: function()
 			{
 				var app_type = _$("#app-type").val();
 
-				// 검색형인 경우 키워드,마켓링크 모두 사용 불가
-				if (util.in_array(app_type, ['S'])) {
-					if (_$("#app-execurl").val() && _$("#app-keyword").val()) {
-						alert('[마켓링크]와 [검색 키워드] 모두 설정해서 사용할 수 없습니다.\n두개 중 하나만 입력하세요');
-						return;
-					}
-				}
-				
-				// 검색형이 아닌 경우 Keyword Clear
-				if (!util.in_array(app_type, ['S'])) {
-					_$("#app-keyword").val("");
-				}
-				
 				var ar_param = {
 					'mcode' : '<?=$mcode?>',
 					'appkey' : '<?=$appkey?>',
 					'appplatform' : util.get_item_value(_$("#app-platform")),
 					'apptype' : _$("#app-type").val(),
-					'apppackageid' : _$("#app-packageid").val(),
-					'appkeyword' : _$("#app-keyword").val(),
+					'apphomeurl' : _$("#app-homeurl").val(),
 					'appexecurl' : _$("#app-execurl").val(),
 					'apptitle' : _$("#app-title").val(),
 					'appimageurl' : _$("#app-image-url").val(),
+					'appimagetype' : _$("#img-app-icon").data('type'),		// base64 데이터형식인지, URL인지 구별
 					'appexecdesc' : _$("#app-exec-desc").val(),
-					'appmarket' : 'P',
+					'appmarket' : 'W',
 					'appcontent' : _$("#app-content").val(),
 					'appgender' : util.get_item_value(_$("#app-sex")),
 					'appagefrom' : util.intval(_$("#app-agefrom").val()),
@@ -485,6 +455,7 @@ var <?=$js_page_id?> = function()
 		util.set_event_for_input_number(_$("#app-exec-hourly-cnt"), '100,000,000');
 		util.set_event_for_input_number(_$("#app-exec-daily-cnt"), '100,000,000');
 		util.set_event_for_input_number(_$("#app-exec-total-cnt"), '100,000,000');
+
 	}		
 
 	setEvents(); // Event Attaching		

@@ -19,7 +19,6 @@
 	$app_ageto				= $_REQUEST['appageto'];
 	
 	$app_merchant_fee      = $_REQUEST['appmerchantfee'];
-	$app_exec_sdate        = $_REQUEST['appexecsdate'];
 	$app_exec_edate        = $_REQUEST['appexecedate'];
 	$app_exec_stime        = $_REQUEST['appexecstime'];
 	$app_exec_etime        = $_REQUEST['appexecetime'];
@@ -34,11 +33,8 @@
 	$app_level_4_active_date 	= $_REQUEST['level4activedate'];
 	
 	
-	// echo "!$app_platform  || $app_type  || $app_group  || $app_packageid  || $app_title  || $app_image_url  || $app_exec_desc  || $app_exec_sdate  || $app_exec_edate  || $app_exec_stime  || $app_exec_etime";
-
-	if ($mcode =="" || $appkey =="" || $app_platform == "" || $app_type == "" || $app_title == "" || $app_image_url == "" || $app_exec_desc == "" || $app_exec_sdate == "" || $app_exec_edate == "" || $app_exec_stime == "" || $app_exec_etime == "") return_die(false, null, '정보를 모두 입력해 주십시요.');
+	if ($mcode =="" || $appkey =="" || $app_platform == "" || $app_type == "" || $app_title == "" || $app_image_url == "" || $app_exec_desc == "" || $app_exec_stime == "" || $app_exec_etime == "") return_die(false, null, '정보를 모두 입력해 주십시요.');
 	if ($app_platform == 'A' && !$app_packageid) return_die(false, null, '패키지 정보가 없습니다.');
-	if ($app_type == 'S' && !$app_keyword) return_die(false, null, '검색설치형에 필요한 키워드가 없습니다.');
 	
 	$app_exec_stime        = sprintf("%02d:00:00", $app_exec_stime);
 	$app_exec_etime        = sprintf("%02d:00:00", $app_exec_etime);
@@ -62,7 +58,6 @@
 	$db_app_ageto           = mysql_real_escape_string($app_ageto);
 		
 	$db_app_merchant_fee      = mysql_real_escape_string($app_merchant_fee);
-	$db_app_exec_sdate        = mysql_real_escape_string($app_exec_sdate);
 	$db_app_exec_edate        = mysql_real_escape_string($app_exec_edate);
 	$db_app_exec_stime        = mysql_real_escape_string($app_exec_stime);
 	$db_app_exec_etime        = mysql_real_escape_string($app_exec_etime);
@@ -81,32 +76,31 @@
 				app_title = '$db_app_title', 
 				app_content = '$db_app_content', 
 				app_iconurl = '$db_app_image_url', 
-				app_packageid = '$db_app_packageid', 
-				app_keyword = '$db_app_keyword',
-				app_homeurl = '$db_app_homeurl',
-				app_execurl = '$db_app_execurl', 
+				app_packageid = IF('$db_app_packageid' <> '', '$db_app_packageid', NULL), 
+				app_keyword = IF('$db_app_keyword' <> '', '$db_app_keyword', NULL),
+				app_homeurl = IF('$db_app_homeurl' <> '', '$db_app_homeurl', NULL),
+				app_execurl = IF('$db_app_execurl' <> '', '$db_app_execurl', NULL), 
 		
 				app_platform = '$db_app_platform',
-				app_gender = '$db_app_gender', 
-				app_agefrom = '$db_app_agefrom',
-				app_ageto = '$db_app_ageto',
+				app_gender = IF('$db_app_gender' <> 'A', '$db_app_gender', NULL), 
+				app_agefrom = IF('$db_app_agefrom' <> '0' OR '$db_app_ageto' <> '100', '$db_app_agefrom', NULL),
+				app_ageto = IF('$db_app_agefrom' <> '0' OR '$db_app_ageto' <> '100', '$db_app_ageto', NULL),
 				app_exec_type = '$db_app_type', 
 				app_exec_desc = '$db_app_exec_desc', 
 				app_market = '$db_app_market', 
 				app_merchant_fee = '$db_app_merchant_fee', 
-				exec_sdate = '$db_app_exec_sdate', 
-				exec_edate = '$db_app_exec_edate', 
-				exec_stime = '$db_app_exec_stime', 
-				exec_etime = '$db_app_exec_etime', 
-				exec_hour_max_cnt = '$db_app_exec_hourly_cnt', 
-				exec_day_max_cnt = '$db_app_exec_daily_cnt', 
-				exec_tot_max_cnt = '$db_app_exec_total_cnt', 
+				exec_edate = IF('$db_app_exec_edate' <> '', '$db_app_exec_edate', NULL), 
+				exec_stime = IF('$db_app_exec_stime' <> '00:00:00' OR '$db_app_exec_etime' <> '24:00:00', '$db_app_exec_stime', NULL), 
+				exec_etime = IF('$db_app_exec_stime' <> '00:00:00' OR '$db_app_exec_etime' <> '24:00:00', '$db_app_exec_etime', NULL), 
+				exec_hour_max_cnt = IF('$db_app_exec_hourly_cnt' < '100000000', '$db_app_exec_hourly_cnt', NULL), 
+				exec_day_max_cnt = IF('$db_app_exec_daily_cnt' < '100000000', '$db_app_exec_daily_cnt', NULL), 
+				exec_tot_max_cnt = IF('$db_app_exec_total_cnt' < '100000000', '$db_app_exec_total_cnt', NULL), 
 				
-				publisher_level = '$db_app_publisher_level',
-				level_1_active_date = '$db_app_level_1_active_date',
-				level_2_active_date = '$db_app_level_2_active_date',
-				level_3_active_date = '$db_app_level_3_active_date',
-				level_4_active_date = '$db_app_level_4_active_date',
+				publisher_level = IF('$db_app_publisher_level' <> '9', '$db_app_publisher_level', NULL),
+				level_1_active_date = IF('$db_app_level_1_active_date' <> '', '$db_app_level_1_active_date', NULL),
+				level_2_active_date = IF('$db_app_level_2_active_date' <> '', '$db_app_level_2_active_date', NULL),
+				level_3_active_date = IF('$db_app_level_3_active_date' <> '', '$db_app_level_3_active_date', NULL),
+				level_4_active_date = IF('$db_app_level_4_active_date' <> '', '$db_app_level_4_active_date', NULL),
 				up_date = NOW() 
 			WHERE app_key = '{$db_appkey}'";
  	mysql_execute($sql, $conn);

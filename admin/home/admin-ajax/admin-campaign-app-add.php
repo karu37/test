@@ -18,7 +18,6 @@
 	$app_ageto				= $_REQUEST['appageto'];
 	
 	$app_merchant_fee      = $_REQUEST['appmerchantfee'];
-	$app_exec_sdate        = $_REQUEST['appexecsdate'];
 	$app_exec_edate        = $_REQUEST['appexecedate'];
 	$app_exec_stime        = $_REQUEST['appexecstime'];
 	$app_exec_etime        = $_REQUEST['appexecetime'];
@@ -33,11 +32,8 @@
 	$app_level_4_active_date 	= $_REQUEST['level4activedate'];
 	
 	
-	// echo "!$app_platform  || $app_type  || $app_group  || $app_packageid  || $app_title  || $app_image_url  || $app_exec_desc  || $app_exec_sdate  || $app_exec_edate  || $app_exec_stime  || $app_exec_etime";
-
-	if ($mcode =="" || $app_platform == "" || $app_type == "" || $app_title == "" || $app_image_url == "" || $app_exec_desc == "" || $app_exec_sdate == "" || $app_exec_edate == "" || $app_exec_stime == "" || $app_exec_etime == "") return_die(false, null, '정보를 모두 입력해 주십시요.');
+	if ($mcode =="" || $app_platform == "" || $app_type == "" || $app_title == "" || $app_image_url == "" || $app_exec_desc == "" || $app_exec_stime == "" || $app_exec_etime == "") return_die(false, null, '정보를 모두 입력해 주십시요.');
 	if ($app_platform == 'A' && !$app_packageid) return_die(false, null, '패키지 정보가 없습니다.');
-	if ($app_type == 'S' && !$app_keyword) return_die(false, null, '검색설치형에 필요한 키워드가 없습니다.');
 	
 	$app_exec_stime        = sprintf("%02d:00:00", $app_exec_stime);
 	$app_exec_etime        = sprintf("%02d:00:00", $app_exec_etime);
@@ -60,7 +56,6 @@
 	$db_app_ageto           = mysql_real_escape_string($app_ageto);
 		
 	$db_app_merchant_fee      = mysql_real_escape_string($app_merchant_fee);
-	$db_app_exec_sdate        = mysql_real_escape_string($app_exec_sdate);
 	$db_app_exec_edate        = mysql_real_escape_string($app_exec_edate);
 	$db_app_exec_stime        = mysql_real_escape_string($app_exec_stime);
 	$db_app_exec_etime        = mysql_real_escape_string($app_exec_etime);
@@ -118,10 +113,11 @@
 		app_exec_desc, 
 		app_market, 
 		app_merchant_fee, 
-		exec_sdate, 
+		
 		exec_edate, 
 		exec_stime, 
 		exec_etime, 
+		
 		exec_hour_max_cnt, 
 		exec_day_max_cnt, 
 		exec_tot_max_cnt, 
@@ -140,32 +136,32 @@
 		'$db_app_title', 
 		'$db_app_content', 
 		'$db_app_image_url', 
-		'$db_app_packageid', 
-		'$db_app_keyword',
-		'$db_app_homeurl',
-		'$db_app_execurl', 
+		IF('$db_app_packageid' <> '', '$db_app_packageid', NULL),
+		IF('$db_app_keyword' <> '', '$db_app_keyword', NULL),
+		IF('$db_app_homeurl' <> '', '$db_app_homeurl', NULL),
+		IF('$db_app_execurl' <> '', '$db_app_execurl', NULL),
 
 		'$db_app_platform',
-		'$db_app_gender', 
-		'$db_app_agefrom',
-		'$db_app_ageto',
+		IF('$db_app_gender' <> 'A', '$db_app_gender', NULL),
+		IF('$db_app_agefrom' <> '0' OR '$db_app_ageto' <> '100', '$db_app_agefrom', NULL),
+		IF('$db_app_agefrom' <> '0' OR '$db_app_ageto' <> '100', '$db_app_ageto', NULL),
 		'$db_app_type', 
 		'$db_app_exec_desc', 
 		'$db_app_market', 
 		'$db_app_merchant_fee', 
-		'$db_app_exec_sdate', 
-		'$db_app_exec_edate', 
-		'$db_app_exec_stime', 
-		'$db_app_exec_etime', 
-		'$db_app_exec_hourly_cnt', 
-		'$db_app_exec_daily_cnt', 
-		'$db_app_exec_total_cnt', 
 		
-		'$db_app_publisher_level',
-		'$db_app_level_1_active_date',
-		'$db_app_level_2_active_date',
-		'$db_app_level_3_active_date',
-		'$db_app_level_4_active_date',
+		IF('$db_app_exec_edate' <> '', '$db_app_exec_edate', NULL),
+		IF('$db_app_exec_stime' <> '00:00:00' OR '$db_app_exec_etime' <> '24:00:00', '$db_app_exec_stime', NULL),
+		IF('$db_app_exec_stime' <> '00:00:00' OR '$db_app_exec_etime' <> '24:00:00', '$db_app_exec_etime', NULL),
+		
+		IF('$db_app_exec_hourly_cnt' < '100000000', '$db_app_exec_hourly_cnt', NULL),
+		IF('$db_app_exec_daily_cnt' < '100000000', '$db_app_exec_daily_cnt', NULL),
+		IF('$db_app_exec_total_cnt' < '100000000', '$db_app_exec_total_cnt', NULL),
+		IF('$db_app_publisher_level' <> '9', '$db_app_publisher_level', NULL)
+		IF('$db_app_level_1_active_date' <> '', '$db_app_level_1_active_date', NULL),
+		IF('$db_app_level_2_active_date' <> '', '$db_app_level_2_active_date', NULL),
+		IF('$db_app_level_3_active_date' <> '', '$db_app_level_3_active_date', NULL),
+		IF('$db_app_level_4_active_date' <> '', '$db_app_level_4_active_date', NULL),
 		
 		'N',
 		NOW(), 
