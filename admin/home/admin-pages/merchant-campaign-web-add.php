@@ -31,18 +31,6 @@
 				</select>
         	</div>
 		</div>
-		<div class='ui-block-a' style='height:50px'>리스트 그룹</div>
-		<div class='ui-block-b' style='height:50px; padding-top:3px'>
-        	<div data-role="fieldcontain" style='padding: 0px 0px; border: 0; margin: 0'>
-				<select name="app-group" id="app-group" data-inline='true' data-mini='true' data-native-menu="true" data-theme='c' init-value='blog'>
-					<option value="iexec" selected>설치/실행형</option>
-					<option value="blog">블로그형 (카카오톡/페이스북 등)</option>
-					<option value="reg">가입/동의/로그인형</option>
-					<option value="fin">신청형 (보험/신용카드 등)</option>
-					<option value="etc">기타</option>
-				</select>
-        	</div>
-		</div>
 		<div class='ui-block-a'>홈 URL</div>
 		<div class='ui-block-b'>
 			<div style='width:300px; display: block; height: 20px; padding-top: 5px'>
@@ -102,18 +90,10 @@
 				</textarea>
 			</div>
 		</div>
-		<div class='ui-block-a'>사용자적립</div>
+		<div class='ui-block-a'>광고원가</div>
 		<div class='ui-block-b'>
 			<div style='width:100px; display: inline-block; height: 20px; padding-top: 5px; float:left'>
-				<input type="text" id="app-fee-user" name="app-fee-user" />
-			</div>
-			<div style='float:left; padding: 15px 10px'>원</div>
-			<div style='clear:both'></div>
-		</div>
-		<div class='ui-block-a'>적립원가</div>
-		<div class='ui-block-b'>
-			<div style='width:100px; display: inline-block; height: 20px; padding-top: 5px; float:left'>
-				<input type="text" id="app-fee-offer" name="app-fee-offer" />
+				<input type="text" id="app-merchant-fee" name="app-merchant-fee" />
 			</div>
 			<div style='float:left; padding: 15px 10px'>원</div>
 			<div style='clear:both'></div>
@@ -183,6 +163,15 @@
 			<div style='clear:both'></div>
 		</div>
 		
+		<div class='ui-block-a'>시간 최대 실행</div>
+		<div class='ui-block-b'>
+			<div style='width:100px; display: inline-block; height: 20px; padding-top: 5px; float:left'>
+				<input type="text" id="app-exec-hourly-cnt" name="app-exec-hourly-cnt"  init-value='100,000,000' />
+			</div>
+			<div style='float:left; padding: 15px 10px'>회</div>
+			<div style='clear:both'></div>
+		</div>
+				
 		<div class='ui-block-a'>일일 최대 실행</div>
 		<div class='ui-block-b'>
 			<div style='width:100px; display: inline-block; height: 20px; padding-top: 5px; float:left'>
@@ -199,14 +188,105 @@
 			<div style='float:left; padding: 15px 10px'>회</div>
 			<div style='clear:both'></div>
 		</div>
-		<div class='ui-block-a app-review-star-wrapper'>시간당 제한</div>
-		<div class='ui-block-b app-review-star-wrapper'>
-			<div style='width:100px; display: inline-block; height: 20px; padding-top: 5px; float:left'>
-				<input type="text" id="autolaunch-hourly-limit" name="autolaunch-hourly-limit"  init-value='100,000,000' />
+		
+		<div class='ui-block-a'>매체사 레벨</div>
+		<div class='ui-block-b'>
+			<div style='padding-top: 2px'>
+	        	<div style='width:160px; display: inline-block; float:left'>
+					<select name="app-publisher-level" id="app-publisher-level" init-value='4'>
+				        <option value="1">1 (자체서비스)</option>
+				        <option value="2">2 (전략적 제휴사)</option>
+				        <option value="3">3 (제휴사)</option>
+				        <option value="4">4 (비추천 제휴사)</option>
+				    </select>	        		
+		        </div>
 			</div>
-			<div style='float:left; padding: 15px 10px'>회</div>
+			<div style='float:left; padding: 15px 10px'>(지정 레벨보다 낮은 경우 광고 공급 차단됨)</div>
 			<div style='clear:both'></div>
 		</div>
+		
+		<div class='ui-block-a' style='height:180px'>오픈일정</div>
+		<div class='ui-block-b' style='height:180px'>
+			<div>
+				<div style='width:44px; display: inline-block; height: 20px; padding-top: 2px; float:left; line-height: 40px'>
+					레벨 1
+				</div>
+				<div style='width:100px; display: inline-block; height: 20px; padding-top: 4px; float:left'>
+					<input type="text" data-role="date" class='td-2-item' name="level-1-active-date" id="level-1-active-date" value="<?=date("Y-m-d")?>" />
+				</div>
+				<div data-role="fieldcontain" style='display: inline-block; padding-top: 2px; border: 0; margin: 0'>
+					<select name="level-1-active-time" id="level-1-active-time" data-inline='true' data-mini='true' data-native-menu="true" data-theme='c' init-value='00'>
+						<?
+							for ($i=0; $i < 24; $i++) {
+								$hour = sprintf("%02d", $i);
+								echo "<option value='{$hour}'>{$i}시</option>\n";
+							}
+						?>
+					</select>
+	    		</div>
+				<div style='clear:both'></div>
+			</div>
+			<div>
+				<div style='width:44px; display: inline-block; height: 20px; padding-top: 2px; float:left; line-height: 40px'>
+					레벨 2
+				</div>
+				<div style='width:100px; display: inline-block; height: 20px; padding-top: 4px; float:left'>
+					<input type="text" data-role="date" class='td-2-item' name="level-2-active-date" id="level-2-active-date" value="<?=date("Y-m-d")?>" />
+				</div>
+				<div data-role="fieldcontain" style='display: inline-block; padding-top: 2px; border: 0; margin: 0'>
+					<select name="level-2-active-time" id="level-2-active-time" data-inline='true' data-mini='true' data-native-menu="true" data-theme='c' init-value='00'>
+						<?
+							for ($i=0; $i < 25; $i++) {
+								$hour = sprintf("%02d", $i);
+								echo "<option value='{$hour}'>{$i}시</option>\n";
+							}
+						?>
+					</select>
+	    		</div>
+				<div style='clear:both'></div>
+			</div>
+			<div>
+				<div style='width:44px; display: inline-block; height: 20px; padding-top: 2px; float:left; line-height: 40px'>
+					레벨 3
+				</div>
+				<div style='width:100px; display: inline-block; height: 20px; padding-top: 4px; float:left'>
+					<input type="text" data-role="date" class='td-2-item' name="level-3-active-date" id="level-3-active-date" value="<?=date("Y-m-d")?>" />
+				</div>
+				<div data-role="fieldcontain" style='display: inline-block; padding-top: 2px; border: 0; margin: 0'>
+					<select name="level-3-active-time" id="level-3-active-time" data-inline='true' data-mini='true' data-native-menu="true" data-theme='c' init-value='00'>
+						<?
+							for ($i=0; $i < 25; $i++) {
+								$hour = sprintf("%02d", $i);
+								echo "<option value='{$hour}'>{$i}시</option>\n";
+							}
+						?>
+					</select>
+	    		</div>
+				<div style='clear:both'></div>
+			</div>
+			<div>
+				<div style='width:44px; display: inline-block; height: 20px; padding-top: 2px; float:left; line-height: 40px'>
+					레벨 4
+				</div>
+				<div style='width:100px; display: inline-block; height: 20px; padding-top: 4px; float:left'>
+					<input type="text" data-role="date" class='td-2-item' name="level-4-active-date" id="level-4-active-date" value="<?=date("Y-m-d")?>" />
+				</div>
+				<div data-role="fieldcontain" style='display: inline-block; padding-top: 2px; border: 0; margin: 0'>
+					<select name="level-4-active-time" id="level-4-active-time" data-inline='true' data-mini='true' data-native-menu="true" data-theme='c' init-value='00'>
+						<?
+							for ($i=0; $i < 25; $i++) {
+								$hour = sprintf("%02d", $i);
+								echo "<option value='{$hour}'>{$i}시</option>\n";
+							}
+						?>
+					</select>
+	    		</div>
+				<div style='clear:both'></div>
+			</div>
+		</div>
+		
+		
+		
 		<iframe id='home-page' src='about:blank' style='width:100%;height:1'></iframe>
 	</div>
 	<div style='padding-top: 20px'>
@@ -337,7 +417,6 @@ var <?=$js_page_id?> = function()
 				var ar_param = {
 					'appplatform' : util.get_item_value(_$("#app-platform")),
 					'apptype' : _$("#app-type").val(),
-					'appgroup' : _$("#app-group").val(),
 					'apphomeurl' : _$("#app-homeurl").val(),
 					'appexecurl' : _$("#app-execurl").val(),
 					'apptitle' : _$("#app-title").val(),
@@ -349,8 +428,7 @@ var <?=$js_page_id?> = function()
 					'appgender' : util.get_item_value(_$("#app-sex")),
 					'appagefrom' : util.intval(_$("#app-agefrom").val()),
 					'appageto' : util.intval(_$("#app-ageto").val()),
-					'appfeeoffer' : util.intval(_$("#app-fee-offer").val()),
-					'appfeeuser' : util.intval(_$("#app-fee-user").val()),
+					'appmerchantfee' : util.intval(_$("#app-merchant-fee").val()),
 					'appexecsdate' : _$("#app-exec-sdate").val(),
 					'appexecedate' : _$("#app-exec-edate").val(),
 					'appexecstime' : _$("#app-exec-stime").val(),
