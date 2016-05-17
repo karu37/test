@@ -8,7 +8,10 @@
 <ul id='admin-menu-list' style="min-height: 600px; padding: 10px 0px 10px 10px; line-height:18px">
 	<? $idx = 1; ?>
 	<li class='cate'><b><?=$idx++?>. 초기 <span>개발</span></b><li>
-		<li style='padding-left:15px' class='frequent'>└ <a data-ajax="false" href='?id=partner-list'>업체 목록</a></li>
-		<li style='padding-left:15px' class='frequent'>└ <a data-ajax="false" href='?id=partner-add'>새 업체 등록</a></li>
+		<li style='padding-left:15px' class='frequent'>└ <a data-ajax="false" href='?id=partner-list'>파트너 목록</a></li>
+			<li style='padding-left:25px' class='frequent'>└ <a data-ajax="false" href='?id=partner-add'>새 파트너 등록</a></li>
+		<li style='padding-left:15px' class='frequent'>└ <a data-ajax="false" href='?id=all-merchant-list'>전체 Merchant 목록</a></li>
+		<li style='padding-left:15px' class='frequent'>└ <a data-ajax="false" href='?id=all-publisher-list'>전체 Publisher 목록</a></li>
+		<li style='padding-left:15px' class='frequent'>└ <a data-ajax="false" href='?id=all-appkey-list'>전체 광고 목록</a></li>
 	
 </ul>

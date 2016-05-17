@@ -1,30 +1,29 @@
 <?
-	$is_mactive = $_REQUEST['mactive'];
-	$db_is_mactive = mysql_real_escape_string($is_mactive);
-	
 	// --------------------------------
 	$searchfor = $_REQUEST['searchfor'];
 	$search = trim($_REQUEST['search']);
+	
 	if (!$searchfor) $searchfor = 'name';
 	$db_search = mysql_real_escape_string($search);
 
 	$where = "";
-	if ($is_mactive) $where = " AND a.is_mactive = '{$db_is_mactive}'";
-	
 	if ($searchfor == "name" && $search) $where .= " AND a.name LIKE '%{$db_search}%'";
-	else if ($searchfor == "id" && $search) $where .= " AND a.partner_id LIKE '%{$db_search}%'";
-	
 	$order_by = "ORDER BY a.id DESC";
+	
 	// --------------------------------
 	// Paginavigator initialize	
-	$sql = "SELECT COUNT(*) as cnt FROM al_partner_t a WHERE 1=1 {$where}";
+	// --------------------------------
+	$sql = "SELECT COUNT(*) as cnt FROM al_publisher_t a WHERE 1=1 {$where}";
 	$row = mysql_fetch_assoc(mysql_query($sql, $conn));
 	$pages = new Paginator($row['cnt']);
 	$limit = "LIMIT " . $pages->limit_start . "," . $pages->limit_end;
-	// --------------------------------
 
-	$sql = "SELECT * FROM al_partner_t a WHERE 1=1 {$where} {$limit}";
+	// ---------------------------------------
+	// publisher info
+	// ---------------------------------------
+	$sql = "SELECT * FROM al_publisher_t a {$order_by} {$limit}";
 	$result = mysql_query($sql, $conn);
+
 ?>
 	<style>
 		#ctl-main-list tr:not(:last-child):hover td 			{background:#dff}
@@ -49,7 +48,7 @@
 		#ctl-main-list tr:hover td				{background:#dff}
 		
 	</style>
-	<t4 style='line-height: 40px'>파트너 목록</t4>
+	<t4 style='line-height: 40px'>전체 Publisher 목록</t4>
 	<hr>
 	<form onsubmit='return <?=$js_page_id?>.action.on_btn_search()'>
 		<table border=0 cellpadding=0 cellspacing=0 width=100%>
@@ -83,54 +82,64 @@
 	</div>		
 	<hr>
 	<br>
-	<table id='ctl-main-list' class='single-line' cellpadding=0 cellspacing=0 width=100%>
+	
+	<table class='single-line list'  cellpadding=0 cellspacing=0 width=100%>
 	<thead>
 		<tr>
-			<th>IDX</th>
-			<th>상태</th>
-			<th width=1px></th>
-			<th>파트너 ID</th>
-			<th>파트너 명</th>
-			<th>회사</th>
-			<th>전화번호</th>
+			<th>Idx</th>
+			<th width=1px><div class='th_status'>상태</div></th>
+			<th></th>
+			<th>Icon</th>
+			<th>mcode</th>
+			<th>PlatForm</th>
+			<th>타입</th>
+			<th>마켓</th>
+			<th>제목/</th>
+			<th>적립원가</th>
+			<th>필터</th>
+			<th>광고활성</th>
+			<th>적립/수량</th>
+			<th>활성일</th>
 			<th>등록일</th>
-			<th width=1px></th>
-		</tr>	
+		</tr>
 	</thead>
 	<tbody>
-		<?
-		$arr_mactive = array('D' => '삭제', 'Y' => '정상');
-		while ($row = mysql_fetch_assoc($result)) {
-			$id = $row['id'];
+	<?
+		while ($publisher = mysql_fetch_assoc($result)) {
 			
-			$td_click = "onclick=window.location.href='?id=partner-detail&partnerid={$row['partner_id']}' style='cursor:pointer'";
-		?>
-			<tr id='list-<?=$row['id']?>' class='mactive-<?=$row['is_mactive']?>'>
-				<td <?=$td_click?>><?=$row['id']?></td>
-				<td <?=$td_click?> id='user-status-<?=$row['id']?>'><?=$arr_mactive[$row['is_mactive']]?></td>
-				<td class='btn'>
-					<a class='btn-delete' href='#' onclick='<?=$js_page_id?>.action.on_btn_delete("<?=$row['partner_id']?>", "<?=$row['id']?>")'  style='padding: 5px 4px'data-role='button' data-mini='true' data-inline='true'>삭제</a>
-					<a class='btn-restore' href='#' onclick='<?=$js_page_id?>.action.on_btn_restore("<?=$row['partner_id']?>", "<?=$row['id']?>")'  style='padding: 5px 4px'data-role='button' data-mini='true' data-inline='true'>복구</a>
+			$url_pcode = urlencode($publisher['pcode']);
+			$td_onclick = "onclick='window.location.href=\"?id=publisher-appkey-list&partnerid={$partner_id}&pcode={$url_pcode}\"'";
+
+			// 현재의 Publisher의 active상태 : Y / T / N 만 가능함.					
+			$ar_btn_theme = array('a','a','a');
+			if ($publisher['is_mactive'] == 'Y') $ar_btn_theme = array('b','a','a');
+			else if ($publisher['is_mactive'] == 'T') $ar_btn_theme = array('a','b','a');
+			else if ($publisher['is_mactive'] == 'N') $ar_btn_theme = array('a','a','b');
+
+			?>
+			<tr style='cursor:pointer' id='line-p-<?=$publisher['pcode']?>'>
+				<td <?=$td_onclick?>><?=$publisher['id']?></td>
+				<td class='btn-td'>
+					<div class='btn-wrapper'>
+						<a class='btn-p-<?=$publisher['pcode']?> btn-Y' href='#' onclick='<?=$js_page_id?>.action.on_btn_set_publisher_active("<?=$publisher['pcode']?>", "Y")' data-theme='<?=$ar_btn_theme[0]?>' data-role='button' data-mini='true' data-inline='true'>연<br>동</a>
+						<a class='btn-p-<?=$publisher['pcode']?> btn-T' href='#' onclick='<?=$js_page_id?>.action.on_btn_set_publisher_active("<?=$publisher['pcode']?>", "T")' data-theme='<?=$ar_btn_theme[1]?>'  data-role='button' data-mini='true' data-inline='true'>개<br>발</a>
+						<a class='btn-p-<?=$publisher['pcode']?> btn-N' href='#' onclick='<?=$js_page_id?>.action.on_btn_set_publisher_active("<?=$publisher['pcode']?>", "N")' data-theme='<?=$ar_btn_theme[2]?>'  data-role='button' data-mini='true' data-inline='true'>중<br>지</a>
+					</div>
 				</td>
-				<td <?=$td_click?>><?=$row['partner_id']?></td>
-				<td <?=$td_click?>><?=$row['name']?></td>
-				<td <?=$td_click?>><?=$row['company']?></td>
-				<td <?=$td_click?>><?=to_phoneno($row['telno'])?></td>
-				<td <?=$td_click?>><?=admin_to_date($row['reg_date'])?></td>
-				<td class='btn'>
-					<a href='?id=partner-modify&partnerid=<?=$row['partner_id']?>' style='padding: 5px 4px' data-theme='b' data-role='button' data-mini='true' data-inline='true'>계정정보 수정</a>
-				</td>
-				
+				<td <?=$td_onclick?>><?=$publisher['pcode']?></td>
+				<td <?=$td_onclick?>><?=$publisher['name']?></td>
+				<td <?=$td_onclick?>><?=$publisher['offer_fee_rate']?></td>
+				<td <?=$td_onclick?>><?=$publisher['level']?></td>
+				<td><a href='#' onclick='goPage("dlg-publisher-modify", null, {publisher_code:"<?=$publisher['pcode']?>"})' data-theme='a' data-role='button' data-mini='true' data-inline='true'>정보<br>변경</a></td>
+				<td><a href='#' onclick='<?=$js_page_id?>.action.on_btn_delete_partner_publisher_code("<?=$partner_id?>", "<?=$publisher['pcode']?>")' data-theme='a' data-role='button' data-mini='true' data-inline='true'>코드<br>제외</a></td>
 			</tr>
-		<?
+			<?
 		}
-		?>
+		
+	?>
 	</tbody>
 	</table>
 	
-	<div style='padding: 10px'>
-  			<a href='?id=partner-add' data-role='button' data-mini='true' data-inline='true'>새 업체 등록</a>
-	</div>		
 	<hr>
 	<div style='padding:10px' class='ui-grid-a'>
 		<div class='ui-block-a' style='width:70%; padding-top:20px'><?=$pages->display_pages()?></div>
