@@ -23,6 +23,7 @@
 		#app-info	#app-content-wrapper	.cleditorMain	{height: 285px !important}
 		#app-info	#app-content-wrapper	.cleditorMain iframe	{height: 232px !important}
 
+		.required			{background-color:lightyellow}
 		.app-keyword-wrapper					{background-color: lightgreen}
 	</style>
 	<div style='padding: 10px'>
@@ -132,15 +133,24 @@
 				<textarea id="app-content" name="app-content"><?=$row['app_content']?></textarea>
 			</div>
 		</div>
-		<div class='ui-block-a'>광고원가</div>
-		<div class='ui-block-b'>
+		<div class='ui-block-a required'>광고원가</div>
+		<div class='ui-block-b required'>
 			<div style='width:100px; display: inline-block; height: 20px; padding-top: 5px; float:left'>
 				<input type="text" id="app-merchant-fee" name="app-merchant-fee" value='<?=number_format($row['app_merchant_fee'])?>'/>
 			</div>
 			<div style='float:left; padding: 15px 10px'>원</div>
 			<div style='clear:both'></div>
 		</div>
-		<div class='ui-block-a'>실행기간</div>
+		<div class='ui-block-a required'>총 실행 수</div>
+		<div class='ui-block-b required'>
+			<div style='width:100px; display: inline-block; height: 20px; padding-top: 5px; float:left'>
+				<input type="text" id="app-exec-total-cnt" name="app-exec-total-cnt"  init-value='<?=number_format($row['exec_tot_max_cnt'])?>' />
+			</div>
+			<div style='float:left; padding: 15px 10px'>회</div>
+			<div style='clear:both'></div>
+		</div>
+		
+		<div class='ui-block-a'>광고종료</div>
 		<div class='ui-block-b'>
 			<div style='width:100px; display: inline-block; height: 20px; padding-top: 2px; float:left'>
 				<input type="text" data-role="date" class='td-2-item' name="app-exec-edate" id="app-exec-edate" data-clear-btn=true placeholder='기간없음' value="<?=str_replace('/','-',$row['exec_edate'])?>" />
@@ -216,14 +226,6 @@
 		<div class='ui-block-b'>
 			<div style='width:100px; display: inline-block; height: 20px; padding-top: 5px; float:left'>
 				<input type="text" id="app-exec-daily-cnt" name="app-exec-daily-cnt" data-clear-btn=true init-value='<?=number_format(ifempty($row['exec_day_max_cnt'], 100000000))?>' />
-			</div>
-			<div style='float:left; padding: 15px 10px'>회</div>
-			<div style='clear:both'></div>
-		</div>
-		<div class='ui-block-a'>총 실행 수</div>
-		<div class='ui-block-b'>
-			<div style='width:100px; display: inline-block; height: 20px; padding-top: 5px; float:left'>
-				<input type="text" id="app-exec-total-cnt" name="app-exec-total-cnt"  init-value='<?=number_format($row['exec_tot_max_cnt'])?>' />
 			</div>
 			<div style='float:left; padding: 15px 10px'>회</div>
 			<div style='clear:both'></div>
