@@ -27,26 +27,26 @@
 	$result = mysql_query($sql, $conn);
 ?>
 	<style>
-		#ctl-main-list tr:not(:last-child):hover td 			{background:#dff}
-		#ctl-main-list tr.mactive-D:hover td 					{background:#888}
+		.list tr:hover td				{background:#dff}
 		
-		#ctl-main-list tr	{line-height:25px}
-		#ctl-main-list th	{padding: 2px 4px}
-		#ctl-main-list td	{padding: 2px 4px}
+		.list tr	{line-height:25px}
+		.list th	{padding: 2px 4px}
+		.list td	{padding: 2px 4px}
 		
 		/* 비활성 (로그인 불가) */
-		#ctl-main-list .mactive-N 				{background:#666666}
-		#ctl-main-list .mactive-N td			{color: #bbb}
+		.list .mactive-N 				{background:#999}
+		.list .mactive-N:hover td 		{background:#888}
+		.list .mactive-N td				{color: #bbb}
 		
 		/* 삭제 (로그인 불가) */
-		#ctl-main-list .mactive-D 				{background:#666666}
-		#ctl-main-list .mactive-D td			{color: #bbb}
+		.list .mactive-D 				{background:#666}
+		.list .mactive-D:hover td 		{background:#777}
+		.list .mactive-D td				{color: #bbb}
 		
-		#ctl-main-list .mactive-Y .btn-restore	{display: none}	/* 활성화면     삭제버튼(디폴트), 복구(숨기기) */
-		#ctl-main-list .mactive-N .btn-delete	{display: none}	/* 비활성상태면 삭제버튼(디폴트), 복구(숨기기) */
-		#ctl-main-list .mactive-D .btn-delete	{display: none}	/* 삭제상태면   삭제버튼(숨기기), 복구(디폴트) */
+		.list .mactive-Y .btn-restore	{display: none}	/* 활성화면     삭제버튼(디폴트), 복구(숨기기) */
+		.list .mactive-N .btn-delete	{display: none}	/* 비활성상태면 삭제버튼(디폴트), 복구(숨기기) */
+		.list .mactive-D .btn-delete	{display: none}	/* 삭제상태면   삭제버튼(숨기기), 복구(디폴트) */
 		
-		#ctl-main-list tr:hover td				{background:#dff}
 		
 	</style>
 	<t4 style='line-height: 40px'>파트너 목록</t4>
@@ -83,7 +83,7 @@
 	</div>		
 	<hr>
 	<br>
-	<table id='ctl-main-list' class='single-line' cellpadding=0 cellspacing=0 width=100%>
+	<table class='list single-line' cellpadding=0 cellspacing=0 width=100%>
 	<thead>
 		<tr>
 			<th>IDX</th>

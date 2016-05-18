@@ -120,8 +120,8 @@
 		</td></tr></table>
 	</form>
 	<hr>
-	<div style='text-align:right; padding-top:10px'>
-		<a href='#' onclick='<?=$js_page_id?>.action.on_btn_new_app_campaign()' data-role='button' data-theme='e' data-transition="none" data-inline='true' data-mini='true'>새 광고 등록</a>
+	<div style='text-align:left; padding-top:10px'>
+		<a href='#' onclick='<?=$js_page_id?>.action.on_btn_new_app_campaign()' data-role='button' data-theme='b' data-transition="none" data-inline='true' data-mini='true'>새 광고 등록</a>
 	</div>
 	<div style="display:block; padding-top:20px; padding-left: 10px; font-size:22px; color: blue; font-weight: bold"><?=$row_merchant['name']?> - 총 : <?=number_format($pages->total_items)?> 건</div>
 	<div class='ui-grid-a' style='padding:5px 10px; <?=$pages->num_pages <= 1 ? "display:none" : ""?>'>
@@ -132,13 +132,13 @@
 	<table class='list single-line' cellpadding=0 cellspacing=0 width=100%>
 	<thead>
 		<tr>
-			<th>IDX</th>
-			<th width=1px>ON/OFF</th>
+			<th width=30px>IDX</th>
+			<th width=50px>ON/OFF</th>
 			<th>타입</th>
 			<th>제목</th>
 			<th>원가</th>
 			<th>공개모드</th>
-			<th width=1px></th>
+			<th width=60px></th>
 		</tr>	
 	</thead>
 	<tbody>
@@ -153,7 +153,7 @@
 			
 			$url_mcode = urlencode($mcode);
 			$url_appkey = urlencode($row['app_key']);
-			$td_onclick = "onclick=\"mvPage('merchant-campaign-app-modify', null, {partnerid: '{$partner_id}', mcode:'{$mcode}', appkey: '{$row['app_key']}'})\"";
+			$td_onclick = "onclick=\"mvPage('merchant-campaign-modify', null, {partnerid: '{$partner_id}', mcode:'{$mcode}', appkey: '{$row['app_key']}'})\"";
 			?>
 			<tr id='list-<?=$row['id']?>' class='mactive-<?=$row['is_mactive']?>' style='cursor:pointer'>
 				<td <?=$td_onclick?>><?=$row['id']?></td>
@@ -168,7 +168,7 @@
 				<td <?=$td_onclick?>><?=number_format($row['app_merchant_fee'])?></td>
 				<td <?=$td_onclick?>><?=$row['is_public_mode']?></td>
 				<td>
-					<a href='#' onclick='mvPage("dlgpage-merchantapp-config", null, {partnerid: "<?=$partner_id?>", mcode: "<?=$row_merchant['mcode']?>", appkey:"<?=$row['app_key']?>"})' data-theme='<?=$ar_btn_theme[0]?>' data-role='button' data-mini='true' data-inline='true'>Publisher별 설정</a>
+					<a href='#' onclick='mvPage("dlgpage-merchantapp-config", null, {partnerid: "<?=$partner_id?>", mcode: "<?=$row_merchant['mcode']?>", appkey:"<?=$row['app_key']?>"})' data-theme='b' data-role='button' data-mini='true' data-inline='true'>Publisher별 설정</a>
 				</td>
 			</tr>
 			<?
@@ -182,8 +182,8 @@
 		<div class='ui-block-b' style='width:30%; text-align:right'><?=$pages->display_jump_menu() . $pages->display_items_per_page()?></div>
 	</div>
 
-	<div style='text-align:right; padding-top:10px'>
-		<a href='#' onclick='<?=$js_page_id?>.action.on_btn_new_app_campaign()' data-role='button' data-theme='e' data-transition="none" data-inline='true' data-mini='true'>새 광고 등록</a>
+	<div style='text-align:left; padding-top:10px'>
+		<a href='#' onclick='<?=$js_page_id?>.action.on_btn_new_app_campaign()' data-role='button' data-theme='b' data-transition="none" data-inline='true' data-mini='true'>새 광고 등록</a>
 	</div>
 	
 
@@ -239,10 +239,10 @@ var <?=$js_page_id?> = function()
 				
 			},
 			on_btn_new_app_campaign: function() {
-				mvPage('merchant-campaign-app-add', null, {mcode: '<?=$mcode?>'});
+				mvPage('merchant-campaign-add-app', null, {mcode: '<?=$mcode?>'});
 			},
 			on_btn_new_web_campaign: function() {
-				mvPage('merchant-campaign-web-add', null, {mcode: '<?=$mcode?>'});
+				mvPage('merchant-campaign-add-web', null, {mcode: '<?=$mcode?>'});
 			},
 
 		},

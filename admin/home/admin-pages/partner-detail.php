@@ -38,7 +38,13 @@
 ?>
 <div>
 	<style>
-		.list tr:hover td 	{background:#dff}
+		/* line hover setup using mactive flag */
+		.list tr:hover td 				{background:#dff}
+		.list tr.mactive-N td 			{background:#999; color:#fff}
+		.list tr.mactive-N:hover td 	{background:#888}
+		.list tr.mactive-T td 			{background:#f80; color:#000}
+		.list tr.mactive-T:hover td 	{background:#f80}
+				
 		.list tr			{line-height:25px}
 		.list th			{padding: 2px 4px}
 		.list td			{padding: 2px 4px}
@@ -93,7 +99,7 @@
 					else if ($publisher['is_mactive'] == 'N') $ar_btn_theme = array('a','a','b');
 
 					?>
-					<tr style='cursor:pointer' id='line-p-<?=$publisher['pcode']?>'>
+					<tr style='cursor:pointer' id='line-p-<?=$publisher['pcode']?>'class='mactive-<?=$publisher['is_mactive']?>'>
 						<td <?=$td_onclick?>><?=$publisher['id']?></td>
 						<td class='btn-td'>
 							<div class='btn-wrapper'>
@@ -106,8 +112,8 @@
 						<td <?=$td_onclick?>><?=$publisher['name']?></td>
 						<td <?=$td_onclick?>><?=$publisher['offer_fee_rate']?></td>
 						<td <?=$td_onclick?>><?=$publisher['level']?></td>
-						<td><a href='#' onclick='goPage("dlg-publisher-modify", null, {publisher_code:"<?=$publisher['pcode']?>"})' data-theme='a' data-role='button' data-mini='true' data-inline='true'>정보<br>변경</a></td>
 						<td><a href='#' onclick='<?=$js_page_id?>.action.on_btn_delete_partner_publisher_code("<?=$partner_id?>", "<?=$publisher['pcode']?>")' data-theme='a' data-role='button' data-mini='true' data-inline='true'>코드<br>제외</a></td>
+						<td><a href='#' onclick='goPage("dlg-publisher-modify", null, {publisher_code:"<?=$publisher['pcode']?>"})' data-theme='b' data-role='button' data-mini='true' data-inline='true'>정보<br>변경</a></td>
 					</tr>
 					<?
 				}
@@ -153,7 +159,7 @@
 					else if ($merchant['is_mactive'] == 'T') $ar_btn_theme = array('a','b','a');
 					else if ($merchant['is_mactive'] == 'N') $ar_btn_theme = array('a','a','b');
 					?>
-					<tr style='cursor:pointer' id='line-m-<?=$merchant['mcode']?>'>
+					<tr style='cursor:pointer' id='line-m-<?=$merchant['mcode']?>' class='mactive-<?=$merchant['is_mactive']?>'>
 						<td <?=$td_onclick?>><?=$merchant['id']?></td>
 						<td class='btn-td'>
 							<div class='btn-wrapper'>
@@ -164,8 +170,8 @@
 						</td>
 						<td <?=$td_onclick?>><?=$merchant['mcode']?></td>
 						<td <?=$td_onclick?>><?=$merchant['name']?></td>
-						<td><a href='#' onclick='goPage("dlg-merchant-modify", null, {merchant_code:"<?=$merchant['mcode']?>"})' data-theme='a' data-role='button' data-mini='true' data-inline='true'>정보<br>변경</a></td>
 						<td><a href='#' onclick='<?=$js_page_id?>.action.on_btn_delete_partner_merchant_code("<?=$partner_id?>", "<?=$merchant['mcode']?>")' data-theme='a' data-role='button' data-mini='true' data-inline='true'>코드<br>제외</a></td>
+						<td><a href='#' onclick='goPage("dlg-merchant-modify", null, {merchant_code:"<?=$merchant['mcode']?>"})' data-theme='b' data-role='button' data-mini='true' data-inline='true'>정보<br>변경</a></td>
 					</tr>
 					<?
 				}
@@ -210,6 +216,7 @@ var <?=$js_page_id?> = function()
 						$('.btn-p-'+pcode+'.btn-N').removeClass('ui-btn-a ui-btn-b ui-btn-up-a ui-btn-up-b');
 						$('.btn-p-'+pcode+'.btn-' + ar_param.isactive).addClass('ui-btn-b ui-btn-up-b').attr('data-theme', 'b');
 						
+						$('#line-p-'+pcode).removeClassMatch(/mactive\-/g).addClass('mactive-'+status);
 					} else util.Alert(js_data['msg']);
 				});
 			},
@@ -228,6 +235,7 @@ var <?=$js_page_id?> = function()
 						$('.btn-m-'+mcode+'.btn-N').removeClass('ui-btn-a ui-btn-b ui-btn-up-a ui-btn-up-b');
 						$('.btn-m-'+mcode+'.btn-' + ar_param.isactive).addClass('ui-btn-b ui-btn-up-b').attr('data-theme', 'b');
 						
+						$('#line-m-'+mcode).removeClassMatch(/mactive\-/g).addClass('mactive-'+status);
 					} else util.Alert(js_data['msg']);
 				});
 			},

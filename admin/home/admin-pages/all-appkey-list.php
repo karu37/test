@@ -13,7 +13,7 @@
 	// --------------------------------
 	// Paginavigator initialize	
 	// --------------------------------
-	$sql = "SELECT COUNT(*) as cnt FROM al_publisher_t a WHERE 1=1 {$where}";
+	$sql = "SELECT COUNT(*) as cnt FROM al_app_t a WHERE 1=1 {$where}";
 	$row = mysql_fetch_assoc(mysql_query($sql, $conn));
 	$pages = new Paginator($row['cnt']);
 	$limit = "LIMIT " . $pages->limit_start . "," . $pages->limit_end;
@@ -21,34 +21,28 @@
 	// ---------------------------------------
 	// publisher info
 	// ---------------------------------------
-	$sql = "SELECT * FROM al_publisher_t a {$order_by} {$limit}";
+	$sql = "SELECT * FROM al_app_t a {$order_by} {$limit}";
 	$result = mysql_query($sql, $conn);
 
 ?>
 	<style>
-		#ctl-main-list tr:not(:last-child):hover td 			{background:#dff}
-		#ctl-main-list tr.mactive-D:hover td 					{background:#888}
+		/* line hover setup using mactive flag */
+		.list tr:hover td 				{background:#eff}
+		.list tr.mactive-N td 			{background:#999; color:#fff}
+		.list tr.mactive-N:hover td 	{background:#888}
+		.list tr.mactive-T td 			{background:#f90; color:#000}
+		.list tr.mactive-T:hover td 	{background:#f80}
 		
-		#ctl-main-list tr	{line-height:25px}
-		#ctl-main-list th	{padding: 2px 4px}
-		#ctl-main-list td	{padding: 2px 4px}
+		.list tr	{line-height:25px}
+		.list th	{padding: 2px 4px}
+		.list td	{line-height:1em; padding: 2px 4px}
 		
-		/* 비활성 (로그인 불가) */
-		#ctl-main-list .mactive-N 				{background:#666666}
-		#ctl-main-list .mactive-N td			{color: #bbb}
-		
-		/* 삭제 (로그인 불가) */
-		#ctl-main-list .mactive-D 				{background:#666666}
-		#ctl-main-list .mactive-D td			{color: #bbb}
-		
-		#ctl-main-list .mactive-Y .btn-restore	{display: none}	/* 활성화면     삭제버튼(디폴트), 복구(숨기기) */
-		#ctl-main-list .mactive-N .btn-delete	{display: none}	/* 비활성상태면 삭제버튼(디폴트), 복구(숨기기) */
-		#ctl-main-list .mactive-D .btn-delete	{display: none}	/* 삭제상태면   삭제버튼(숨기기), 복구(디폴트) */
-		
-		#ctl-main-list tr:hover td				{background:#dff}
+		.list .btn-td									{padding-left: 0px padding-right: 0px}
+		.list .th_status, .list .btn-td .btn-wrapper	{width: 66px}
+		.list .btn-td a									{padding:7px 4px; font-size: 10px; letter-spacing:0px; margin: 2px -2px 2px -1px; box-shadow:none;}
 		
 	</style>
-	<t4 style='line-height: 40px'>전체 Publisher 목록</t4>
+	<t4 style='line-height: 40px'>전체 광고 목록</t4>
 	<hr>
 	<form onsubmit='return <?=$js_page_id?>.action.on_btn_search()'>
 		<table border=0 cellpadding=0 cellspacing=0 width=100%>
@@ -88,13 +82,11 @@
 		<tr>
 			<th>Idx</th>
 			<th width=1px><div class='th_status'>상태</div></th>
-			<th></th>
+			<th width=30px>활성</th>
 			<th>Icon</th>
-			<th>mcode</th>
+			<th width=80px>mcode</th>
 			<th>PlatForm</th>
-			<th>타입</th>
-			<th>마켓</th>
-			<th>제목/</th>
+			<th>제목</th>
 			<th>적립원가</th>
 			<th>필터</th>
 			<th>광고활성</th>
@@ -105,33 +97,45 @@
 	</thead>
 	<tbody>
 	<?
-		while ($publisher = mysql_fetch_assoc($result)) {
+		$arr_platform = array('A' => 'Android', 'I' => 'IOS', 'W' => '-');
+		$arr_market = array('P' => 'PLAY#', 'A' => 'APP#', 'W' => '웹서비스');
+		$arr_gender = array('M' => '남성', 'F' => '여성');
+		while ($appkey = mysql_fetch_assoc($result)) {
 			
-			$url_pcode = urlencode($publisher['pcode']);
+			$url_appkey = urlencode($appkey['appkey']);
+			$url_mcode = urlencode($appkey['mcode']);
 			$td_onclick = "onclick='window.location.href=\"?id=publisher-appkey-list&partnerid={$partner_id}&pcode={$url_pcode}\"'";
 
 			// 현재의 Publisher의 active상태 : Y / T / N 만 가능함.					
 			$ar_btn_theme = array('a','a','a');
-			if ($publisher['is_mactive'] == 'Y') $ar_btn_theme = array('b','a','a');
-			else if ($publisher['is_mactive'] == 'T') $ar_btn_theme = array('a','b','a');
-			else if ($publisher['is_mactive'] == 'N') $ar_btn_theme = array('a','a','b');
+			if ($appkey['is_mactive'] == 'Y') $ar_btn_theme = array('b','a');
+			else if ($appkey['is_mactive'] == 'N') $ar_btn_theme = array('a','b');
+			
+			// 필터 정보
+			$filter = "";
+			if ($appkey['app_agefrom'] != "") $filter .= ($filter?"<br>":"") . "나이: {$appkey['app_agefrom']}~{$appkey['app_ageto']}";
+			if ($appkey['app_gender'] != "") $filter .= ($filter?"<br>":"") . "성별: {$arr_gender[$appkey['app_gender']]}";
 
 			?>
-			<tr style='cursor:pointer' id='line-p-<?=$publisher['pcode']?>'>
-				<td <?=$td_onclick?>><?=$publisher['id']?></td>
+			<tr style='cursor:pointer' id='line-<?=$appkey['appkey']?>' class='mactive-<?=$appkey['is_mactive']?>'>
+				<td <?=$td_onclick?>><?=$appkey['id']?></td>
 				<td class='btn-td'>
 					<div class='btn-wrapper'>
-						<a class='btn-p-<?=$publisher['pcode']?> btn-Y' href='#' onclick='<?=$js_page_id?>.action.on_btn_set_publisher_active("<?=$publisher['pcode']?>", "Y")' data-theme='<?=$ar_btn_theme[0]?>' data-role='button' data-mini='true' data-inline='true'>연<br>동</a>
-						<a class='btn-p-<?=$publisher['pcode']?> btn-T' href='#' onclick='<?=$js_page_id?>.action.on_btn_set_publisher_active("<?=$publisher['pcode']?>", "T")' data-theme='<?=$ar_btn_theme[1]?>'  data-role='button' data-mini='true' data-inline='true'>개<br>발</a>
-						<a class='btn-p-<?=$publisher['pcode']?> btn-N' href='#' onclick='<?=$js_page_id?>.action.on_btn_set_publisher_active("<?=$publisher['pcode']?>", "N")' data-theme='<?=$ar_btn_theme[2]?>'  data-role='button' data-mini='true' data-inline='true'>중<br>지</a>
+						<a class='btn-<?=$appkey['appkey']?> btn-Y' href='#' onclick='<?=$js_page_id?>.action.on_btn_set_publisher_active("<?=$appkey['pcode']?>", "Y")' data-theme='<?=$ar_btn_theme[0]?>' data-role='button' data-mini='true' data-inline='true'>연<br>동</a>
+						<a class='btn-<?=$appkey['appkey']?> btn-N' href='#' onclick='<?=$js_page_id?>.action.on_btn_set_publisher_active("<?=$appkey['pcode']?>", "N")' data-theme='<?=$ar_btn_theme[1]?>'  data-role='button' data-mini='true' data-inline='true'>중<br>지</a>
 					</div>
 				</td>
-				<td <?=$td_onclick?>><?=$publisher['pcode']?></td>
-				<td <?=$td_onclick?>><?=$publisher['name']?></td>
-				<td <?=$td_onclick?>><?=$publisher['offer_fee_rate']?></td>
-				<td <?=$td_onclick?>><?=$publisher['level']?></td>
-				<td><a href='#' onclick='goPage("dlg-publisher-modify", null, {publisher_code:"<?=$publisher['pcode']?>"})' data-theme='a' data-role='button' data-mini='true' data-inline='true'>정보<br>변경</a></td>
-				<td><a href='#' onclick='<?=$js_page_id?>.action.on_btn_delete_partner_publisher_code("<?=$partner_id?>", "<?=$publisher['pcode']?>")' data-theme='a' data-role='button' data-mini='true' data-inline='true'>코드<br>제외</a></td>
+				<td <?=$td_onclick?>><?=$appkey['is_active']?></td>
+				<td <?=$td_onclick?>><img src='<?=$appkey['app_iconurl']?>' width=40px style='width:40px;height:40px;overflow:hidden;border-radius:0.5em;border:1px solid #888' /></td>
+				<td <?=$td_onclick?>><?=$appkey['mcode']?></td>
+				<td <?=$td_onclick?>><?=$arr_platform[$appkey['app_platform']]?><br><?=$arr_market[$appkey['app_market']]?></td>
+				
+				<td <?=$td_onclick?>><?=$appkey['app_title']?></td>
+				<td <?=$td_onclick?>><?=$appkey['app_merchant_fee']?></td>
+				<td <?=$td_onclick?>><?=$filter?></td>
+				
+				<td><a href='#' onclick='<?=$js_page_id?>.action.on_btn_delete_partner_publisher_code("<?=$partner_id?>", "<?=$appkey['pcode']?>")' data-theme='a' data-role='button' data-mini='true' data-inline='true'>코드<br>제외</a></td>
+				<td><a href='#' onclick='goPage("dlg-publisher-modify", null, {publisher_code:"<?=$appkey['pcode']?>"})' data-theme='b' data-role='button' data-mini='true' data-inline='true'>정보<br>변경</a></td>
 			</tr>
 			<?
 		}

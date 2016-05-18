@@ -1,6 +1,39 @@
 <?/*
 
 //-----------------------------------
+ALine - 개발환경 설정
+//-----------------------------------
+
+127.0.0.1		admin.aline-soft.kr image.aline-soft.kr
+127.0.0.1		www.aline-soft.kr aline-soft.kr partner.aline-soft.kr
+
+<VirtualHost *:80>
+	ServerName admin.aline-soft.kr
+	ServerAlias admin.aline-soft.kr
+	ServerAdmin a@localhost
+	DocumentRoot "D:\Develope_Web\www.aline-soft.kr\admin\home"
+	
+	<Directory />
+		Options FollowSymLinks
+		AllowOverride FileInfo
+		Require all granted
+	</Directory>	
+</VirtualHost>
+
+<VirtualHost *:80>
+	ServerName image.aline-soft.kr
+	ServerAlias image.aline-soft.kr
+	ServerAdmin a@localhost
+	DocumentRoot "D:\Develope_Web\www.aline-soft.kr\image\home"
+
+	<Directory />
+		Options FollowSymLinks
+		AllowOverride FileInfo
+		Require all granted
+	</Directory>	
+</VirtualHost>
+
+//-----------------------------------
 ALine - 광고 공급되는 조건
 //-----------------------------------
 

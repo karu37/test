@@ -1,75 +1,110 @@
-<?
-	$partner_id = $_REQUEST['partnerid'];
-	$mcode = $_REQUEST['mcode'];
-?>
-	<style>
-		#add_app	.ui-block-a	{height: 45px; line-height:45px; padding-left: 10px; width:100px; border-bottom: 1px solid #ddd; font-weight: bold}
-		#add_app	.ui-block-b	{height: 45px; width:500px; border-bottom: 1px solid #ddd}
-		
-		#add_app	#app-exec-desc-wrapper	.cleditorMain	{height: 85px !important}
-		#add_app	#app-exec-desc-wrapper	.cleditorMain iframe	{height: 32px !important}
-		
-		#add_app	#app-content-wrapper	.cleditorMain	{height: 285px !important}
-		#add_app	#app-content-wrapper	.cleditorMain iframe	{height: 232px !important}
-		
-		.required			{background-color:lightyellow}
-	</style>
-	<t3 style='height:40px; padding-top:20px'>WEB 방식 광고 등록</t3>
+<div>
+	<t3 style='height:40px; padding-top:20px'>광고 정보 수정</t3>
 	<hr>
-	<div id='add_app' class='ui-grid-a'>
+	<style>
+		#app-info	.ui-block-a	{height: 45px; line-height:45px; padding-left: 10px; width:100px; border-bottom: 1px solid #ddd; font-weight: bold}
+		#app-info	.ui-block-b	{height: 45px; width:500px; border-bottom: 1px solid #ddd}
+		
+		#app-info	#app-exec-desc-wrapper	.cleditorMain	{height: 85px !important}
+		#app-info	#app-exec-desc-wrapper	.cleditorMain iframe	{height: 32px !important}
+		
+		#app-info	#app-content-wrapper	.cleditorMain	{height: 285px !important}
+		#app-info	#app-content-wrapper	.cleditorMain iframe	{height: 232px !important}
+
+		.required			{background-color:lightyellow}
+		.app-keyword-wrapper					{background-color: lightgreen}
+	</style>
+	<div style='padding: 10px'>
+		<a href='#' onclick='<?=$js_page_id?>.action.on_btn_modifycampaign()' data-role='button' data-theme='b' data-inline='true' data-mini='true' >변경사항 적용하기</a>
+		<a href='?id=campaign-by-appkey-list&appkey=<?=urlencode($row['app_key'])?>' data-theme='b' data-role='button' data-mini='true' data-inline='true'>참가자</a>
+		
+		<a href='?id=campaign-app-exec-view&appkey=<?=urlencode($row['app_key'])?>' data-role='button' data-theme='b' data-inline='true' data-mini='true' >일자별 수행수</a>
+	</div>	
+	<hr>
+	<div id='app-info' class='ui-grid-a'>
+		<div class='ui-block-a'>광고 키</div>
+		<div class='ui-block-b'>
+			<t3 style='line-height: 48px'><?=$row['app_key']?></t3>
+		</div>
+		<div class='ui-block-a'>광고 상태</div>
+		<div class='ui-block-b'>
+			<div style='float:left; display:inline-block'>
+				<fieldset id="app-active" class='field-set' data-role="controlgroup" data-type="horizontal" data-mini=true init-value="<?=$row['is_active']?>" data-theme='a'>
+			        <input name="app-active" id="app-active-Y" value="Y" type="radio" />
+			        <label for="app-active-Y">적립 가능</label>
+			        <input name="app-active" id="app-active-N" value="N" type="radio" />
+			        <label for="app-active-N">적립 불가</label>
+			    </fieldset>		
+			</div>
+		    <div style='float:left; display:inline-block; padding-top:5px; padding-left:10px'>
+			    <a href='#' onclick='<?=$js_page_id?>.action.on_btn_save_activestatus()' data-theme='b' data-role='button' data-mini='true' data-inline='true'>상태 적용</a>			
+			</div>
+			<div style='clear:both'></div>
+		</div>
 		<div class='ui-block-a'>플랫폼</div>
 		<div class='ui-block-b'>
-			<fieldset id="app-platform" class='td-2-item' data-role="controlgroup" data-type="horizontal" data-mini=true init-value="W" >
-		        <input name="app-platform" id="app-platform-android" value="A" onclick='mvPage("merchant-campaign-app-add", null, {mcode:"<?=$mcode?>"})' type="radio" />
-		        <label for="app-platform-android">Android APP 형</label>
-		        <input name="app-platform" id="app-platform-web" value="W" type="radio" />
-		        <label for="app-platform-web">WEB 형</label>
+			<fieldset id="app-platform" class='td-2-item' data-role="controlgroup" data-type="horizontal" data-mini=true init-value="A" readonly >
+		        <input name="app-platform" id="app-platform-android" value="A" type="radio" />
+		        <label for="app-platform-android">Android App</label>
 		    </fieldset>									
 		</div>
 		<div class='ui-block-a' style='height:50px'>실행 타입</div>
 		<div class='ui-block-b' style='height:50px; padding-top:3px'>
         	<div data-role="fieldcontain" style='padding: 0px 0px; border: 0; margin: 0'>
 				<select name="app-type" id="app-type" onchange="<?=$js_page_id?>.action.on_change_app_type()" data-inline='true' data-mini='true' data-native-menu="true" data-theme='c'>
-					<option value="F">페이스북 좋아요</option>
+					<option value="I" <?=$row['app_exec_type'] == 'I' ? 'selected' : ''?>>설치형</option>
+					<option value="E" <?=$row['app_exec_type'] == 'E' ? 'selected' : ''?>>실행형</option>
+					<option value="S" <?=$row['app_exec_type'] == 'S' ? 'selected' : ''?>>검색설치형</option>
 				</select>
         	</div>
 		</div>
-		<div class='ui-block-a'>홈 URL</div>
-		<div class='ui-block-b'>
-			<div style='width:300px; display: block; height: 20px; padding-top: 5px'>
-				<form onsubmit="return <?=$js_page_id?>.action.on_btn_search_info()">
-				<div style='width:230px; display: inline-block; height: 20px'>
-					<input type="text" id="app-homeurl" name="app-homeurl" value='https://m.facebook.com/samsung'/>
-				</div>
-				<input type=submit data-role="button" data-theme='c' data-theme="b" data-inline='true' data-mini='true' style="margin-top: 15px; margin:0px 5px" value="검색" />
-				</form>
-				
-			</div>
-		</div>		
-		<div class='ui-block-a'>실행 URL</div>
-		<div class='ui-block-b'>
-			<div style='width:300px; display: block; height: 20px; padding-top: 5px'>
-				<input type="text" id="app-execurl" name="app-execurl" />
-			</div>
-		</div>		
-		
-		<div class='ui-block-a'>제목</div>
+		<div class='ui-block-a'>앱 이름</div>
 		<div class='ui-block-b'>
 			<div style='width:300px; display: inline-block; height: 20px; padding-top: 5px'>
-				<input type="text" id="app-title" name="app-title" />
+				<input type="text" id="app-title" name="app-title" value='<?=addslashes($row['app_title'])?>'/>
 			</div>
 		</div>
+		<div class='ui-block-a'>Package ID</div>
+		<div class='ui-block-b'>
+			<div style='width:450px; display: inline-block; height: 20px; padding-top: 5px'>
+				
+				<div style='float:left; width:330px'>
+					<input type="text" id="app-packageid" name="app-packageid" value='<?=addslashes($row['app_packageid'])?>' />
+				</div>
+				<? if ($row['app_packageid']) { ?>
+				<a data-role='button' data-inline='true' data-mini='true' href='https://play.google.com/store/apps/details?id=<?=$row['app_packageid']?>' target=_blank style='float:right'>구글확인</a>
+				<? } ?>
+				<div style='clear:both'></div>
+				
+			</div>
+		</div>
+		<div class='ui-block-a app-keyword-wrapper' style='height: 55px'>검색 키워드</div>
+		<div class='ui-block-b app-keyword-wrapper' style='height: 55px'>
+			<div style='width:300px; display: block; height: 20px; padding-top: 5px'>
+				<input type="text" id="app-keyword" name="app-keyword" value='<?=addslashes($row['app_keyword'])?>' />
+			</div>
+			<br>
+			(리뷰형의 경우 앱에 연령제한이 있는 꼭 입력)
+		</div>		
+		<div class='ui-block-a' style='height: 55px'>마켓 링크</div>
+		<div class='ui-block-b' style='height: 55px'>
+			<div style='width:300px; display: block; height: 20px; padding-top: 5px'>
+				<input type="text" id="app-execurl" name="app-execurl" value='<?=addslashes($row['app_execurl'])?>' />
+			</div>
+			<br>
+			(고객이 요청한 URL을 꼭 경우해야하는 경우에만 사용 - 사용시 검색키워드 사용불가)
+		</div>	
 		<div class='ui-block-a' style='height: 100px'>아이콘</div>
 		<div class='ui-block-b' style='height: 100px'>
 			<div style='width:400px; display: inline-block; height: 20px; padding-top: 5px'>
 				<div style='width:80px height: 80px; float: left;'>
 					<div style='border: 1px solid #ddd'>
-						<img src="" id='img-app-icon' width=80px />
+						<img src="<?=$row['app_iconurl']?>" id='img-app-icon' width=80px />
 					</div>
 				</div>
 				<div id='file-upload-div' style='width:300px; float:left; margin-left: 10px; '>
 					<input type=file id="upload-image-file" value='파일 업로드' />
-					<input type=hidden id="app-image-url" value="" />
+					<input type=hidden id="app-image-url" value="<?=$row['app_iconurl']?>" />
 				</div>
 				<div style='clear:both'></div>
 			</div>
@@ -77,26 +112,19 @@
 		<div class='ui-block-a' style='height:100px'>참여 설명</div>
 		<div class='ui-block-b' style='height:100px' id='app-exec-desc-wrapper'>
 			<div style='width:400px; display: inline-block; padding-top: 5px'>
-				<textarea id="app-exec-desc" name="app-exec-desc"></textarea>
+				<textarea id="app-exec-desc" name="app-exec-desc"><?=$row['app_exec_desc']?></textarea>
 			</div>
 		</div>
-		
 		<div class='ui-block-a' style='height:300px'>광고 설명</div>
 		<div class='ui-block-b' style='height:300px' id='app-content-wrapper'>
 			<div style='width:400px; display: inline-block; padding-top: 5px'>
-				<textarea id="app-content" name="app-content">
-<br><br>				
-[참여안내]<br>
-1. 시작하기를 클릭하여 광고에 참여<br>
-2. 페이스북 로그인 > 좋아요 클릭<br>
-3. 적립하기
-				</textarea>
+				<textarea id="app-content" name="app-content"><?=$row['app_content']?></textarea>
 			</div>
 		</div>
 		<div class='ui-block-a required'>광고원가</div>
 		<div class='ui-block-b required'>
 			<div style='width:100px; display: inline-block; height: 20px; padding-top: 5px; float:left'>
-				<input type="text" id="app-merchant-fee" name="app-merchant-fee" />
+				<input type="text" id="app-merchant-fee" name="app-merchant-fee" value='<?=number_format($row['app_merchant_fee'])?>'/>
 			</div>
 			<div style='float:left; padding: 15px 10px'>원</div>
 			<div style='clear:both'></div>
@@ -104,16 +132,16 @@
 		<div class='ui-block-a required'>총 실행 수</div>
 		<div class='ui-block-b required'>
 			<div style='width:100px; display: inline-block; height: 20px; padding-top: 5px; float:left'>
-				<input type="text" id="app-exec-total-cnt" name="app-exec-total-cnt" init-value='0' />
+				<input type="text" id="app-exec-total-cnt" name="app-exec-total-cnt"  init-value='<?=number_format($row['exec_tot_max_cnt'])?>' />
 			</div>
 			<div style='float:left; padding: 15px 10px'>회</div>
 			<div style='clear:both'></div>
 		</div>
-				
+		
 		<div class='ui-block-a'>광고종료</div>
 		<div class='ui-block-b'>
 			<div style='width:100px; display: inline-block; height: 20px; padding-top: 2px; float:left'>
-				<input type="text" data-role="date" class='td-2-item' name="app-exec-edate" id="app-exec-edate" data-clear-btn=true placeholder='기간없음' value="" />
+				<input type="text" data-role="date" class='td-2-item' name="app-exec-edate" id="app-exec-edate" data-clear-btn=true placeholder='기간없음' value="<?=str_replace('/','-',$row['exec_edate'])?>" />
 			</div>
 			<div style='float:left; padding: 15px 10px'> 까지 (설정하지 않으면 기간제한 없음)</div>
 			<div style='clear:both'></div>
@@ -122,10 +150,10 @@
 		<div class='ui-block-b'>
 			<div style='width:60px; display: inline-block; height: 20px; padding-top: 2px; float:left'>
 				<div data-role="fieldcontain" style='padding: 0px 0px; border: 0; margin: 0'>
-				<select name="app-exec-stime" id="app-exec-stime" data-inline='true' data-mini='true' data-native-menu="true" data-theme='c' init-value='0'>
+				<select name="app-exec-stime" id="app-exec-stime" data-inline='true' data-mini='true' data-native-menu="true" data-theme='c' init-value='<?=$row['exec_stime'] ? intval(substr($row['exec_stime'], 0, 2)) : 0?>'>
 					<?
 						for ($i=0; $i < 25; $i++) {
-							echo "<option value='{$i}'>{$i}</option>\n";
+							echo "<option value='{$i}' {$selected}>{$i}</option>\n";
 						}
 					?>
 				</select>
@@ -134,10 +162,10 @@
 			<div style='float:left; padding: 15px 10px'>시 부터 </div>
 			<div style='width:60px; display: inline-block; height: 20px; padding-top: 2px; float:left'>
 				<div data-role="fieldcontain" style='padding: 0px 0px; border: 0; margin: 0'>
-				<select name="app-exec-etime" id="app-exec-etime" data-inline='true' data-mini='true' data-native-menu="true" data-theme='c' init-value='24'>
+				<select name="app-exec-etime" id="app-exec-etime" data-inline='true' data-mini='true' data-native-menu="true" data-theme='c' init-value='<?=$row['exec_etime'] ? intval(substr($row['exec_etime'], 0, 2)) : 24?>'>
 					<?
 						for ($i=0; $i < 25; $i++) {
-							echo "<option value='{$i}'>{$i}</option>\n";
+							echo "<option value='{$i}' {$selected}>{$i}</option>\n";
 						}
 					?>
 				</select>
@@ -146,10 +174,11 @@
 			<div style='float:left; padding: 15px 10px'>시</div>
 			<div style='clear:both'></div>
 		</div>
+		
 		<div class='ui-block-a'>성별 필터</div>
 		<div class='ui-block-b'>
 			<div class='ui-block-a' style='width:200px'>
-				<fieldset id="app-sex" class='td-2-item' data-role="controlgroup" data-type="horizontal" data-mini=true init-value="A">
+				<fieldset id="app-sex" class='td-2-item' data-role="controlgroup" data-type="horizontal" data-mini=true init-value="<?=ifempty($row['app_gender'], 'A')?>">
 			        <input name="app-sex" id="app-sex-all" value="A" type="radio" />
 			        <label for="app-sex-all">전체</label>
 			        <input name="app-sex" id="app-sex-man" value="M" type="radio" />
@@ -162,20 +191,20 @@
 		<div class='ui-block-a'>나이 필터</div>
 		<div class='ui-block-b'>
 			<div style='width:60px; display: inline-block; height: 20px; padding-top: 6px; float:left'>
-				<input type="number" class='td-2-item' name="app-agefrom" data-clear-btn=true id="app-agefrom" value="0" />
+				<input type="number" class='td-2-item' name="app-agefrom" id="app-agefrom" data-clear-btn=true value="<?=$row['app_agefrom']?>" />
 			</div>
 			<div style='float:left; padding: 14px 10px'>세 부터 </div>
 			<div style='width:90px; display: inline-block; height: 20px; padding-top: 6px; float:left'>
-				<input type="number" class='td-2-item' name="app-ageto" data-clear-btn=true id="app-ageto" value="100" />
+				<input type="number" class='td-2-item' name="app-ageto" id="app-ageto" data-clear-btn=true value="<?=$row['app_ageto']?>" />
 			</div>
 			<div style='float:left; padding: 14px 10px'>세 까지 </div>
 			<div style='clear:both'></div>
 		</div>
-		
+
 		<div class='ui-block-a'>시간 최대 실행</div>
 		<div class='ui-block-b'>
 			<div style='width:100px; display: inline-block; height: 20px; padding-top: 5px; float:left'>
-				<input type="text" id="app-exec-hourly-cnt" name="app-exec-hourly-cnt" data-clear-btn=true  init-value='100,000,000' />
+				<input type="text" id="app-exec-hourly-cnt" name="app-exec-hourly-cnt" data-clear-btn=true init-value='<?=number_format(ifempty($row['exec_hour_max_cnt'], 100000000))?>' />
 			</div>
 			<div style='float:left; padding: 15px 10px'>회</div>
 			<div style='clear:both'></div>
@@ -184,17 +213,18 @@
 		<div class='ui-block-a'>일일 최대 실행</div>
 		<div class='ui-block-b'>
 			<div style='width:100px; display: inline-block; height: 20px; padding-top: 5px; float:left'>
-				<input type="text" id="app-exec-daily-cnt" name="app-exec-daily-cnt" data-clear-btn=true init-value='100,000,000' />
+				<input type="text" id="app-exec-daily-cnt" name="app-exec-daily-cnt" data-clear-btn=true init-value='<?=number_format(ifempty($row['exec_day_max_cnt'], 100000000))?>' />
 			</div>
 			<div style='float:left; padding: 15px 10px'>회</div>
 			<div style='clear:both'></div>
 		</div>
 
+		
 		<div class='ui-block-a'>매체사 레벨</div>
 		<div class='ui-block-b'>
 			<div style='padding-top: 2px'>
 	        	<div style='width:160px; display: inline-block; float:left'>
-					<select name="app-publisher-level" id="app-publisher-level" init-value='9'>
+					<select name="app-publisher-level" id="app-publisher-level" init-value='<?=ifempty($row['publisher_level'], '9')?>'>
 						<option value="9">전체</option>
 				        <option value="1">1 (자체서비스)</option>
 				        <option value="2">2 (전략적 제휴사)</option>
@@ -214,10 +244,10 @@
 					레벨 1
 				</div>
 				<div style='width:100px; display: inline-block; height: 20px; padding-top: 4px; float:left'>
-					<input type="text" data-role="date" class='td-2-item' name="level-1-active-date" id="level-1-active-date" data-clear-btn=true value="" />
+					<input type="text" data-role="date" class='td-2-item' name="level-1-active-date" id="level-1-active-date" data-clear-btn=true value="<?=admin_date("Y-m-d", strtotime($row['level_1_active_date']))?>" />
 				</div>
 				<div data-role="fieldcontain" style='display: inline-block; padding-top: 2px; border: 0; margin: 0'>
-					<select name="level-1-active-time" id="level-1-active-time" data-inline='true' data-mini='true' data-native-menu="true" data-theme='c' init-value=''>
+					<select name="level-1-active-time" id="level-1-active-time" data-inline='true' data-mini='true' data-native-menu="true" data-theme='c' init-value='<?=admin_date("H", strtotime($row['level_1_active_date']))?>'>
 						<?
 							echo "<option></option>\n";
 							for ($i=0; $i < 24; $i++) {
@@ -234,10 +264,10 @@
 					레벨 2
 				</div>
 				<div style='width:100px; display: inline-block; height: 20px; padding-top: 4px; float:left'>
-					<input type="text" data-role="date" class='td-2-item' name="level-2-active-date" id="level-2-active-date" data-clear-btn=true value="" />
+					<input type="text" data-role="date" class='td-2-item' name="level-2-active-date" id="level-2-active-date" data-clear-btn=true value="<?=admin_date("Y-m-d", strtotime($row['level_2_active_date']))?>" />
 				</div>
 				<div data-role="fieldcontain" style='display: inline-block; padding-top: 2px; border: 0; margin: 0'>
-					<select name="level-2-active-time" id="level-2-active-time" data-inline='true' data-mini='true' data-native-menu="true" data-theme='c' init-value=''>
+					<select name="level-2-active-time" id="level-2-active-time" data-inline='true' data-mini='true' data-native-menu="true" data-theme='c' init-value='<?=admin_date("H", strtotime($row['level_2_active_date']))?>'>
 						<?
 							echo "<option></option>\n";
 							for ($i=0; $i < 25; $i++) {
@@ -254,10 +284,10 @@
 					레벨 3
 				</div>
 				<div style='width:100px; display: inline-block; height: 20px; padding-top: 4px; float:left'>
-					<input type="text" data-role="date" class='td-2-item' name="level-3-active-date" id="level-3-active-date" data-clear-btn=true value="" />
+					<input type="text" data-role="date" class='td-2-item' name="level-3-active-date" id="level-3-active-date" data-clear-btn=true value="<?=admin_date("Y-m-d", strtotime($row['level_3_active_date']))?>" />
 				</div>
 				<div data-role="fieldcontain" style='display: inline-block; padding-top: 2px; border: 0; margin: 0'>
-					<select name="level-3-active-time" id="level-3-active-time" data-inline='true' data-mini='true' data-native-menu="true" data-theme='c' init-value=''>
+					<select name="level-3-active-time" id="level-3-active-time" data-inline='true' data-mini='true' data-native-menu="true" data-theme='c' init-value='<?=admin_date("H", strtotime($row['level_3_active_date']))?>'>
 						<?
 							echo "<option></option>\n";
 							for ($i=0; $i < 25; $i++) {
@@ -274,10 +304,10 @@
 					레벨 4
 				</div>
 				<div style='width:100px; display: inline-block; height: 20px; padding-top: 4px; float:left'>
-					<input type="text" data-role="date" class='td-2-item' name="level-4-active-date" id="level-4-active-date" data-clear-btn=true value="" />
+					<input type="text" data-role="date" class='td-2-item' name="level-4-active-date" id="level-4-active-date" data-clear-btn=true value="<?=admin_date("Y-m-d", strtotime($row['level_4_active_date']))?>" />
 				</div>
 				<div data-role="fieldcontain" style='display: inline-block; padding-top: 2px; border: 0; margin: 0'>
-					<select name="level-4-active-time" id="level-4-active-time" data-inline='true' data-mini='true' data-native-menu="true" data-theme='c' init-value=''>
+					<select name="level-4-active-time" id="level-4-active-time" data-inline='true' data-mini='true' data-native-menu="true" data-theme='c' init-value='<?=admin_date("H", strtotime($row['level_4_active_date']))?>'>
 						<?
 							echo "<option></option>\n";
 							for ($i=0; $i < 25; $i++) {
@@ -290,15 +320,16 @@
 				<div style='clear:both'></div>
 			</div>
 		</div>
-		
-		
-		
-		<iframe id='home-page' src='about:blank' style='width:100%;height:1'></iframe>
 	</div>
 	<div style='padding-top: 20px'>
-		<a href='#' onclick='<?=$js_page_id?>.action.on_btn_addcampaign()' data-role='button' data-theme='b' data-inline='true' data-mini='true' >등록하기</a>
-	</div>
+		<a href='#' onclick='<?=$js_page_id?>.action.on_btn_modifycampaign()' data-role='button' data-theme='b' data-inline='true' data-mini='true' >변경사항 적용하기</a>
+		<a href='?id=campaign-by-appkey-list&appkey=<?=urlencode($row['app_key'])?>' data-theme='b' data-role='button' data-mini='true' data-inline='true'>참가자</a>
 		
+		<a href='?id=campaign-app-exec-view&appkey=<?=urlencode($row['app_key'])?>' data-role='button' data-theme='b' data-inline='true' data-mini='true' >일자별 수행수</a>
+	</div>
+
+</div>
+			
 <script type="text/javascript"> 
 
 var <?=$js_page_id?> = function()
@@ -314,103 +345,46 @@ var <?=$js_page_id?> = function()
 				_$("div[data-role='popup']").on("popupbeforeposition", function(){ util.initPage($(this)); });
 				
 				$("#app-exec-desc").cleditor();
-				$("#app-content").cleditor();				
+				$("#app-content").cleditor();
 				
 				page.action.on_change_app_type();
 			},
 			on_change_app_type: function()
 			{
-				if (_$("#app-type").val() == 'F') {
+				_$(".app-keyword-wrapper").hide();
+				if (_$("#app-type").val() == 'S') {
+					_$(".app-keyword-wrapper").show();
 				}
 			},
-			on_btn_search_info: function()
-			{
-				var url =  _$("#app-homeurl").val();
-				if (!url) {
-					alert('홈 URL을 입력하세요.');
-					return false;
-				}
-				
-				if (url.indexOf('https://m.facebook.com') != 0) {
-					alert('모바일용 홈 URL을 넣으세요. https://m.facebook.com/ ... ');
-					return false;
-				}
-				
-				$.mobile.loading('show');
-				// facebook인 경우 홈에서 제목/아이콘/참여설명을 가져온다.
-				// https://m.facebook.com/samsung
-				
-				var ar_param = {'url': url};
-				var request_url = get_ajax_url('get-url', ar_param);
-				_$("#home-page").attr('src', request_url);
-				
-				var startTimer = (new Date()).getTime();
-				var timer = setInterval(function() {
-					
-					if ((new Date()).getTime() - startTimer > 20*1000) 
-					{
-						$.mobile.loading('hide');
-						clearInterval(timer);
-						alert('요청 시간 초과')
-					} 
-					else 
-					{
-						if (frames[0].window.location.href == request_url && frames[0].window.document.readyState == 'complete') {
-							$.mobile.loading('hide');
-							clearInterval(timer);
-							
-							// 홈 URL (빈 경우에만)
-							if (!_$("#app-execurl").val()) _$("#app-execurl").val(_$("#app-homeurl").val());
-
-							// 프로필 이미지 가져오기							
-							var profilePic = $(".profilePicContainer .profilePic", frames[0].window.document).attr('style').match(/url\(\"(.*)\"\)/i)[1];
-							var ar_param = {url: profilePic};
-							util.request(get_ajax_url('get-base64-img', ar_param), function(sz_data) {
-								var js_data = util.to_json(sz_data);
-								if (js_data['result']) {
-									_$("#img-app-icon").data('type', 'base64');		// base64 데이터형식인지, URL인지 구별
-									_$("#img-app-icon").attr('src', 'data:image/png;base64,' + js_data['base64']);
-									_$("#app-image-url").val(js_data['base64']);			
-								}
-							});
-							
-							// 제목
-							var title = $("head title", frames[0].window.document).text();
-							_$("#app-title").val(title);
-							
-							// 사이트 인사말
-							var description = '';
-								var desc_html = $(".decelerateChildren", frames[0].window.document).html();
-								desc_html = desc_html.replace(/<\div/gi, '<br><div');
-								var desc_text = g_admin_util.strip_tags(desc_html.replace(/<\/span\>/gi, '</span><br>'), '<br>');
-								var arr_find = desc_text.match(/^정보(.*?)(다른 사람들이|좋아요|https?\:\/\/)/); 
-								if (arr_find) description = arr_find[1];
-								
-							_$("#app-content").val(description + _$("#app-content").val()).blur();
-							
-							_$("#home-page").attr('src', 'about:blank');
-						}
-					}
-				}, 1000);
-
-				return false;
-			},
-			on_btn_addcampaign: function()
+			on_btn_modifycampaign: function()
 			{
 				var app_type = _$("#app-type").val();
 
+				// 검색형인 경우 키워드,마켓링크 모두 사용 불가
+				if (util.in_array(app_type, ['S'])) {
+					if (_$("#app-execurl").val() && _$("#app-keyword").val()) {
+						alert('[마켓링크]와 [검색 키워드] 모두 설정해서 사용할 수 없습니다.\n두개 중 하나만 입력하세요');
+						return;
+					}
+				}
+				
+				// 검색형이 아닌 경우 Keyword Clear
+				if (!util.in_array(app_type, ['S'])) {
+					_$("#app-keyword").val("");
+				}
+				
 				var ar_param = {
 					'mcode' : '<?=$mcode?>',
 					'appkey' : '<?=$appkey?>',
 					'appplatform' : util.get_item_value(_$("#app-platform")),
 					'apptype' : _$("#app-type").val(),
-					'apphomeurl' : _$("#app-homeurl").val(),
+					'apppackageid' : _$("#app-packageid").val(),
+					'appkeyword' : _$("#app-keyword").val(),
 					'appexecurl' : _$("#app-execurl").val(),
 					'apptitle' : _$("#app-title").val(),
 					'appimageurl' : _$("#app-image-url").val(),
-					'appimagetype' : _$("#img-app-icon").data('type'),		// base64 데이터형식인지, URL인지 구별
 					'appexecdesc' : _$("#app-exec-desc").val(),
-					'appmarket' : 'W',
+					'appmarket' : 'P',
 					'appcontent' : _$("#app-content").val(),
 					'appgender' : util.get_item_value(_$("#app-sex")),
 					'appagefrom' : util.intval(_$("#app-agefrom").val()),
@@ -422,7 +396,7 @@ var <?=$js_page_id?> = function()
 					'appexechourlycnt': util.intval(_$("#app-exec-hourly-cnt").val()),
 					'appexecdailycnt' : util.intval(_$("#app-exec-daily-cnt").val()),
 					'appexectotalcnt' : util.intval(_$("#app-exec-total-cnt").val()),
-
+					
 					'apppublisherlevel': util.get_item_value(_$("#app-publisher-level")),
 					
 					'level1activedate': _$("#level-1-active-date").val() ? _$("#level-1-active-date").val() + " " + util.get_item_value(_$("#level-1-active-time")) : "",
@@ -430,26 +404,33 @@ var <?=$js_page_id?> = function()
 					'level3activedate': _$("#level-3-active-date").val() ? _$("#level-3-active-date").val() + " " + util.get_item_value(_$("#level-3-active-time")) : "",
 					'level4activedate': _$("#level-4-active-date").val() ? _$("#level-4-active-date").val() + " " + util.get_item_value(_$("#level-4-active-time")) : ""
 				};
-				
-				if (ar_param.apphomeurl.indexOf('https://m.facebook.com') != 0) {
-					alert('모바일용 홈 URL을 넣으세요. https://m.facebook.com/ ... ');
-					return false;
-				}
-				if (ar_param.appexecurl.indexOf('https://www.facebook.com') == 0) {
-					alert('모바일용 홈 URL을 넣으세요. https://m.facebook.com/ ... ');
-					return false;
-				}
-
-				util.post(get_ajax_url('admin-campaign-app-add'), ar_param, function(sz_data) {
+				alert(util.var_dump(ar_param));
+				util.post(get_ajax_url('admin-campaign-app-modify'), ar_param, function(sz_data) {
 					var js_data = util.to_json(sz_data);
 					if (js_data['result']) {
-						util.Alert('알림', '등록되었습니다.', function() {
-							mvPage('merchant-campaign-web-modify', null, {partnerid:'<?=$partner_id?>', mcode:'<?=$mcode?>', appkey:js_data['app_key']});
+						util.Alert('알림', '수정되었습니다.', function() {
+							window.location.reload();
 						});	
 					} else util.Alert(js_data['msg']);
 				});
+
+			},
+			on_btn_save_activestatus: function() {
+				var ar_param = {
+					'mcode' : '<?=$mcode?>',
+					'appkey' : '<?=$appkey?>',
+					'isactive': util.get_item_value(_$("#app-active"))
+				};
 				
-			},	
+				util.post(get_ajax_url('admin-campaign-set-active'), ar_param, function(sz_data) {
+					var js_data = util.to_json(sz_data);
+					if (js_data['result']) {
+						util.Alert('알림', '수정되었습니다.', function() {
+							window.location.reload();
+						});	
+					} else util.Alert(js_data['msg']);
+				});
+			},
 
 		},
 		upload: {
@@ -469,7 +450,6 @@ var <?=$js_page_id?> = function()
 					contentType: false,
 					success: function(sz_data, textStatus, jqXHR) {
 						var js_data = util.to_json(sz_data);
-						_$("#img-app-icon").data('type', 'url');		// base64 데이터형식인지, URL인지 구별
 						_$("#img-app-icon").attr('src', js_data['url']);
 						_$("#app-image-url").val(js_data['url']);
 					}, 
@@ -479,16 +459,16 @@ var <?=$js_page_id?> = function()
 				});
 				
 			},
-		},		
+		},
 	};		
 	
 	function setEvents() {
 		$(document).on("pageinit", function(){page.action.initialize();} );
-
+		
 		_$("#upload-image-file").change(page.upload.on_change_file);
 
 		util.set_event_for_input_number(_$("#app-merchant-fee"));
-
+		
 		util.set_event_for_input_number(_$("#app-agefrom"), '0');
 		util.set_event_for_input_number(_$("#app-ageto"), '100');
 				
@@ -502,7 +482,3 @@ var <?=$js_page_id?> = function()
 }();
 
 </script>
-	
-		
-		
-		

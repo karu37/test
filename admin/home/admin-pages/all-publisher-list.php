@@ -26,8 +26,13 @@
 	$result = mysql_query($sql, $conn);
 ?>
 	<style>
-		.list tr:hover td 				{background:#dff}
-		.list tr.mactive-D:hover td 	{background:#888}
+		/* line hover setup using mactive flag */
+		.list tr:hover td 				{background:#eff}
+		.list tr.mactive-N td 			{background:#999; color:#fff}
+		.list tr.mactive-N:hover td 	{background:#888}
+		.list tr.mactive-T td 			{background:#f90; color:#000}
+		.list tr.mactive-T:hover td 	{background:#f80}
+				
 		.list tr			{line-height:25px}
 		.list th			{padding: 2px 4px}
 		.list td			{padding: 2px 4px}
@@ -96,7 +101,7 @@
 			else if ($publisher['is_mactive'] == 'N') $ar_btn_theme = array('a','a','b');
 
 			?>
-			<tr style='cursor:pointer' id='line-p-<?=$publisher['pcode']?>'>
+			<tr style='cursor:pointer' id='line-p-<?=$publisher['pcode']?>' class="mactive-<?=$publisher['is_mactive']?>">
 				<td <?=$td_onclick?>><?=$pages->limit_start + $idx?></td>
 				<td class='btn-td'>
 					<div class='btn-wrapper'>
@@ -164,6 +169,7 @@ var <?=$js_page_id?> = function()
 						$('.btn-p-'+pcode+'.btn-N').removeClass('ui-btn-a ui-btn-b ui-btn-up-a ui-btn-up-b');
 						$('.btn-p-'+pcode+'.btn-' + ar_param.isactive).addClass('ui-btn-b ui-btn-up-b').attr('data-theme', 'b');
 						
+						$('#line-p-'+pcode).removeClassMatch(/mactive\-/g).addClass('mactive-'+status);
 					} else util.Alert(js_data['msg']);
 				});
 			},
