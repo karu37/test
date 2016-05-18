@@ -35,7 +35,7 @@
 		
 		.list tr	{line-height:25px}
 		.list th	{padding: 2px 4px}
-		.list td	{line-height:1.2em; padding: 2px 4px}
+		.list td	{line-height:1em; padding: 2px 4px}
 		
 		.list .btn-td									{padding-left: 0px padding-right: 0px}
 		.list .th_status, .list .btn-td .btn-wrapper	{width: 66px}
@@ -82,22 +82,24 @@
 		<tr>
 			<th>Idx</th>
 			<th width=1px><div class='th_status'>상태</div></th>
-			<th width=30px>활성</th>
-			<th>Icon</th>
-			<th width=80px>mcode</th>
-			<th>PlatForm</th>
+			<th width=30px>적립</th>
+			<th>아이콘</th>
+			<th width=80px>매체코드</th>
+			<th>환경</th>
 			<th>제목</th>
-			<th>적립원가</th>
+			<th width=30px>원가</th>
+			<th width=40px>총실행</th>
+			<th width=40px>수행수</th>
 			<th>필터</th>
-			<th>적립/수량</th>
 			<th>활성일</th>
 			<th>등록일</th>
 		</tr>
 	</thead>
 	<tbody>
 	<?
-		$arr_platform = array('A' => '<span style="color:blue;font-weight:bold">Android</span>', 'I' => '<span style="color:red;font-weight:bold">IOS</span>', 'W' => '-');
-		$arr_market = array('P' => '<span style="color:blue;font-weight:bold;font-size:11px">플레이스토어</span>', 'A' => '<span style="color:red;font-weight:bold;font-size:11px">앱스토어</span>', 'W' => 'web');
+		$arr_platform = array('A' => '<span style="color:blue;font-weight:bold">Android</span>', 'I' => '<span style="color:red;font-weight:bold">IOS</span>', 'W' => '<span style="color:orange;font-weight:bold;font-size:11px">WEB</span>');
+		$arr_market = array('P' => '<span style="color:blue;font-weight:bold;font-size:11px">플레이스토어</span>', 'A' => '<span style="color:red;font-weight:bold;font-size:11px">앱스토어</span>', 'W' => '<span style="color:orange;font-weight:bold;font-size:11px">수행형</span>');
+		$arr_exectype = array('I' => '<span style="color:blue;font-weight:bold">CPI</span>', 'E' => '<span style="color:green;font-weight:bold">CPE</span>', 'F' => '<span style="color:orange;font-weight:bold;font-size:11px">페북좋아요</span>');
 		$arr_gender = array('M' => '남성', 'F' => '여성');
 		while ($appkey = mysql_fetch_assoc($result)) {
 			
@@ -112,28 +114,42 @@
 			
 			// 필터 정보
 			$filter = "";
-			if ($appkey['app_agefrom'] != "") $filter .= ($filter?"<br>":"") . "나이: {$appkey['app_agefrom']}~{$appkey['app_ageto']}";
 			if ($appkey['app_gender'] != "") $filter .= ($filter?"<br>":"") . "성별: {$arr_gender[$appkey['app_gender']]}";
-			if ($filter) $filter = "<div style='text-align:left;padding: 0 5px'>{$filter}</div>";
+			if ($appkey['app_agefrom'] != "") $filter .= ($filter?"<br>":"") . "나이: {$appkey['app_agefrom']}~{$appkey['app_ageto']}";
+			if ($appkey['exec_stime'] != "") {
+				$shour = date("H", strtotime($appkey['exec_stime']));
+				$ehour = date("H", strtotime($appkey['exec_etime']));
+				$filter .= ($filter?"<br>":"") . "<span style='color:darkgreen;font-size:inherit'>시간: {$shour}~{$ehour}</span>";
+			}
+			if ($appkey['exec_edate'] != "") {
+				$edate = admin_to_date($appkey['exec_edate']);
+				$filter .= ($filter?"<br>":"") . "<span style='color:darkgreen;font-size:inherit'>만료: {$edate}</span>";
+			}
+			if ($filter) $filter = "<div style='text-align:left;padding: 0 5px; font-size:9px; line-height:1em'>{$filter}</div>";
+			
+			// Packageid (Optional display)
+			$app_packageid = ($appkey['app_packageid'] ? "<div style='text-align:left; padding: 0 5px; color:#888; font-size:9px'>{$appkey['app_packageid']}</div>" : "");
 
 			?>
 			<tr style='cursor:pointer' id='line-<?=$appkey['appkey']?>' class='mactive-<?=$appkey['is_mactive']?>'>
 				<td <?=$td_onclick?>><?=$appkey['id']?></td>
 				<td class='btn-td'>
 					<div class='btn-wrapper'>
-						<a class='btn-<?=$appkey['appkey']?> btn-Y' href='#' onclick='<?=$js_page_id?>.action.on_btn_set_publisher_active("<?=$appkey['pcode']?>", "Y")' data-theme='<?=$ar_btn_theme[0]?>' data-role='button' data-mini='true' data-inline='true'>연<br>동</a>
-						<a class='btn-<?=$appkey['appkey']?> btn-N' href='#' onclick='<?=$js_page_id?>.action.on_btn_set_publisher_active("<?=$appkey['pcode']?>", "N")' data-theme='<?=$ar_btn_theme[1]?>'  data-role='button' data-mini='true' data-inline='true'>중<br>지</a>
+						<a class='btn-<?=$appkey['appkey']?> btn-Y' href='#' onclick='<?=$js_page_id?>.action.on_btn_set_appkey_active("<?=$appkey['pcode']?>", "Y")' data-theme='<?=$ar_btn_theme[0]?>' data-role='button' data-mini='true' data-inline='true'>정<br>상</a>
+						<a class='btn-<?=$appkey['appkey']?> btn-N' href='#' onclick='<?=$js_page_id?>.action.on_btn_set_appkey_active("<?=$appkey['pcode']?>", "N")' data-theme='<?=$ar_btn_theme[1]?>'  data-role='button' data-mini='true' data-inline='true'>중<br>지</a>
+						<a href='#' onclick='<?=$js_page_id?>.action.on_btn_set_appkey_active("<?=$appkey['pcode']?>", "D")' data-theme='a'  data-role='button' data-mini='true' data-inline='true'>삭<br>제</a>
 					</div>
 				</td>
 				<td <?=$td_onclick?>><?=$appkey['is_active']?></td>
 				<td <?=$td_onclick?>><img src='<?=$appkey['app_iconurl']?>' width=40px style='width:40px;height:40px;overflow:hidden;border-radius:0.5em;border:1px solid #888' /></td>
 				<td <?=$td_onclick?>><?=$appkey['mcode']?></td>
-				<td <?=$td_onclick?>><?=$arr_platform[$appkey['app_platform']]?><br><?=$arr_market[$appkey['app_market']]?></td>
+				<td <?=$td_onclick?>><?=$arr_platform[$appkey['app_platform']]?><br><?=$arr_market[$appkey['app_market']]?><br><?=$arr_exectype[$appkey['app_exec_type']]?></td>
 				
-				<td <?=$td_onclick?>><div style='text-align:left; padding: 0 5px'><?=$appkey['app_title']?></div></td>
+				<td <?=$td_onclick?>><div style='text-align:left; padding: 0 5px; color:inherit'><?=$appkey['app_title']?></div><?=$app_packageid?></td>
 				<td <?=$td_onclick?>><?=$appkey['app_merchant_fee']?></td>
-				<td <?=$td_onclick?>><?=$filter?></td>
+				<td <?=$td_onclick?>><?=admin_number($appkey['exec_tot_max_cnt'])?></td>
 				<td <?=$td_onclick?>></td>
+				<td <?=$td_onclick?>><?=$filter?></td>
 				<td <?=$td_onclick?>><?=$appkey['is_active'] == 'Y' ? admin_to_date($appkey['last_active_time']).'<br>'.admin_to_time($appkey['last_active_time']) : ""?></td>
 				<td <?=$td_onclick?>><?=admin_to_date($appkey['reg_date']).'<br>'.admin_to_time($appkey['reg_date'])?></td>
 			</tr>

@@ -256,14 +256,22 @@ var util = {
 		if (!txt) return false;
 		return txt.match(/^[a-z0-9_+.-]+@([a-z0-9-]+\.)+[a-z0-9]{2,4}$/i);
 	},
-	intval: function(str_num) {
-		if (!str_num) return 0;
+	is_empty: function(txt) {
+		return (typeof txt == 'undefined' || txt === null || txt === "");
+	},
+	ifempty: function(txt,val) {
+		if (util.is_empty(txt)) return val;
+		return txt;
+	},
+	intval: function(str_num, empty_string) {
+		if (typeof empty_string == 'undefined') empty_string = 0;
+		if (util.is_empty(str_num)) return empty_string;
 		str_num = str_num.replace(/,/g, '');
 		return parseInt(str_num);
 	},
 	number_format: function(num, empty_string){
 		if (typeof empty_string == 'undefined') empty_string = 0;
-		if (typeof num == 'undefined' || num === null || num === "") num = empty_string;
+		if (util.is_empty(num)) num = empty_string;
 		else if (typeof num == 'string') {
 			num = util.intval(num);
 			num = (num).toFixed(0).replace(/(\d)(?=(\d{3})+$)/g, "$1,");

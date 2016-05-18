@@ -192,7 +192,7 @@
 		<div class='ui-block-a'>시간 최대 실행</div>
 		<div class='ui-block-b'>
 			<div style='width:100px; display: inline-block; height: 20px; padding-top: 5px; float:left'>
-				<input type="text" id="app-exec-hourly-cnt" name="app-exec-hourly-cnt" data-clear-btn=true init-value='<?=number_format(ifempty($row['exec_hour_max_cnt'], 100000000))?>' />
+				<input type="text" id="app-exec-hourly-cnt" name="app-exec-hourly-cnt" data-clear-btn=true placeholder='제한 없음' init-value='<?=number_format(ifempty($row['exec_hour_max_cnt'], ""))?>' />
 			</div>
 			<div style='float:left; padding: 15px 10px'>회</div>
 			<div style='clear:both'></div>
@@ -201,7 +201,7 @@
 		<div class='ui-block-a'>일일 최대 실행</div>
 		<div class='ui-block-b'>
 			<div style='width:100px; display: inline-block; height: 20px; padding-top: 5px; float:left'>
-				<input type="text" id="app-exec-daily-cnt" name="app-exec-daily-cnt" data-clear-btn=true init-value='<?=number_format(ifempty($row['exec_day_max_cnt'], 100000000))?>' />
+				<input type="text" id="app-exec-daily-cnt" name="app-exec-daily-cnt" data-clear-btn=true placeholder='제한 없음' init-value='<?=number_format(ifempty($row['exec_day_max_cnt'], ""))?>' />
 			</div>
 			<div style='float:left; padding: 15px 10px'>회</div>
 			<div style='clear:both'></div>
@@ -364,9 +364,9 @@ var <?=$js_page_id?> = function()
 					'appexecedate' : _$("#app-exec-edate").val(),
 					'appexecstime' : _$("#app-exec-stime").val(),
 					'appexecetime' : _$("#app-exec-etime").val(),
-					'appexechourlycnt': util.intval(_$("#app-exec-hourly-cnt").val()),
-					'appexecdailycnt' : util.intval(_$("#app-exec-daily-cnt").val()),
-					'appexectotalcnt' : util.intval(_$("#app-exec-total-cnt").val()),
+					'appexechourlycnt': util.intval(_$("#app-exec-hourly-cnt").val(), ""),
+					'appexecdailycnt' : util.intval(_$("#app-exec-daily-cnt").val(), ""),
+					'appexectotalcnt' : util.intval(_$("#app-exec-total-cnt").val(), ""),
 					
 					'apppublisherlevel': util.get_item_value(_$("#app-publisher-level")),
 					
@@ -375,6 +375,16 @@ var <?=$js_page_id?> = function()
 					'level3activedate': _$("#level-3-active-date").val() ? _$("#level-3-active-date").val() + " " + util.get_item_value(_$("#level-3-active-time")) : "",
 					'level4activedate': _$("#level-4-active-date").val() ? _$("#level-4-active-date").val() + " " + util.get_item_value(_$("#level-4-active-time")) : ""
 				};
+				
+				if (!util.is_empty(ar_param.appexechourlycnt) && ar_param.appexechourlycnt <= 0) {
+					alert('시간 최대 실행 값을 확인하세요 ');
+					return;					
+				}
+				if (!util.is_empty(ar_param.appexecdailycnt) && ar_param.appexecdailycnt <= 0) {
+					alert('일일 최대 실행 값을 확인하세요 ');
+					return;					
+				}
+				
 				alert(util.var_dump(ar_param));
 				util.post(get_ajax_url('admin-campaign-app-modify'), ar_param, function(sz_data) {
 					var js_data = util.to_json(sz_data);
@@ -443,9 +453,9 @@ var <?=$js_page_id?> = function()
 		util.set_event_for_input_number(_$("#app-agefrom"), '0');
 		util.set_event_for_input_number(_$("#app-ageto"), '100');
 				
-		util.set_event_for_input_number(_$("#app-exec-hourly-cnt"), '100,000,000');
-		util.set_event_for_input_number(_$("#app-exec-daily-cnt"), '100,000,000');
-		util.set_event_for_input_number(_$("#app-exec-total-cnt"), '100,000,000');
+		util.set_event_for_input_number(_$("#app-exec-hourly-cnt"), '');
+		util.set_event_for_input_number(_$("#app-exec-daily-cnt"), '');
+		util.set_event_for_input_number(_$("#app-exec-total-cnt"), '');
 
 	}		
 

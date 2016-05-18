@@ -154,9 +154,9 @@
 		IF('$db_app_exec_stime' <> '00:00:00' OR '$db_app_exec_etime' <> '24:00:00', '$db_app_exec_stime', NULL),
 		IF('$db_app_exec_stime' <> '00:00:00' OR '$db_app_exec_etime' <> '24:00:00', '$db_app_exec_etime', NULL),
 		
-		IF('$db_app_exec_hourly_cnt' < '100000000', '$db_app_exec_hourly_cnt', NULL),
-		IF('$db_app_exec_daily_cnt' < '100000000', '$db_app_exec_daily_cnt', NULL),
-		IF('$db_app_exec_total_cnt' < '100000000', '$db_app_exec_total_cnt', NULL),
+		IF('$db_app_exec_hourly_cnt' <> '', '$db_app_exec_hourly_cnt', NULL),
+		IF('$db_app_exec_daily_cnt' <> '', '$db_app_exec_daily_cnt', NULL),
+		IF('$db_app_exec_total_cnt' <> '', '$db_app_exec_total_cnt', NULL),
 		IF('$db_app_publisher_level' <> '9', '$db_app_publisher_level', NULL)
 		IF('$db_app_level_1_active_date' <> '', '$db_app_level_1_active_date', NULL),
 		IF('$db_app_level_2_active_date' <> '', '$db_app_level_2_active_date', NULL),
