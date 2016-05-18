@@ -35,7 +35,7 @@
 		
 		.list tr	{line-height:25px}
 		.list th	{padding: 2px 4px}
-		.list td	{line-height:1em; padding: 2px 4px}
+		.list td	{line-height:1.2em; padding: 2px 4px}
 		
 		.list .btn-td									{padding-left: 0px padding-right: 0px}
 		.list .th_status, .list .btn-td .btn-wrapper	{width: 66px}
@@ -89,7 +89,6 @@
 			<th>제목</th>
 			<th>적립원가</th>
 			<th>필터</th>
-			<th>광고활성</th>
 			<th>적립/수량</th>
 			<th>활성일</th>
 			<th>등록일</th>
@@ -97,14 +96,14 @@
 	</thead>
 	<tbody>
 	<?
-		$arr_platform = array('A' => 'Android', 'I' => 'IOS', 'W' => '-');
-		$arr_market = array('P' => 'PLAY#', 'A' => 'APP#', 'W' => '웹서비스');
+		$arr_platform = array('A' => '<span style="color:blue;font-weight:bold">Android</span>', 'I' => '<span style="color:red;font-weight:bold">IOS</span>', 'W' => '-');
+		$arr_market = array('P' => '<span style="color:blue;font-weight:bold;font-size:11px">플레이스토어</span>', 'A' => '<span style="color:red;font-weight:bold;font-size:11px">앱스토어</span>', 'W' => 'web');
 		$arr_gender = array('M' => '남성', 'F' => '여성');
 		while ($appkey = mysql_fetch_assoc($result)) {
 			
 			$url_appkey = urlencode($appkey['appkey']);
 			$url_mcode = urlencode($appkey['mcode']);
-			$td_onclick = "onclick='window.location.href=\"?id=publisher-appkey-list&partnerid={$partner_id}&pcode={$url_pcode}\"'";
+			$td_onclick = "onclick=\"mvPage('merchant-campaign-modify', null, {mcode: '{$appkey['mcode']}', appkey: '{$appkey['app_key']}'})\"";
 
 			// 현재의 Publisher의 active상태 : Y / T / N 만 가능함.					
 			$ar_btn_theme = array('a','a','a');
@@ -115,6 +114,7 @@
 			$filter = "";
 			if ($appkey['app_agefrom'] != "") $filter .= ($filter?"<br>":"") . "나이: {$appkey['app_agefrom']}~{$appkey['app_ageto']}";
 			if ($appkey['app_gender'] != "") $filter .= ($filter?"<br>":"") . "성별: {$arr_gender[$appkey['app_gender']]}";
+			if ($filter) $filter = "<div style='text-align:left;padding: 0 5px'>{$filter}</div>";
 
 			?>
 			<tr style='cursor:pointer' id='line-<?=$appkey['appkey']?>' class='mactive-<?=$appkey['is_mactive']?>'>
@@ -130,12 +130,12 @@
 				<td <?=$td_onclick?>><?=$appkey['mcode']?></td>
 				<td <?=$td_onclick?>><?=$arr_platform[$appkey['app_platform']]?><br><?=$arr_market[$appkey['app_market']]?></td>
 				
-				<td <?=$td_onclick?>><?=$appkey['app_title']?></td>
+				<td <?=$td_onclick?>><div style='text-align:left; padding: 0 5px'><?=$appkey['app_title']?></div></td>
 				<td <?=$td_onclick?>><?=$appkey['app_merchant_fee']?></td>
 				<td <?=$td_onclick?>><?=$filter?></td>
-				
-				<td><a href='#' onclick='<?=$js_page_id?>.action.on_btn_delete_partner_publisher_code("<?=$partner_id?>", "<?=$appkey['pcode']?>")' data-theme='a' data-role='button' data-mini='true' data-inline='true'>코드<br>제외</a></td>
-				<td><a href='#' onclick='goPage("dlg-publisher-modify", null, {publisher_code:"<?=$appkey['pcode']?>"})' data-theme='b' data-role='button' data-mini='true' data-inline='true'>정보<br>변경</a></td>
+				<td <?=$td_onclick?>></td>
+				<td <?=$td_onclick?>><?=$appkey['is_active'] == 'Y' ? admin_to_date($appkey['last_active_time']).'<br>'.admin_to_time($appkey['last_active_time']) : ""?></td>
+				<td <?=$td_onclick?>><?=admin_to_date($appkey['reg_date']).'<br>'.admin_to_time($appkey['reg_date'])?></td>
 			</tr>
 			<?
 		}

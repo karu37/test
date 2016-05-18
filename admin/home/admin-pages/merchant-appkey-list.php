@@ -153,7 +153,7 @@
 			
 			$url_mcode = urlencode($mcode);
 			$url_appkey = urlencode($row['app_key']);
-			$td_onclick = "onclick=\"mvPage('merchant-campaign-modify', null, {partnerid: '{$partner_id}', mcode:'{$mcode}', appkey: '{$row['app_key']}'})\"";
+			$td_onclick = "onclick=\"mvPage('merchant-campaign-modify', null, {mcode:'{$mcode}', appkey: '{$row['app_key']}'})\"";
 			?>
 			<tr id='list-<?=$row['id']?>' class='mactive-<?=$row['is_mactive']?>' style='cursor:pointer'>
 				<td <?=$td_onclick?>><?=$row['id']?></td>

@@ -164,9 +164,10 @@
 			<th>공급사</th>
 			<th>타입</th>
 			<th>제목</th>
-			<th>원가</th>
 			<th>지정가</th>
 			<th>지정율</th>
+			<th width=1px></th>
+			<th>원가</th>
 			<th>공급금액</th>
 		</tr>	
 	</thead>
@@ -180,7 +181,7 @@
 			if ($row['pa_is_mactive'] == 'Y') $ar_btn_theme = array('b','a');
 			else if ($row['pa_is_mactive'] == 'N') $ar_btn_theme = array('a','b');
 			
-			$td_onclick = "onclick='goPage(\"dlg-publisherapp-config\", null, {pcode:\"{$pcode}\", appkey:\"{$row['app_key']}\"})'";
+			$td_onclick = "onclick=\"mvPage('merchant-campaign-modify', null, {mcode: '{$row['mcode']}', appkey: '{$row['app_key']}'})\"";
 			?>
 			<tr id='list-<?=$row['id']?>' class='mactive-<?=$row['pa_is_mactive']?>' style='cursor:pointer'>
 				<td <?=$td_onclick?>><?=$row['id']?></td>
@@ -193,10 +194,12 @@
 				<td <?=$td_onclick?>><?=$row['merchant_name']?></td>
 				<td <?=$td_onclick?>><?=$row['app_exec_type_name']?></td>
 				<td <?=$td_onclick?>><?=$row['app_title']?></td>
-				<td <?=$td_onclick?>><?=number_format($row['app_merchant_fee'])?></td>
 				<td <?=$td_onclick?>><?=admin_number($row['app_offer_fee'])?></td>
 				<td <?=$td_onclick?>><?=admin_number($row['app_offer_fee_rate'])?></td>
+				<td><a href='#' onclick='goPage("dlg-publisherapp-config", null, {pcode: "<?=$pcode?>", appkey:"<?=$row['app_key']?>"})' data-theme='b' data-role='button' data-mini='true' data-inline='true'>가격<br>지정</a></td>
+				<td <?=$td_onclick?>><?=number_format($row['app_merchant_fee'])?></td>
 				<td <?=$td_onclick?>><b><?=admin_number($row['publisher_fee'])?></b></td>
+				
 			</tr>
 			<?
 		}

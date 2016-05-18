@@ -1,5 +1,4 @@
 <?
-	$partner_id = $_REQUEST['partnerid'];
 	$mcode = $_REQUEST['mcode'];
 	$appkey = $_REQUEST['appkey'];
 	
