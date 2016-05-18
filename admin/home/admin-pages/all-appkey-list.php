@@ -109,8 +109,9 @@
 
 			// 현재의 Publisher의 active상태 : Y / T / N 만 가능함.					
 			$ar_btn_theme = array('a','a','a');
-			if ($appkey['is_mactive'] == 'Y') $ar_btn_theme = array('b','a');
-			else if ($appkey['is_mactive'] == 'N') $ar_btn_theme = array('a','b');
+			if ($appkey['is_mactive'] == 'Y') $ar_btn_theme = array('b','a','a');
+			else if ($appkey['is_mactive'] == 'N') $ar_btn_theme = array('a','b','a');
+			else if ($appkey['is_mactive'] == 'D') $ar_btn_theme = array('a','a','b');
 			
 			// 필터 정보
 			$filter = "";
@@ -135,9 +136,9 @@
 				<td <?=$td_onclick?>><?=$appkey['id']?></td>
 				<td class='btn-td'>
 					<div class='btn-wrapper'>
-						<a class='btn-<?=$appkey['appkey']?> btn-Y' href='#' onclick='<?=$js_page_id?>.action.on_btn_set_appkey_active("<?=$appkey['pcode']?>", "Y")' data-theme='<?=$ar_btn_theme[0]?>' data-role='button' data-mini='true' data-inline='true'>정<br>상</a>
-						<a class='btn-<?=$appkey['appkey']?> btn-N' href='#' onclick='<?=$js_page_id?>.action.on_btn_set_appkey_active("<?=$appkey['pcode']?>", "N")' data-theme='<?=$ar_btn_theme[1]?>'  data-role='button' data-mini='true' data-inline='true'>중<br>지</a>
-						<a href='#' onclick='<?=$js_page_id?>.action.on_btn_set_appkey_active("<?=$appkey['pcode']?>", "D")' data-theme='a'  data-role='button' data-mini='true' data-inline='true'>삭<br>제</a>
+						<a class='btn-<?=$appkey['appkey']?> btn-Y' href='#' onclick='<?=$js_page_id?>.action.on_btn_set_appkey_mactive("<?=$appkey['mcode']?>", "<?=$appkey['app_key']?>", "Y")' data-theme='<?=$ar_btn_theme[0]?>' data-role='button' data-mini='true' data-inline='true'>정<br>상</a>
+						<a class='btn-<?=$appkey['appkey']?> btn-N' href='#' onclick='<?=$js_page_id?>.action.on_btn_set_appkey_mactive("<?=$appkey['mcode']?>", "<?=$appkey['app_key']?>", "N")' data-theme='<?=$ar_btn_theme[1]?>'  data-role='button' data-mini='true' data-inline='true'>중<br>지</a>
+						<a class='btn-<?=$appkey['appkey']?> btn-D' href='#' onclick='<?=$js_page_id?>.action.on_btn_set_appkey_mactive("<?=$appkey['mcode']?>", "<?=$appkey['app_key']?>", "D")' data-theme='<?=$ar_btn_theme[2]?>' data-role='button' data-mini='true' data-inline='true'>삭<br>제</a>
 					</div>
 				</td>
 				<td <?=$td_onclick?>><?=$appkey['is_active']?></td>
@@ -188,28 +189,16 @@ var <?=$js_page_id?> = function()
 				window.location.href = '?' + util.json_to_urlparam(ar_param);
 				return false;
 			},
-			on_btn_delete: function(partnerid, listid) {
-				var ar_param = {'partnerid': partnerid, mactive: 'D'};
-				util.request(get_ajax_url('admin-partner-set-mactive', ar_param), function(sz_data) {
+			on_btn_set_appkey_mactive: function(mcode, appkey, status) {
+				var ar_param = {'mcode': mcode, 'appkey': appkey, 'ismactive': status};
+				util.request(get_ajax_url('admin-campaign-set-mactive', ar_param), function(sz_data) {
 					var js_data = util.to_json(sz_data);
 					if (js_data['result']) {
-						$("#list-" + listid).removeClass().addClass('mactive-D');
-						$("#user-status-" + listid).html("삭제");
-						toast('삭제되었습니다.');						
+						$("#line-" + appkey).removeClass().addClass('mactive-' + status);
+						toast('설정되었습니다.');
 					} else util.Alert(js_data['msg']);
 				});
 			},
-			on_btn_restore: function(partnerid, listid) {
-				var ar_param = {'partnerid': partnerid, mactive: 'Y'};
-				util.request(get_ajax_url('admin-partner-set-mactive', ar_param), function(sz_data) {
-					var js_data = util.to_json(sz_data);
-					if (js_data['result']) {
-						$("#list-" + listid).removeClass().addClass('mactive-Y');
-						$("#user-status-" + listid).html("정상");
-						toast('복구되었습니다.');						
-					} else util.Alert(js_data['msg']);
-				});
-			},			
 
 		},
 	};		
