@@ -28,7 +28,7 @@
 		<th>Reward 환율</th>
 		<td>
 			<div style='width: 80px;float:left'>
-				<input type="number" id="txt-reward-percent" name="txt-reward-percent" placeholder='100' />
+				<input type="number" id="txt-reward-percent" name="txt-reward-percent" placeholder='100' value='<?=$row['reward_percent']?>' />
 			</div>
 			<div style='width: 300px;float:left; padding-top: 7px; padding-left: 10px'>
 				%
@@ -41,7 +41,7 @@
 		<th>Reward 단위</th>
 		<td>
 			<div style='width: 80px'>
-				<input type="text" id="txt-reward-unit" name="txt-reward-unit" placeholder='원' />
+				<input type="text" id="txt-reward-unit" name="txt-reward-unit" placeholder='원' value='<?=$row['reward_unit']?>' />
 			</div>
 			* 충전소에서 금액 표시할 때 사용되는 단위
 		</td>
@@ -49,7 +49,7 @@
 	<tr class='should'>
 		<th valign=top><div style='padding-top:15px'>콜백 URL설정</div></th>
 		<td>
-			<input type="text" id="txt-callback-url" name="txt-callback-url" placeholder='http:// 로 시작하는 매체사 URL' />
+			<input type="text" id="txt-callback-url" name="txt-callback-url" placeholder='http:// 로 시작하는 매체사 URL' value='<?=$row['callback_url']?>' />
 			* 광고 적립이 완료되었을 때, A-Line이 호출할 매체사 URL<br>
 				&nbsp; 예) http://www.partner.com/callback/aline.jsp
 <pre>
@@ -69,8 +69,11 @@
 		</td>
 	</tr>
 	</table>
+	<div style='padding-top: 10px;'>
+		<a href='#' onclick='<?=$js_page_id?>.action.on_btn_set_callbackinfo()' data-role='button' data-theme='b' data-inline='true' data-mini='true' >등록하기</a>
+	</div>
 	
-	<div class='app-info'  style='background-color:#fff; width:600px; padding-top: 10px'>
+	<div class='app-info'  style='background-color:#fff; width:600px; padding-top: 30px'>
 		<b3>콜백 테스트 호출</b3>
 		<br>
 		<br>
@@ -88,15 +91,12 @@
  			<br>
  			<b>POST 파라미터</b>
  			<div id='sample-postparam' style='border: 1px solid #ddd; min-height:100px; color: darkblue; padding: 5px'></div>
- 			<div style='text-align: right'>
+ 			<div style='padding-top:10px'>
 	 			<a href='#' onclick='<?=$js_page_id?>.action.on_btn_send_sampleurl()' data-role='button' data-mini='true' data-inline='true'>샘플 URL 호출</a>
 	 		</div>
 	 	</div>
 	</div>
 	
-	<div style='padding-top: 20px'>
-		<a href='#' onclick='<?=$js_page_id?>.action.on_btn_addpartner()' data-role='button' data-theme='b' data-inline='true' data-mini='true' >등록하기</a>
-	</div>
 
 </div>
 			
@@ -116,23 +116,18 @@ var <?=$js_page_id?> = function()
 				
 				setTimeout( function() { page.action.on_update_callbacktest_url(); page.action.on_update_callbacktest_param(); } , 100);
 			},
-			on_btn_addpartner: function()
+			on_btn_set_callbackinfo: function()
 			{
-
 				var ar_param = {
-					'partnerid' : _$("#partner-id").val(),
-					'partnerpw' : _$("#partner-pw").val(),
-					'partnername' : _$("#partner-name").val(),
-					'appkey' : _$("#partner-appkey").val(),
-					'company' : _$("#partner-company").val(),
-					'telno' : _$("#partner-telno").val(),
-					'memo' : _$("#partner-memo").val()
+					'pcode' : "<?=$pcode?>",
+					'callbackurl' : $("#txt-callback-url").val(),
+					'rewardpercent' : _$("#txt-reward-percent").val()
 				};
-				util.post(get_ajax_url('admin-partner-new'), ar_param, function(sz_data) {
+				util.post(get_ajax_url('admin-publisher-set-callback'), ar_param, function(sz_data) {
 					var js_data = util.to_json(sz_data);
 					if (js_data['result']) {
 						util.Alert('알림', '등록되었습니다.', function() {
-							window.location.href = "?id=partner-modify&partnerid=" + js_data['partnerid'];
+							window.location.reload();
 						});	
 					} else util.Alert(js_data['msg']);
 				});
