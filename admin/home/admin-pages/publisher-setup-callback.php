@@ -74,22 +74,23 @@
 	</div>
 	
 	<div class='app-info'  style='background-color:#fff; width:600px; padding-top: 30px'>
-		<b3>콜백 테스트 호출</b3>
-		<br>
+		<b3>콜백 호출 테스트</b3>
+		<hr>
 		<br>
 		<table border=0 cellpadding=0 cellspacing=0 width=100%>
-			<tr><td>광고키</td><td>TEST0000000000000001</td>
-			<tr><td>제공 금액</td><td>250</td>
-			<tr><td>uid</td><td><input type=text id='test-uid' name='uid style='display:inline-block; width:100px' value='super1234' /></td>
- 			<tr><td>userdata</td><td><input type=text id='test-userdata' name='uid style='display:inline-block; width:600px' value='user-defined-sample-data' /></td>
- 			<tr><td>unique</td><td><input type=text id='test-unique' name='uid style='display:inline-block; width:600px' value='TEST-<?=date("YmdHis")?>' /></td>
+			<tr><td>광고키</td><td><div style='width:200px'><input type=text id='test-ad' name='test-ad' value='' /></div></td>
+			<tr><td>제공 금액</td><td><div style='width:200px'><input type=text id='test-price' name='test-price' value='' /></div></td>
+			<tr><td>uid</td><td><div style='width:200px'><input type=text id='test-uid' name='test-uid value='' /></div></td>
+ 			<tr><td>userdata</td><td width=500px><input type=text id='test-userdata' name='test-userdata value='' /></td>
+ 			<tr><td>unique</td><td><div style='width:200px'><input type=text id='test-unique' name='test-unique' value='' /></div></td>
 			</tr>
 		</table>
+		
 		<div style='background: #eff; padding:10px'>		
  			<b>콜백 URL</b>
  			<div id='sample-url' style='border: 1px solid #ddd; min-height:20px; color: darkblue; padding: 5px'></div>
  			<br>
- 			<b>POST 파라미터</b>
+ 			<b>콜백 POST 파라미터</b>
  			<div id='sample-postparam' style='border: 1px solid #ddd; min-height:100px; color: darkblue; padding: 5px'></div>
  			<div style='padding-top:10px'>
 	 			<a href='#' onclick='<?=$js_page_id?>.action.on_btn_send_sampleurl()' data-role='button' data-mini='true' data-inline='true'>샘플 URL 호출</a>
@@ -113,9 +114,17 @@ var <?=$js_page_id?> = function()
 			{
 				util.initPage($('#page'));
 				_$("div[data-role='popup']").on("popupbeforeposition", function(){ util.initPage($(this)); });
+
+				// restore data from localstorage				
+				_$("#test-ad").val( util.ifempty(localStorage.getItem('test-ad'), 'TEST-000000000000000000001') );
+				_$("#test-price").val( util.ifempty(localStorage.getItem('test-price'), '250') );
+				_$("#test-uid").val( util.ifempty(localStorage.getItem('test-uid'), 'user1234') );
+				_$("#test-userdata").val( util.ifempty(localStorage.getItem('test-userdata'), 'CUSTOM-USER-DATA') );
+				_$("#test-unique").val( util.ifempty(localStorage.getItem('test-unique'), 'UNIQUE-000000000000001') );
 				
 				setTimeout( function() { page.action.on_update_callbacktest_url(); page.action.on_update_callbacktest_param(); } , 100);
 			},
+			// 보상율과 CallbackURL을 서버에 저장한다.
 			on_btn_set_callbackinfo: function()
 			{
 				var ar_param = {
@@ -123,6 +132,12 @@ var <?=$js_page_id?> = function()
 					'callbackurl' : $("#txt-callback-url").val(),
 					'rewardpercent' : _$("#txt-reward-percent").val()
 				};
+				
+				if (!ar_param.callbackurl.match(/^https?\:\/\/[a-z_-]+\/.*$/)) {
+					alert("URL 형식이 올바르지 않습니다.");
+					return;	
+				}
+								
 				util.post(get_ajax_url('admin-publisher-set-callback'), ar_param, function(sz_data) {
 					var js_data = util.to_json(sz_data);
 					if (js_data['result']) {
@@ -132,17 +147,44 @@ var <?=$js_page_id?> = function()
 					} else util.Alert(js_data['msg']);
 				});
 			},
-			on_update_callbacktest_url: function() {
-				_$("#sample-url").html( $("#txt-callback-url").val() );
-			},
-			on_update_callbacktest_param: function() {
-				var param = {ad:'TEST0000000000000001', 
-							price:'250', 
-							reward: Math.floor(250 * util.ifempty($("#txt-reward-percent").val(),100) / 100),
+			// input으로부터 Post Parameter를 구성한다.
+			gen_post_parameter: function() {
+				var param = {ad: $("#test-ad").val(), 
+							price: $("#test-price").val(), 
+							reward: Math.floor($("#test-price").val() * util.ifempty($("#txt-reward-percent").val(),100) / 100),
 							uid: $("#test-uid").val(),
 							userdata: $("#test-userdata").val(),
 							unique: $("#test-unique").val()};
+				return param;
+			},
+			// CallbackURL이 변경되면 정보를 갱신한다.
+			on_update_callbacktest_url: function() {
+				_$("#sample-url").html( $("#txt-callback-url").val() );
+			},
+			// input 값이 변경되면 새로운 Post값으로 갱신한다.
+			on_update_callbacktest_param: function() {
+						
+				var param = page.action.gen_post_parameter();
 				_$("#sample-postparam").html( util.json_to_urlparam(param).replace(/\&/g, "&<br>") );
+				
+				// store data to localstorage
+				localStorage.setItem('test-ad', _$("#test-ad").val());
+				localStorage.setItem('test-price', _$("#test-price").val());
+				localStorage.setItem('test-uid', _$("#test-uid").val());
+				localStorage.setItem('test-userdata', _$("#test-userdata").val());
+				localStorage.setItem('test-unique', _$("#test-unique").val());
+			},
+			// 전송 테스트를 호출한다.
+			on_btn_send_sampleurl: function() {
+				
+				var url = $("#txt-callback-url").val();
+				var param = page.action.gen_post_parameter();
+				if (!url.match(/^https?\:\/\/[a-z_.-]+\/.*$/)) {
+					alert("URL 형식이 올바르지 않습니다.");
+					return;	
+				}
+				
+				alert(url + '?' + util.json_to_urlparam(param));
 				
 			},
 		},
@@ -153,6 +195,9 @@ var <?=$js_page_id?> = function()
 		
 		$("#txt-callback-url").on('change', page.action.on_update_callbacktest_url);
 		$("#txt-reward-percent").on('change', page.action.on_update_callbacktest_param);
+		
+		$("#test-ad").on('change', page.action.on_update_callbacktest_param);
+		$("#test-price").on('change', page.action.on_update_callbacktest_param);
 		$("#test-uid").on('change', page.action.on_update_callbacktest_param);
 		$("#test-userdata").on('change', page.action.on_update_callbacktest_param);
 		$("#test-unique").on('change', page.action.on_update_callbacktest_param);
