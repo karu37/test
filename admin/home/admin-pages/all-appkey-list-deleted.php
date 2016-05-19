@@ -15,7 +15,7 @@
 	// --------------------------------
 	// Paginavigator initialize	
 	// --------------------------------
-	$sql = "SELECT COUNT(*) as cnt FROM al_app_t a WHERE a.is_mactive <> 'D' {$where}";
+	$sql = "SELECT COUNT(*) as cnt FROM al_app_t a WHERE a.is_mactive = 'D' {$where}";
 	$row = mysql_fetch_assoc(mysql_query($sql, $conn));
 	$pages = new Paginator($row['cnt']);
 	$limit = "LIMIT " . $pages->limit_start . "," . $pages->limit_end;
@@ -23,7 +23,7 @@
 	// ---------------------------------------
 	// publisher info
 	// ---------------------------------------
-	$sql = "SELECT * FROM al_app_t a WHERE a.is_mactive <> 'D' {$where} {$order_by} {$limit}";
+	$sql = "SELECT * FROM al_app_t a WHERE a.is_mactive = 'D' {$where} {$order_by} {$limit}";
 	$result = mysql_query($sql, $conn);
 
 ?>
@@ -205,8 +205,6 @@ var <?=$js_page_id?> = function()
 						$('.btn-'+appkey+'.btn-' + ar_param.ismactive).addClass('ui-btn-b ui-btn-up-b').attr('data-theme', 'b');
 						
 						$("#line-" + appkey).removeClass().addClass('mactive-' + status);
-						
-						if (ar_param.ismactive == 'D') $("#line-" + appkey).hide();
 						
 						toast('설정되었습니다.');
 					} else util.Alert(js_data['msg']);

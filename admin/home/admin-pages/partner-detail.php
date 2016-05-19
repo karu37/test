@@ -56,73 +56,8 @@
 	</style>
 	<t3 style='height:40px; padding-top:20px'><?=$partner_name?></t3>
 	
-	<table width=100%>
+	<table width=800px>
 	<tr>
-		<td width=50% style='border: 1px solid #ddd; padding: 10px 10px 10px 10; vertical-align: top'>
-			<!-- PUBLISHER CODE LIST (Brand List) -->
-			<div style='float:left'>
-				<t3>Publisher 목록</t3>
-			</div>
-			<div style='float:right'>
-				<a href='#' onclick='goPage("dlg-publisher-new", null, {partnerid:"<?=$partner_id?>"})' data-role='button' data-theme='b' data-inline='true' data-mini='true' >+ New Publisher</a>
-				<a href='#' onclick='mvPage("dlgpage-partner-add-publisher", null, {partnerid:"<?=$partner_id?>"})' data-role='button' data-theme='a' data-inline='true' data-mini='true' >+ Add Publisher</a>
-			</div>
-			<div style='clear:both'></div>
-			
-			<hr>
-			<table class='single-line list'  cellpadding=0 cellspacing=0 width=100%>
-			<thead>
-				<tr>
-					<th>Idx</th>
-					<th width=1px><div class='th_status'>상태</div></th>
-					<th>코드</th>
-					<th>이름</th>
-					<th>제공가(%)</th>
-					<th>그룹</th>
-					<th width=1px></th>
-					<th width=1px></th>
-				</tr>
-			</thead>
-			<tbody>
-			<?
-				for ($i = 0; $i < count($ar_publisher_lists); $i ++) {
-					
-					$publisher = $ar_publisher_lists[$i];
-					
-					$url_pcode = urlencode($publisher['pcode']);
-					$td_onclick = "onclick='window.location.href=\"?id=publisher-appkey-list&partnerid={$partner_id}&pcode={$url_pcode}\"'";
-
-					// 현재의 Publisher의 active상태 : Y / T / N 만 가능함.					
-					$ar_btn_theme = array('a','a','a');
-					if ($publisher['is_mactive'] == 'Y') $ar_btn_theme = array('b','a','a');
-					else if ($publisher['is_mactive'] == 'T') $ar_btn_theme = array('a','b','a');
-					else if ($publisher['is_mactive'] == 'N') $ar_btn_theme = array('a','a','b');
-
-					?>
-					<tr style='cursor:pointer' id='line-p-<?=$publisher['pcode']?>'class='mactive-<?=$publisher['is_mactive']?>'>
-						<td <?=$td_onclick?>><?=$publisher['id']?></td>
-						<td class='btn-td'>
-							<div class='btn-wrapper'>
-								<a class='btn-p-<?=$publisher['pcode']?> btn-Y' href='#' onclick='<?=$js_page_id?>.action.on_btn_set_publisher_active("<?=$publisher['pcode']?>", "Y")' data-theme='<?=$ar_btn_theme[0]?>' data-role='button' data-mini='true' data-inline='true'>연<br>동</a>
-								<a class='btn-p-<?=$publisher['pcode']?> btn-T' href='#' onclick='<?=$js_page_id?>.action.on_btn_set_publisher_active("<?=$publisher['pcode']?>", "T")' data-theme='<?=$ar_btn_theme[1]?>'  data-role='button' data-mini='true' data-inline='true'>개<br>발</a>
-								<a class='btn-p-<?=$publisher['pcode']?> btn-N' href='#' onclick='<?=$js_page_id?>.action.on_btn_set_publisher_active("<?=$publisher['pcode']?>", "N")' data-theme='<?=$ar_btn_theme[2]?>'  data-role='button' data-mini='true' data-inline='true'>중<br>지</a>
-							</div>
-						</td>
-						<td <?=$td_onclick?>><?=$publisher['pcode']?></td>
-						<td <?=$td_onclick?>><?=$publisher['name']?></td>
-						<td <?=$td_onclick?>><?=$publisher['offer_fee_rate']?></td>
-						<td <?=$td_onclick?>><?=$publisher['level']?></td>
-						<td><a href='#' onclick='<?=$js_page_id?>.action.on_btn_delete_partner_publisher_code("<?=$partner_id?>", "<?=$publisher['pcode']?>")' data-theme='a' data-role='button' data-mini='true' data-inline='true'>코드<br>제외</a></td>
-						<td><a href='#' onclick='goPage("dlg-publisher-modify", null, {publisher_code:"<?=$publisher['pcode']?>"})' data-theme='b' data-role='button' data-mini='true' data-inline='true'>정보<br>변경</a></td>
-					</tr>
-					<?
-				}
-				
-			?>
-			</tbody>
-			</table>
-			<!-- -------------------------------- -->
-		</td>
 		<td width=50% style='border: 1px solid #ddd; padding: 10px 10px 10px 10px; vertical-align: top'>
 			<!-- MERCHANT CODE LIST (대행사 List) -->
 			<div style='float:left'>
@@ -180,7 +115,77 @@
 			</tbody>
 			</table>
 			<!-- -------------------------------- -->
-		</td>
+		</td>		
+	</tr><tr>
+		<td><br></td>
+	</tr><tr>
+		<td width=50% style='border: 1px solid #ddd; padding: 10px 10px 10px 10; vertical-align: top'>
+			<!-- PUBLISHER CODE LIST (Brand List) -->
+			<div style='float:left'>
+				<t3>Publisher 목록</t3>
+			</div>
+			<div style='float:right'>
+				<a href='#' onclick='goPage("dlg-publisher-new", null, {partnerid:"<?=$partner_id?>"})' data-role='button' data-theme='b' data-inline='true' data-mini='true' >+ New Publisher</a>
+				<a href='#' onclick='mvPage("dlgpage-partner-add-publisher", null, {partnerid:"<?=$partner_id?>"})' data-role='button' data-theme='a' data-inline='true' data-mini='true' >+ Add Publisher</a>
+			</div>
+			<div style='clear:both'></div>
+			
+			<hr>
+			<table class='single-line list'  cellpadding=0 cellspacing=0 width=100%>
+			<thead>
+				<tr>
+					<th>Idx</th>
+					<th width=1px><div class='th_status'>상태</div></th>
+					<th>코드</th>
+					<th>이름</th>
+					<th>제공가(%)</th>
+					<th>그룹</th>
+					<th width=1px></th>
+					<th width=1px></th>
+					<th width=1px></th>
+				</tr>
+			</thead>
+			<tbody>
+			<?
+				for ($i = 0; $i < count($ar_publisher_lists); $i ++) {
+					
+					$publisher = $ar_publisher_lists[$i];
+					
+					$url_pcode = urlencode($publisher['pcode']);
+					$td_onclick = "onclick='window.location.href=\"?id=publisher-appkey-list&partnerid={$partner_id}&pcode={$url_pcode}\"'";
+
+					// 현재의 Publisher의 active상태 : Y / T / N 만 가능함.					
+					$ar_btn_theme = array('a','a','a');
+					if ($publisher['is_mactive'] == 'Y') $ar_btn_theme = array('b','a','a');
+					else if ($publisher['is_mactive'] == 'T') $ar_btn_theme = array('a','b','a');
+					else if ($publisher['is_mactive'] == 'N') $ar_btn_theme = array('a','a','b');
+
+					?>
+					<tr style='cursor:pointer' id='line-p-<?=$publisher['pcode']?>'class='mactive-<?=$publisher['is_mactive']?>'>
+						<td <?=$td_onclick?>><?=$publisher['id']?></td>
+						<td class='btn-td'>
+							<div class='btn-wrapper'>
+								<a class='btn-p-<?=$publisher['pcode']?> btn-Y' href='#' onclick='<?=$js_page_id?>.action.on_btn_set_publisher_active("<?=$publisher['pcode']?>", "Y")' data-theme='<?=$ar_btn_theme[0]?>' data-role='button' data-mini='true' data-inline='true'>연<br>동</a>
+								<a class='btn-p-<?=$publisher['pcode']?> btn-T' href='#' onclick='<?=$js_page_id?>.action.on_btn_set_publisher_active("<?=$publisher['pcode']?>", "T")' data-theme='<?=$ar_btn_theme[1]?>'  data-role='button' data-mini='true' data-inline='true'>개<br>발</a>
+								<a class='btn-p-<?=$publisher['pcode']?> btn-N' href='#' onclick='<?=$js_page_id?>.action.on_btn_set_publisher_active("<?=$publisher['pcode']?>", "N")' data-theme='<?=$ar_btn_theme[2]?>'  data-role='button' data-mini='true' data-inline='true'>중<br>지</a>
+							</div>
+						</td>
+						<td <?=$td_onclick?>><?=$publisher['pcode']?></td>
+						<td <?=$td_onclick?>><?=$publisher['name']?></td>
+						<td <?=$td_onclick?>><?=$publisher['offer_fee_rate']?></td>
+						<td <?=$td_onclick?>><?=$publisher['level']?></td>
+						<td><a href='#' onclick='mvPage("publisher-setup-callback", null, {pcode:"<?=$publisher['pcode']?>"})' data-theme='e' data-role='button' data-mini='true' data-inline='true'>콜백<br>설정</a></td>
+						<td><a href='#' onclick='<?=$js_page_id?>.action.on_btn_delete_partner_publisher_code("<?=$partner_id?>", "<?=$publisher['pcode']?>")' data-theme='a' data-role='button' data-mini='true' data-inline='true'>코드<br>제외</a></td>
+						<td><a href='#' onclick='goPage("dlg-publisher-modify", null, {publisher_code:"<?=$publisher['pcode']?>"})' data-theme='b' data-role='button' data-mini='true' data-inline='true'>정보<br>변경</a></td>
+					</tr>
+					<?
+				}
+				
+			?>
+			</tbody>
+			</table>
+			<!-- -------------------------------- -->
+		<tr>
 	</tr>
 	</table>		
 

@@ -83,6 +83,7 @@
 			<th width=50px>제공(%)</th>
 			<th width=30px>그룹</th>
 			<th width=1px></th>
+			<th width=1px></th>
 		</tr>
 	</thead>
 	<tbody>
@@ -115,7 +116,8 @@
 				<td <?=$td_onclick?>><?=$publisher['pcode']?></td>
 				<td <?=$td_onclick?>><?=$publisher['offer_fee_rate']?></td>
 				<td <?=$td_onclick?>><?=$publisher['level']?></td>
-				<td><a href='#' onclick='goPage("dlg-publisher-modify", null, {publisher_code:"<?=$publisher['pcode']?>"})' data-theme='a' data-role='button' data-mini='true' data-inline='true'>정보<br>변경</a></td>
+				<td><a href='#' onclick='mvPage("publisher-setup-callback", null, {pcode:"<?=$publisher['pcode']?>"})' data-theme='e' data-role='button' data-mini='true' data-inline='true'>콜백<br>설정</a></td>
+				<td><a href='#' onclick='goPage("dlg-publisher-modify", null, {publisher_code:"<?=$publisher['pcode']?>"})' data-theme='b' data-role='button' data-mini='true' data-inline='true'>정보<br>변경</a></td>
 			</tr>
 			<?
 		}
