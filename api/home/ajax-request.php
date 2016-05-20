@@ -12,7 +12,7 @@ $file = $path_queries . "/{$id}.php";
 
 $conn = dbConn();
 
-if (!$conn) return_die(false, '서비스 연결이 원활하지 않습니다.(20)');
+if (!$conn) return_die(false, null, '서비스 연결이 원활하지 않습니다.(20)');
 
 if (file_exists($file)) {
 	

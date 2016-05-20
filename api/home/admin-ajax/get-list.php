@@ -1,15 +1,14 @@
 <?
-	$merchant_code = trim($_REQUEST['mcode']);
-	
-	if (!$merchant_code) return_die(false, null, '잘못된 요청입니다.');
+	$pcode = trim($_REQUEST['pcode']);
+	if (!$pcode) return_die(false, null, '잘못된 요청입니다.');
 
-	$db_merchant_code = mysql_real_escape_string($merchant_code);
+	$db_pcode = mysql_real_escape_string($pcode);
 	
-	$sql = "SELECT mcode, name FROM al_merchant_t WHERE mcode = '{$db_merchant_code}';";
+	$sql = "SELECT pcode, name FROM al_publisher_t WHERE pcode = '{$db_pcode}';";
 	$row = @mysql_fetch_assoc(mysql_query($sql, $conn));
-	
-	$ar_data['merchant_code'] = $row['pcode'];
-	$ar_data['merchant_name'] = $row['name'];
+
+	var_dump($row);
+		
 	return_die(true, $ar_data);
 
 ?>

@@ -12,7 +12,7 @@ $file = $path_queries . "/{$id}.php";
 
 $conn = dbConn();
 
-if (!$conn) return_die(false, '¼­ºñ½º ¿¬°áÀÌ ¿øÈ°ÇÏÁö ¾Ê½À´Ï´Ù.(20)');
+if (!$conn) return_die(false, null, 'ì„œë¹„ìŠ¤ ì—°ê²°ì´ ì›í™œí•˜ì§€ ì•ŠìŠµë‹ˆë‹¤.(20)');
 
 if (file_exists($file)) {
 	
@@ -40,7 +40,7 @@ function get_auth_adminid($req_user_fields = "", &$ar_admin = null)
 		return $admin_id;
 	}
 	
-	//  field °¡ ÀÖ´Â °æ¿ì ÆÄ¶ø¹ÌÅÍ 2¹øÂ° °ª¿¡ °ªµéÀ» ¸®ÅÏÇÑ´Ù.
+	//  field ê°€ ìˆëŠ” ê²½ìš° íŒŒëë¯¸í„° 2ë²ˆì§¸ ê°’ì— ê°’ë“¤ì„ ë¦¬í„´í•œë‹¤.
 	$sql = "select id, {$req_user_fields} al_from admin_user_t where admin_id = '{$db_admin_id}' and md5(user_pw) = '{$db_umcode}'";
 	$result = mysql_query($sql, $conn);
 	$row = mysql_fetch_assoc($result);

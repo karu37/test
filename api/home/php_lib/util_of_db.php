@@ -1,11 +1,12 @@
 <?
+
 function dbConn() {
+	global $site_define;
 	
-	$db = "aline";
-	// $db_host = "localhost";
-	$db_host = "111.67.221.119";
-	$db_user = "keywords";
-	$db_passwd = "dhxhfld!@#";
+	$db = $site_define['db-name'];
+	$db_host = $site_define['db-host'];
+	$db_user = $site_define['db-user'];
+	$db_passwd = $site_define['db-passwd'];
 
 	$connect = @mysql_connect($db_host,$db_user,$db_passwd, null, MYSQL_CLIENT_COMPRESS);
 	if (!$connect) return null;
