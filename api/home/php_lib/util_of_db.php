@@ -1,6 +1,6 @@
 <?
-
 function dbConn() {
+	
 	global $site_define;
 	
 	$db = $site_define['db-name'];

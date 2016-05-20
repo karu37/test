@@ -1,4 +1,19 @@
 <?
+// ---------------------------------------
+// $site_define 로딩하기
+// ---------------------------------------
+
+	$default_file = dirname(__FILE__).'/../../../site-definition-default.php';
+	$site_file = dirname(__FILE__).'/../../../site-definition.php';
+	if (file_exists($site_file)) $file = $site_file; else $file = $default_file;
+	
+	$txt = file_get_contents($file);
+	if (preg_match('/\/\*(.*)\*\//usim', $txt, $matched)) {
+		eval($matched[1]);
+	}
+	
+// ---------------------------------------
+
 // util_ 로 시작하는 모든 php include함.
 include_ex( dirname(__FILE__)."/util_*.php" );
 

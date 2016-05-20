@@ -23,4 +23,28 @@ if (file_exists($file)) {
 	exit;
 }
 
+// http://www.golfon.kr/golf/ajax/request.php?admin_id=man%40gmail.com&umcode=970e817c27cd333e1c4a57cd90f3df5b&id=user-get-avail-cashback
+function get_publisher_info($req_user_fields = "", &$ar_publisher = array())
+{
+	global $conn;
+	
+	$pcode = mysql_real_escape_string($_REQUEST['pcode']);
+	if ($req_user_fields == "") {
+		$sql = "select is_mactive from al_publisher_t where pcode = '{$pcode}'";
+		$result = mysql_query($sql, $conn);
+		$row = mysql_fetch_assoc($result);
+		if (!$row || !$row['is_mactive']) return "";
+		return $row['is_mactive'];
+	}
+	
+	//  field 가 있는 경우 파랍미터 2번째 값에 값들을 리턴한다.
+	$sql = "select is_mactive, {$req_user_fields} from al_publisher_t where pcode = '{$pcode}'";
+	$result = mysql_query($sql, $conn);
+	$row = mysql_fetch_assoc($result);
+	if (!$row || !$row['is_mactive']) return "";
+	$ar_publisher = $row;
+	return $row['is_mactive'];
+
+}
+
 ?>
