@@ -1,7 +1,4 @@
 <?
-	$admin_id = get_auth_adminid();
-	if (!$admin_id) return_die(false, null, '권한이 없습니다.');
-	
 	$merchant_code = trim($_REQUEST['mcode']);
 	
 	if (!$merchant_code) return_die(false, null, '잘못된 요청입니다.');
