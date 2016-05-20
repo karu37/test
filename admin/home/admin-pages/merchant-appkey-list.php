@@ -58,18 +58,18 @@
 	$result = mysql_query($sql, $conn);
 ?>
 	<style>
-		.list .mactive-N 			{background:#999}
-		.list .mactive-N td			{color: #ddd}
-		
-		.list tr:hover td 			{background:#dff}
-		.list tr.mactive-N:hover td {background:#888}
+		.list tr:hover td 				{background:#eff}
+		.list tr.mactive-N td 			{background:#ccc; color:#444}
+		.list tr.mactive-N:hover td 	{background:#ddd}
+		.list tr.mactive-D td 			{background:#aaa; color:#000}
+		.list tr.mactive-D:hover td 	{background:#bbb}
 		
 		.list tr			{line-height:25px}
 		.list th			{padding: 2px 4px}
 		.list td			{padding: 2px 4px}
 				
 		.btn-small-wrapper a	{font-size: 10px}
-		.btn-wrapper			{width: 50px}
+		.btn-wrapper			{width: 70px}
 		.btn-wrapper a			{padding:7px 4px; letter-spacing:0px; margin: 2px -2px 2px -1px; box-shadow:none;}
 	</style>
 	<t4 style='line-height: 40px'><a href='?id=partner-detail&partnerid=<?=$partner_id?>'><b3 style='color:darkred'><?=$row_merchant['name']?></b3></a> 의 광고별 설정</t4>
@@ -147,9 +147,10 @@
 			$id = $row['id'];
 			
 			// 현재의 Merchant의 active상태 : Y / T / N 만 가능함.					
-			$ar_btn_theme = array('a','a');
-			if ($row['is_mactive'] == 'Y') $ar_btn_theme = array('b','a');
-			else if ($row['is_mactive'] == 'N') $ar_btn_theme = array('a','b');
+			$ar_btn_theme = array('a','a','a');
+			if ($row['is_mactive'] == 'Y') $ar_btn_theme = array('b','a','a');
+			else if ($row['is_mactive'] == 'N') $ar_btn_theme = array('a','b','a');
+			else if ($row['is_mactive'] == 'D') $ar_btn_theme = array('a','a','b');
 			
 			$url_mcode = urlencode($mcode);
 			$url_appkey = urlencode($row['app_key']);
@@ -160,7 +161,8 @@
 				<td>
 					<div class='btn-small-wrapper btn-wrapper'>
 						<a class='btn-<?=$row['app_key']?> btn-Y' href='#' onclick='<?=$js_page_id?>.action.on_btn_set_merchantapp_active("<?=$row_merchant['mcode']?>", "<?=$row['app_key']?>", "<?=$row['id']?>", "Y")' data-theme='<?=$ar_btn_theme[0]?>' data-role='button' data-mini='true' data-inline='true'>정<br>상</a>
-						<a class='btn-<?=$row['app_key']?> btn-N' href='#' onclick='<?=$js_page_id?>.action.on_btn_set_merchantapp_active("<?=$row_merchant['mcode']?>", "<?=$row['app_key']?>", "<?=$row['id']?>", "N")' data-theme='<?=$ar_btn_theme[1]?>'  data-role='button' data-mini='true' data-inline='true'>중<br>지</a>
+						<a class='btn-<?=$row['app_key']?> btn-N' href='#' onclick='<?=$js_page_id?>.action.on_btn_set_merchantapp_active("<?=$row_merchant['mcode']?>", "<?=$row['app_key']?>", "<?=$row['id']?>", "N")' data-theme='<?=$ar_btn_theme[1]?>' data-role='button' data-mini='true' data-inline='true'>중<br>지</a>
+						<a class='btn-<?=$row['app_key']?> btn-D' href='#' onclick='<?=$js_page_id?>.action.on_btn_set_merchantapp_active("<?=$row_merchant['mcode']?>", "<?=$row['app_key']?>", "<?=$row['id']?>", "D")' data-theme='<?=$ar_btn_theme[2]?>' data-role='button' data-mini='true' data-inline='true'>삭<br>제</a>
 					</div>
 				</td>
 				<td <?=$td_onclick?>><?=$row['app_exec_type_name']?></td>
@@ -232,6 +234,7 @@ var <?=$js_page_id?> = function()
 						$("#list-" + listid).removeClass().addClass('mactive-' + active);
 						$('.btn-'+appkey+'.btn-Y').removeClass('ui-btn-a ui-btn-b ui-btn-up-a ui-btn-up-b');
 						$('.btn-'+appkey+'.btn-N').removeClass('ui-btn-a ui-btn-b ui-btn-up-a ui-btn-up-b');
+						$('.btn-'+appkey+'.btn-D').removeClass('ui-btn-a ui-btn-b ui-btn-up-a ui-btn-up-b');
 						$('.btn-'+appkey+'.btn-' + ar_param.isactive).addClass('ui-btn-b ui-btn-up-b').attr('data-theme', 'b');
 						toast('저장되었습니다. (' + ar_merchant_active[ar_param.isactive] + ')');
 					} else util.Alert(js_data['msg']);

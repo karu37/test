@@ -4,7 +4,7 @@
 	
 	header("Content-Type: text/html; charset=utf8");
 
-	include dirname(__FILE__)."/../.admin_ips.php";
+	include dirname(__FILE__)."/../../.admin_ips.php";
 	include dirname(__FILE__)."/php_lib/util.php";
 	include dirname(__FILE__)."/php_lib/paginator.class.php";
 

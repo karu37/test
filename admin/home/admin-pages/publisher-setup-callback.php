@@ -57,8 +57,8 @@
 <b>콜백 URL의 POST 전달 파라미터</b>
 	
 	ad={광고 키}
-	uid={매체사 사용자 ID - 최대 32자}
-	userdata={매체사 정의 데이터 - 최대 1024 자}
+	uid={매체사 사용자 ID 또는 사용자 구별자 - 최대 32자}
+	userdata={매체사 사용 데이터 - 최대 1024 자}
 	reward={사용자 보상 금액}
 	price={매체사 제공 금액}
 	unique={적립단위의 고유 키}
@@ -91,9 +91,14 @@
  			<div id='sample-url' style='border: 1px solid #ddd; min-height:20px; color: darkblue; padding: 5px'></div>
  			<br>
  			<b>콜백 POST 파라미터</b>
- 			<div id='sample-postparam' style='border: 1px solid #ddd; min-height:100px; color: darkblue; padding: 5px'></div>
+ 			<div id='sample-postparam' style='border: 1px solid #ddd; min-height:80px; color: darkblue; padding: 5px'></div>
  			<div style='padding-top:10px'>
-	 			<a href='#' onclick='<?=$js_page_id?>.action.on_btn_send_sampleurl()' data-role='button' data-mini='true' data-inline='true'>샘플 URL 호출</a>
+	 			<a href='#' onclick='<?=$js_page_id?>.action.on_btn_send_sampleurl()' data-role='button' data-mini='true' data-inline='true'>콜백 URL 호출 테스트</a>
+	 		</div>
+	 		<div id='url-result-area' init-display='hide'>
+	 			<br>
+	 			<b>요청 결과</b>
+	 			<div id='sample-result' style='border: 1px solid #ddd; min-height:100px; color: darkblue; padding: 5px'></div>
 	 		</div>
 	 	</div>
 	</div>
@@ -133,7 +138,7 @@ var <?=$js_page_id?> = function()
 					'rewardpercent' : _$("#txt-reward-percent").val()
 				};
 				
-				if (!ar_param.callbackurl.match(/^https?\:\/\/[a-z_-]+\/.*$/)) {
+				if (!ar_param.callbackurl.match(/^https?\:\/\/[a-z_\-\.]+\/.*$/)) {
 					alert("URL 형식이 올바르지 않습니다.");
 					return;	
 				}
@@ -184,8 +189,13 @@ var <?=$js_page_id?> = function()
 					return;	
 				}
 				
-				alert(url + '?' + util.json_to_urlparam(param));
-				
+				// alert(url + '?' + util.json_to_urlparam(param));
+				util.post(url, param, function(result) {
+					$("#url-result-area").show();
+					$("#sample-result").html(result);
+				}, function(err) {
+					alert(err);
+				});
 			},
 		},
 	};		

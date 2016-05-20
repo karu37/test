@@ -6,6 +6,7 @@ include_ex( dirname(__FILE__)."/util_*.php" );
 function include_ex( $files ) {
 	foreach (glob($files) as $filename){ include $filename; }
 }
+
 // if empty then return ""
 function ifempty($p1, $p2) {
 	return $p1 == "" ? $p2 : $p1;
