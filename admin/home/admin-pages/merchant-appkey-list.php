@@ -15,7 +15,7 @@
 # al_merchant_app_t.merchant_enabled, merchant_disabled	: 해당 Merchant & 광고를 허용/금지 (Merchant가 설정)
 
 -- 광고 자체 오픈 시간 조정 (아래조건은 모두 AND)
-# 	al_merchant_app_t.open_time		: 해당 Merchant & 광고를 허용/금지
+# 	al_merchant_app_t.active_time		: 해당 Merchant & 광고를 허용/금지
 # 	al_app_t.exec_sdate ~ exec_edate
 # 	al_app_t.exec_stime ~ exec_etime
 #	al_app_t.exec_hour_max_cnt <vs> al_app_exec_stat_t.live_exec_tmcnt

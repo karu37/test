@@ -227,7 +227,9 @@ var util = {
 	from_money: function(sz_money) {
 		if (!sz_money) return "";
 		sz_money = sz_money.replace(/,/g, '');
-		return parseInt(sz_money);
+		var ret = parseInt(sz_money);
+		if (isNaN(ret)) return 0;
+		return ret;
 	},
 	to_displaytime: function(sz_date){	// 7.13(월) 12:20
 		var js_date =new Date(sz_date.replace(/-/g, '/'));
@@ -267,22 +269,17 @@ var util = {
 		if (typeof empty_string == 'undefined') empty_string = 0;
 		if (util.is_empty(str_num)) return empty_string;
 		str_num = str_num.replace(/,/g, '');
-		return parseInt(str_num);
+		var ret = parseInt(str_num);
+		if (isNaN(ret)) return "";
+		return ret;
 	},
-	number_format: function(num, empty_string){
-		if (typeof empty_string == 'undefined') empty_string = 0;
-		if (util.is_empty(num)) num = empty_string;
+	number_format: function(num, emptyzero_string, zero_string){
+		if (typeof emptyzero_string == 'undefined') emptyzero_string = 0;
+		if (typeof zero_string == 'undefined') zero_string = emptyzero_string;
+		if (util.is_empty(num)) return emptyzero_string;
 		else if (typeof num == 'string') {
 			num = util.intval(num);
-			num = (num).toFixed(0).replace(/(\d)(?=(\d{3})+$)/g, "$1,");
-		}
-		return num;
-	},
-	number_format_ex: function(num, empty_string){
-		if (typeof empty_string == 'undefined') empty_string = 0;
-		if (typeof num == 'undefined' || num === null || num === "") num = empty_string;
-		else if (typeof num == 'string') {
-			num = util.intval(num);
+			if (num == 0) return zero_string;
 			num = (num).toFixed(0).replace(/(\d)(?=(\d{3})+$)/g, "$1,");
 		}
 		return num;

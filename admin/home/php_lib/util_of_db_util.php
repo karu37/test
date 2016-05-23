@@ -19,7 +19,7 @@ function admindb_publisher_app_clear($publisher_code, $appkey, $conn)
 						AND IFNULL(is_mactive, 'Y') = 'Y'
 						AND IFNULL(app_offer_fee, '') = ''
 						AND IFNULL(app_offer_fee_rate, '') = ''
-						AND IFNULL(open_time, '') = ''
+						AND IFNULL(active_time, '') = ''
 						AND IFNULL(exec_day_max_cnt, '') = ''
 						AND IFNULL(exec_tot_max_cnt, '') = ''";
 	} else {
@@ -31,7 +31,7 @@ function admindb_publisher_app_clear($publisher_code, $appkey, $conn)
 						AND IFNULL(is_mactive, 'Y') = 'Y'
 						AND IFNULL(app_offer_fee, '') = ''
 						AND IFNULL(app_offer_fee_rate, '') = ''
-						AND IFNULL(open_time, '') = ''
+						AND IFNULL(active_time, '') = ''
 						AND IFNULL(exec_day_max_cnt, '') = ''
 						AND IFNULL(exec_tot_max_cnt, '') = ''";		
 	}

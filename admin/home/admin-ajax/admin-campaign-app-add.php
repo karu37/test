@@ -157,7 +157,7 @@
 		IF('$db_app_exec_hourly_cnt' <> '', '$db_app_exec_hourly_cnt', NULL),
 		IF('$db_app_exec_daily_cnt' <> '', '$db_app_exec_daily_cnt', NULL),
 		IF('$db_app_exec_total_cnt' <> '', '$db_app_exec_total_cnt', NULL),
-		IF('$db_app_publisher_level' <> '9', '$db_app_publisher_level', NULL)
+		IF('$db_app_publisher_level' <> '9', '$db_app_publisher_level', NULL),
 		IF('$db_app_level_1_active_date' <> '', '$db_app_level_1_active_date', NULL),
 		IF('$db_app_level_2_active_date' <> '', '$db_app_level_2_active_date', NULL),
 		IF('$db_app_level_3_active_date' <> '', '$db_app_level_3_active_date', NULL),
@@ -168,6 +168,7 @@
 		NOW(), 
 		NOW()
 	);";
+
  	mysql_execute($sql, $conn);
 
 	// 시간당 설치 개수 설정

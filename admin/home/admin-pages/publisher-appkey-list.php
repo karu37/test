@@ -15,7 +15,7 @@
 # al_publisher_app_t.merchant_enabled, merchant_disabled	: 해당 Publisher & 광고를 허용/금지 (Merchant가 설정)
 
 -- 광고 자체 오픈 시간 조정 (아래조건은 모두 AND)
-# 	al_publisher_app_t.open_time		: 해당 Publisher & 광고를 허용/금지
+# 	al_publisher_app_t.active_time		: 해당 Publisher & 광고를 허용/금지
 # 	al_app_t.exec_sdate ~ exec_edate
 # 	al_app_t.exec_stime ~ exec_etime
 #	al_app_t.exec_hour_max_cnt <vs> al_app_exec_stat_t.live_exec_tmcnt
@@ -54,10 +54,19 @@
 	// 공급가 계산 : 1. al_publisher_app_t.app_offer_fee 가 최우선
 	//               2. al_publisher_app_t.app_offer_fee_rate가 not null ==> floor( app_merchant_fee * al_publisher_app_t.app_offer_fee_rate / 100 )
 	//				 3. al_publisher_t.offer_fee_rate 로 결정 floor( app_merchant_fee * al_publisher_t.offer_fee_rate / 100 )
-	$sql = "SELECT app.*, pa.app_offer_fee, pa.app_offer_fee_rate, pa.publisher_disabled, pa.open_time, pa.exec_tot_max_cnt, 
+	$sql = "SELECT app.*, 
+				pa.app_offer_fee, pa.app_offer_fee_rate, pa.publisher_disabled, pa.active_time, pa.exec_hour_max_cnt, pa.exec_day_max_cnt, pa.exec_tot_max_cnt, 
 				IFNULL(pa.is_mactive, 'Y') as 'pa_is_mactive',
 				IFNULL(pa.app_offer_fee, FLOOR(app.app_merchant_fee * IFNULL(pa.app_offer_fee_rate, p.offer_fee_rate) / 100) ) AS 'publisher_fee', 
-				m.name AS 'merchant_name', 
+				
+				m.name AS 'merchant_name', m.is_mactive as 'm_is_mactive',
+				p.is_mactive as 'p_is_mactive',
+				
+				IF(app.publisher_level IS NULL OR p.level <= app.publisher_level, 'Y', 'N') as 'p_lvmode',
+				
+				IF (app.is_public_mode = 'Y', 
+					IF(IFNULL(pa.merchant_disabled,'N')='N','Y', 'N'),
+					IF(IFNULL(pa.merchant_enabled,'N')='Y', 'Y', 'N')) as 'pa_pmode',
 				t.short_txt AS 'app_exec_type_name' 
 			FROM al_app_t app
 				LEFT OUTER JOIN al_publisher_app_t pa ON app.app_key = pa.app_key AND pcode = '{$db_pcode}' 
@@ -74,9 +83,7 @@
 		.list tr:hover td 			{background:#dff}
 		.list tr.mactive-N:hover td {background:#888}
 		
-		.list tr			{line-height:25px}
-		.list th			{padding: 2px 4px}
-		.list td			{padding: 2px 4px}
+		.list tr > * 	{height:25px; line-height:1em; padding: 4px 4px}
 				
 		.btn-small-wrapper a	{font-size: 10px}
 		.btn-wrapper			{width: 50px}
@@ -160,12 +167,22 @@
 	<thead>
 		<tr>
 			<th>IDX</th>
-			<th width=1px>ON/OFF</th>
-			<th>공급사</th>
+			<th width=1px>수신<br>여부</th>
+			<th>M 이름</th>
 			<th>타입</th>
 			<th>제목</th>
+			
+			<th width=30px>M<br>상태</th>
+			<th width=30px>P<br>상태</th>
+			<th width=30px>M/P<br>모드</th>
+			<th width=30px>M/LV<br>차단</th>
+			
 			<th>지정가</th>
 			<th>지정율</th>
+			<th>지정오픈</th>
+			<th>시간수행</th>
+			<th>일일수행</th>
+			<th>총수행</th>
 			<th width=1px></th>
 			<th>원가</th>
 			<th>공급금액</th>
@@ -173,6 +190,10 @@
 	</thead>
 	<tbody>
 		<?
+		$arr_active = array('Y' => '적립 가능', 'N' => '적립 불가');
+		$arr_mp_mactive = array('Y' => '연동', 'N' => '중지', 'T' => '개발', 'D' => '삭제');
+		
+		$arr_block_mode = array('Y' => '허용', 'N' => '<span style="color:red; font-weight: bold">차단</span>');
 		while ($row = mysql_fetch_assoc($result)) {
 			$id = $row['id'];
 			
@@ -192,11 +213,24 @@
 					</div>
 				</td>
 				<td <?=$td_onclick?>><?=$row['merchant_name']?></td>
+				
 				<td <?=$td_onclick?>><?=$row['app_exec_type_name']?></td>
 				<td <?=$td_onclick?>><?=$row['app_title']?></td>
-				<td <?=$td_onclick?>><?=admin_number($row['app_offer_fee'])?></td>
-				<td <?=$td_onclick?>><?=admin_number($row['app_offer_fee_rate'])?></td>
-				<td><a href='#' onclick='goPage("dlg-publisherapp-config", null, {pcode: "<?=$pcode?>", appkey:"<?=$row['app_key']?>"})' data-theme='b' data-role='button' data-mini='true' data-inline='true'>가격<br>지정</a></td>
+				
+				<td <?=$td_onclick?>><?=$arr_mp_mactive[$row['m_is_mactive']]?></td>
+				<td <?=$td_onclick?>><?=$arr_mp_mactive[$row['p_is_mactive']]?></td>
+				<td <?=$td_onclick?>><?=$arr_block_mode[$row['pa_pmode']]?></td>
+				<td <?=$td_onclick?>><?=$arr_block_mode[$row['p_lvmode']]?></td>
+								
+				<td <?=$td_onclick?>><?=admin_number($row['app_offer_fee'], "-", "0")?></td>
+				<td <?=$td_onclick?>><?=admin_number($row['app_offer_fee_rate'], "-", "0")?></td>
+				
+				<td <?=$td_onclick?>><?=admin_to_datehour($row['active_time'])?></td>
+				<td <?=$td_onclick?>><?=admin_number($row['exec_hour_max_cnt'], "-", "0")?></td>
+				<td <?=$td_onclick?>><?=admin_number($row['exec_day_max_cnt'], "-", "0")?></td>
+				<td <?=$td_onclick?>><?=admin_number($row['exec_tot_max_cnt'], "-", "0")?></td>
+				
+				<td><a href='#' onclick='goPage("dlg-publisherapp-config", null, {pcode: "<?=$pcode?>", appkey:"<?=$row['app_key']?>"})' data-theme='b' data-role='button' data-mini='true' data-inline='true'>공급<br>지정</a></td>
 				<td <?=$td_onclick?>><?=number_format($row['app_merchant_fee'])?></td>
 				<td <?=$td_onclick?>><b><?=admin_number($row['publisher_fee'])?></b></td>
 				

@@ -175,7 +175,7 @@
 		<div class='ui-block-a'>시간 최대 실행</div>
 		<div class='ui-block-b'>
 			<div style='width:100px; display: inline-block; height: 20px; padding-top: 5px; float:left'>
-				<input type="text" id="app-exec-hourly-cnt" name="app-exec-hourly-cnt" data-clear-btn=true  init-value='' />
+				<input type="text" id="app-exec-hourly-cnt" name="app-exec-hourly-cnt" data-clear-btn=true placeholder='제한 없음' init-value='' />
 			</div>
 			<div style='float:left; padding: 15px 10px'>회</div>
 			<div style='clear:both'></div>
@@ -184,7 +184,7 @@
 		<div class='ui-block-a'>일일 최대 실행</div>
 		<div class='ui-block-b'>
 			<div style='width:100px; display: inline-block; height: 20px; padding-top: 5px; float:left'>
-				<input type="text" id="app-exec-daily-cnt" name="app-exec-daily-cnt" data-clear-btn=true init-value='' />
+				<input type="text" id="app-exec-daily-cnt" name="app-exec-daily-cnt" data-clear-btn=true placeholder='제한 없음' init-value='' />
 			</div>
 			<div style='float:left; padding: 15px 10px'>회</div>
 			<div style='clear:both'></div>

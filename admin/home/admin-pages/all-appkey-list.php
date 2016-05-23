@@ -7,15 +7,15 @@
 	$db_search = mysql_real_escape_string($search);
 
 	$where = "";
-	if ($searchfor == "title" && $search) $where .= " AND a.app_title LIKE '%{$db_search}%'";
-	if ($searchfor == "packageid" && $search) $where .= " AND a.app_packageid LIKE '{$db_search}%'";
-	if ($searchfor == "mcode" && $search) $where .= " AND a.mcode = '{$db_search}'";
-	$order_by = "ORDER BY a.id DESC";
+	if ($searchfor == "title" && $search) $where .= " AND app.app_title LIKE '%{$db_search}%'";
+	if ($searchfor == "packageid" && $search) $where .= " AND app.app_packageid LIKE '{$db_search}%'";
+	if ($searchfor == "mcode" && $search) $where .= " AND app.mcode = '{$db_search}'";
+	$order_by = "ORDER BY app.id DESC";
 	
 	// --------------------------------
 	// Paginavigator initialize	
 	// --------------------------------
-	$sql = "SELECT COUNT(*) as cnt FROM al_app_t a WHERE a.is_mactive <> 'D' {$where}";
+	$sql = "SELECT COUNT(*) as cnt FROM al_app_t app WHERE app.is_mactive <> 'D' {$where}";
 	$row = mysql_fetch_assoc(mysql_query($sql, $conn));
 	$pages = new Paginator($row['cnt']);
 	$limit = "LIMIT " . $pages->limit_start . "," . $pages->limit_end;
@@ -23,7 +23,11 @@
 	// ---------------------------------------
 	// publisher info
 	// ---------------------------------------
-	$sql = "SELECT * FROM al_app_t a WHERE a.is_mactive <> 'D' {$where} {$order_by} {$limit}";
+	$sql = "SELECT *, 
+				m.is_mactive as 'm_is_mactive'
+			FROM al_app_t app 
+				INNER JOIN al_merchant_t m ON app.mcode = m.mcode 
+			WHERE app.is_mactive <> 'D' {$where} {$order_by} {$limit}";
 	$result = mysql_query($sql, $conn);
 
 ?>
@@ -35,9 +39,7 @@
 		.list tr.mactive-D td 			{background:#aaa; color:#000}
 		.list tr.mactive-D:hover td 	{background:#bbb}
 		
-		.list tr	{line-height:25px}
-		.list th	{padding: 2px 4px}
-		.list td	{line-height:1em; padding: 2px 4px}
+		.list tr > * 	{height:25px; line-height:1em; padding: 4px 4px}
 		
 		.list .btn-td									{padding-left: 0px padding-right: 0px}
 		.list .th_status, .list .btn-td .btn-wrapper	{width: 66px}
@@ -89,6 +91,7 @@
 			<th width=30px>적립</th>
 			<th>아이콘</th>
 			<th width=80px>매체코드</th>
+			<th width=30px>매체상태</th>
 			<th>환경</th>
 			<th>제목</th>
 			<th width=30px>원가</th>
@@ -105,6 +108,9 @@
 		$arr_market = array('P' => '<span style="color:blue;font-weight:bold;font-size:11px">플레이스토어</span>', 'A' => '<span style="color:red;font-weight:bold;font-size:11px">앱스토어</span>', 'W' => '<span style="color:orange;font-weight:bold;font-size:11px">수행형</span>');
 		$arr_exectype = array('I' => '<span style="color:blue;font-weight:bold">CPI</span>', 'E' => '<span style="color:green;font-weight:bold">CPE</span>', 'F' => '<span style="color:orange;font-weight:bold;font-size:11px">페북좋아요</span>');
 		$arr_gender = array('M' => '남성', 'F' => '여성');
+		
+		$arr_active = array('Y' => '적립 가능', 'N' => '적립 불가');
+		$arr_mp_mactive = array('Y' => '연동', 'N' => '중지', 'T' => '개발', 'D' => '삭제');
 		while ($appkey = mysql_fetch_assoc($result)) {
 			
 			$url_appkey = urlencode($appkey['app_key']);
@@ -145,9 +151,10 @@
 						<a class='btn-<?=$appkey['app_key']?> btn-D' href='#' onclick='<?=$js_page_id?>.action.on_btn_set_appkey_mactive("<?=$appkey['mcode']?>", "<?=$appkey['app_key']?>", "D")' data-theme='<?=$ar_btn_theme[2]?>' data-role='button' data-mini='true' data-inline='true'>삭<br>제</a>
 					</div>
 				</td>
-				<td <?=$td_onclick?>><?=$appkey['is_active']?></td>
+				<td <?=$td_onclick?>><?=$arr_active[$appkey['is_active']]?></td>
 				<td <?=$td_onclick?>><img src='<?=$appkey['app_iconurl']?>' width=40px style='width:40px;height:40px;overflow:hidden;border-radius:0.5em;border:1px solid #888' /></td>
 				<td <?=$td_onclick?>><?=$appkey['mcode']?></td>
+				<td <?=$td_onclick?>><?=$arr_mp_mactive[$appkey['m_is_mactive']]?></td>
 				<td <?=$td_onclick?>><?=$arr_platform[$appkey['app_platform']]?><br><?=$arr_market[$appkey['app_market']]?><br><?=$arr_exectype[$appkey['app_exec_type']]?></td>
 				
 				<td <?=$td_onclick?>><div style='text-align:left; padding: 0 5px; color:inherit'><?=$appkey['app_title']?></div><?=$app_packageid?></td>

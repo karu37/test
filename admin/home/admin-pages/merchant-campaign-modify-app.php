@@ -395,7 +395,7 @@ var <?=$js_page_id?> = function()
 					'appexecetime' : _$("#app-exec-etime").val(),
 					'appexechourlycnt': util.intval(_$("#app-exec-hourly-cnt").val(), ""),
 					'appexecdailycnt' : util.intval(_$("#app-exec-daily-cnt").val(), ""),
-					'appexectotalcnt' : util.intval(_$("#app-exec-total-cnt").val(), ""),
+					'appexectotalcnt' : util.intval(_$("#app-exec-total-cnt").val()),
 					
 					'apppublisherlevel': util.get_item_value(_$("#app-publisher-level")),
 					
@@ -406,11 +406,11 @@ var <?=$js_page_id?> = function()
 				};
 				
 				if (!util.is_empty(ar_param.appexechourlycnt) && ar_param.appexechourlycnt <= 0) {
-					alert('시간 최대 실행 값을 확인하세요 ');
+					alert('시간 최대 실행 값을 없애거나 0보다 큰값을 입력하세요.');
 					return;					
 				}
 				if (!util.is_empty(ar_param.appexecdailycnt) && ar_param.appexecdailycnt <= 0) {
-					alert('일일 최대 실행 값을 확인하세요 ');
+					alert('일일 최대 실행 값을 없애거나 0보다 큰값을 입력하세요.');
 					return;					
 				}
 				
@@ -484,7 +484,7 @@ var <?=$js_page_id?> = function()
 				
 		util.set_event_for_input_number(_$("#app-exec-hourly-cnt"), '');
 		util.set_event_for_input_number(_$("#app-exec-daily-cnt"), '');
-		util.set_event_for_input_number(_$("#app-exec-total-cnt"), '');
+		util.set_event_for_input_number(_$("#app-exec-total-cnt"));
 	}		
 
 	setEvents(); // Event Attaching		

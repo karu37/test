@@ -22,7 +22,14 @@ function admin_to_datetime($datetime, $expired_sec = 0) {
 	if ($expired_sec > 0 && $seconds > $expired_sec) return date("y/m/d", strtotime($datetime)) . ' <span style="color:red; font-weight: bold; font-size: inherit">' . date("H:i:s", strtotime($datetime)) . "</span>";	
 	// if ($seconds < 43200) return admin_to_elapsed_time($datetime);
 	return date("y/m/d", strtotime($datetime)) . ' <span style="color:blue; font-weight: bold; font-size: inherit">' . date("H:i:s", strtotime($datetime)) . "</span>";	
+}
+function admin_to_datehour($datetime, $expired_sec = 0) {
+	if (!$datetime || $datetime == "0000-00-00 00:00:00") return "-";
+	$seconds = time() - strtotime($datetime);
 	
+	if ($expired_sec > 0 && $seconds > $expired_sec) return date("y/m/d", strtotime($datetime)) . ' <span style="color:red; font-weight: bold; font-size: inherit">' . date("H", strtotime($datetime)) . "시</span>";	
+	// if ($seconds < 43200) return admin_to_elapsed_time($datetime);
+	return date("y/m/d", strtotime($datetime)) . ' <span style="color:blue; font-weight: bold; font-size: inherit">' . date("H", strtotime($datetime)) . "시</span>";	
 }
 function admin_to_date($datetime) {
 	if (!$datetime || $datetime == "0000-00-00 00:00:00") return "-";
@@ -69,9 +76,10 @@ function admin_substr($txt, $start, $length) {
 	if (mb_strlen($txt, "UTF-8") > $start + $length) $ret .= "..";
 	return $ret;
 }
-function admin_number($num, $max_num, $empty_txt = "-") {
+function admin_number($num, $empty_txt = "-", $zero_txt = null) {
+	if ($zero_txt === null) $zero_txt = $empty_txt;
+	if ($num === '0') return $zero_txt;
 	if (!$num) return $empty_txt;
-	if ($max_num && $num >= $max_num) return $empty_txt;
 	return number_format($num);	
 }
 // user 정보 표시 관련
