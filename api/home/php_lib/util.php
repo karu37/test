@@ -182,4 +182,8 @@ function is_default($value, $default_value) {
 	if ( !$default_value && !$value ) return true;
 	return false;
 }
+
+function concat_url($url_body, $uri) {
+	return $url_body . (strrpos($url_body, '?') === false ? '?' : '&') . $uri;
+}
 ?>
