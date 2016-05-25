@@ -189,7 +189,7 @@ var <?=$js_page_id?> = function()
 					return;	
 				}
 				
-				// alert(url + '?' + util.json_to_urlparam(param));
+				alert(url + '\n\n' + util.json_to_urlparam(param));
 				util.post(url, param, function(result) {
 					$("#url-result-area").show();
 					$("#sample-result").html(result);

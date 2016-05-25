@@ -144,6 +144,10 @@ function return_die($result, $object = null, $msg = null, $error_sql = null) {
 	array_walk($object,function(&$item){if ($item === null) $item="";});
 	$object['result'] = $result;
 	if ($msg) $object['msg'] = $msg;
+	
+	// code로부터 오류 메시지를 설정함.
+	set_error_msg($object);
+	
 	echo json_encode($object, JSON_UNESCAPED_UNICODE);
 	
 	if (!$result && @mysql_errno($conn)) {
@@ -156,14 +160,75 @@ function return_die($result, $object = null, $msg = null, $error_sql = null) {
 	}
 	die();
 }
+function make_action_log($elapsed_time, $file_name, $adid, $proc_name, $req_url, $post_param, $response, $conn)
+{
+	
+}
+/*
+function make_visit_log($elapsed_time, $file_name, $adid, $proc_name, $req_url, $post_param, $response, $conn) 
+{
+	global $g_user_id, $page_id, $dev_mode;
 
-function post($url, $ar_post_param)
+	$db_list_id = @mysql_real_escape_string($_REQUEST['listid']);
+	$db_user_id = @mysql_real_escape_string($g_user_id);
+	$db_page_id = @mysql_real_escape_string($page_id);
+	$db_error_msg = @mysql_real_escape_string($error_msg);
+	$db_file_name = @mysql_real_escape_string(basename(__FILE__));
+	$db_remote_addr = @mysql_real_escape_string($_SERVER['REMOTE_ADDR']);
+	$db_host = @mysql_real_escape_string($_SERVER['HTTP_HOST']);
+	$db_user_agent = ''; @mysql_real_escape_string($_SERVER['HTTP_USER_AGENT']);
+	$db_user_agent = @mysql_real_escape_string($_SERVER['HTTP_USER_AGENT']);
+	$db_request_uri = @mysql_real_escape_string('http://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI']);
+	$db_did = @mysql_real_escape_string($_REQUEST['did']);
+	$db_device_uuid = @mysql_real_escape_string($_REQUEST['device_uuid']);
+	
+	$db_post = '';
+	foreach($_POST as $key => $val) {
+		$db_post .= @mysql_real_escape_string("{$key}={$val}\n");
+	}
+	
+	$db_result = '';
+	if ($result) {
+		if (gettype($result) == 'string') {
+			$db_result = @mysql_real_escape_string("{$key}={$val}\n");
+		}
+		else if (gettype($result) == 'array') {
+			foreach($result as $key => $val) {
+				$db_result .= @mysql_real_escape_string("{$key}={$val}\n");
+			}
+		}
+	}
+	
+	$sql = "INSERT INTO site_visit_log (error, userip, userid, reqfile, pageid, listid, uagent, host, url, post, result, delay, msg, did, device_uuid) 
+			VALUES (
+				'{$error_flag}',
+				'{$db_remote_addr}', 
+				'{$db_user_id}', 
+				'{$db_file_name}', 
+				'{$db_page_id}', 
+				'{$db_list_id}',
+				'{$db_user_agent}', 
+				'{$db_host}', 
+				'{$db_request_uri}', 
+				'{$db_post}', 
+				'{$db_result}', 
+				'{$elapsed}',
+				'{$db_error_msg}',
+				'{$db_did}',
+				'{$db_device_uuid}'
+			);";
+	mysql_query($sql, $conn);
+}
+*/
+
+function post($url, $ar_post_param, $timeout_sec = 60)
 {
 	$options = array(
 		'http' => array(
 			'header' => "Content-type: application/x-www-form-urlencoded\r\n",
 			'method' => 'POST',
 			'content' => http_build_query($ar_post_param),
+			'timeout' => $timeout_sec,
 			),
 		);
 	
