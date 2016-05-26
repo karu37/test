@@ -61,7 +61,7 @@ function local_request_done($app_key, $arr_data, $conn)
 
 	$ar_app = $arr_data['ad'];
 	$ar_userapp = $arr_data['user_app'];
-
+	$unique_key = $g_local['unique_prefix'].$arr_data['user_app_id'];
 	$ar_result = array();
 	
 	// ----------------------------------------------------------------------
@@ -78,53 +78,60 @@ function local_request_done($app_key, $arr_data, $conn)
 		// ----------------------------------------------------------------------
 		// 사용자 적립하기 (사용자 적립 및 al_user_app_t 상태 변경 모두 처리)
 		// ----------------------------------------------------------------------
-		$ar_reward = callback_reward($arr_data['pcode'], $app_key, $arr_data['adid'], $ar_time, $ar_app, $conn);
-var_dump($ar_reward);		
+		$ar_reward = callback_reward($arr_data['pcode'], $arr_data['mcode'], $app_key, $arr_data['adid'], 
+									$ar_app['app_merchant_fee'], $ar_app['publisher_fee'], $unique_key, 
+									$ar_time, $conn);
+
+//		강제적립 테스트 함수
+//		$ar_reward = force_reward($arr_data['pcode'], $arr_data['mcode'], $app_key, $arr_data['adid'], $ar_app['publisher_fee'], $ar_time, $conn);
+
 		if ($ar_reward['result'] == 'N') {
 			$code = $ar_reward['code'];
 			$msg = $ar_reward['msg'];
 			return array('result' => 'N', 'code' => $code, 'msg' => $msg);
 		}
-echo "OK";
-exit;		
-		// ----------------------------------------------------------------------
-		// CALLBACK 파라미터 생성 후 Publisher 콜백 호출
-		// ----------------------------------------------------------------------
-		$ar_result['result'] = 'Y';
-	
-		$url_param['ad'] = $app_key;
-		$url_param['price'] = $ar_app['publisher_fee'];
-		$url_param['reward'] = intval($ar_app['publisher_fee'] * $arr_data['reward_percent'] / 100);
-		$url_param['uid'] = $ar_userapp['uid'];
-		$url_param['userdata'] = $ar_userapp['userdata'];
-		$url_param['unique'] = $g_local['unique_prefix'].$arr_data['user_app_id'];
-		$req_base_url = $arr_data['callback_url'];
-		// echo "POST URL : " . concat_url($req_base_url, http_build_query($url_param));
-	
-		// ----------------------------------------------------------------------
-		$start_tm = get_timestamp();
-		$response_data = post($req_base_url, $url_param, 3);
-		make_action_log(get_timestamp() - $start_tm, basename(__FILE__), "p-callback", $arr_data['adid'], $req_base_url, http_build_query($url_param), $response_data, $conn);
-		$ar_resp = json_decode($response_data, true);
-	
-		// ----------------------------------------------------------------------
-		// 리턴 데이터 구성 (리턴 불필요 -- 자체 해결해야 함)
-		// 	 callback_done 결과를 al_user_app_t 에 기록하기
-		// ----------------------------------------------------------------------
-		if ($ar_resp['result'] == 'Y') {
-			$sql = "UPDATE al_user_app_t SET callback_done = 'Y', callback_code = NULL, callback_time = '{$ar_time['now']}' WHERE id = '{$arr_data['user_app_id']}'";
-			mysql_query($sql, $conn);
-		} else {
-			$db_code = mysql_real_escape_string($ar_resp['code']);
-			$sql = "UPDATE al_user_app_t SET callback_done = 'N', callback_code = '{$db_code}', callback_time = '{$ar_time['now']}' WHERE id = '{$arr_data['user_app_id']}'";
-			mysql_query($sql, $conn);
+
+		// 강제적립된 대상을 적립한 경우 콜백호출하면 안됨 (Y 가 아닌 N 또는 F 인 경우에 호출함)
+		if ($ar_reward['callback_done'] != 'Y') {
+			
+			// ----------------------------------------------------------------------
+			// CALLBACK 파라미터 생성 후 Publisher 콜백 호출
+			// ----------------------------------------------------------------------
+			$ar_result['result'] = 'Y';
+		
+			$url_param['ad'] = $app_key;
+			$url_param['price'] = $ar_app['publisher_fee'];
+			$url_param['reward'] = intval($ar_app['publisher_fee'] * $arr_data['reward_percent'] / 100);
+			$url_param['uid'] = $ar_userapp['uid'];
+			$url_param['userdata'] = $ar_userapp['userdata'];
+			$url_param['unique'] = $unique_key;
+			$req_base_url = $arr_data['callback_url'];
+			// echo "POST URL : " . concat_url($req_base_url, http_build_query($url_param));
+		
+			// ----------------------------------------------------------------------
+			$start_tm = get_timestamp();
+			$response_data = post($req_base_url, $url_param, 3);
+			make_action_log(get_timestamp() - $start_tm, basename(__FILE__), "p-callback", $arr_data['adid'], $req_base_url, http_build_query($url_param), $response_data, $conn);
+			$ar_resp = json_decode($response_data, true);
+		
+			// ----------------------------------------------------------------------
+			// 리턴 데이터 구성 (리턴 불필요 -- 자체 해결해야 함)
+			// 	 callback_done 결과를 al_user_app_t 에 기록하기 실패시 F 로 설정함.
+			// ----------------------------------------------------------------------
+			if ($ar_resp['result'] == 'Y') {
+				$sql = "UPDATE al_user_app_t SET callback_done = 'Y', callback_code = NULL, callback_time = '{$ar_time['now']}' WHERE id = '{$arr_data['user_app_id']}'";
+				mysql_query($sql, $conn);
+			} else {
+				$db_code = mysql_real_escape_string($ar_resp['code']);
+				$sql = "UPDATE al_user_app_t SET callback_done = 'F', callback_code = '{$db_code}', callback_time = '{$ar_time['now']}' WHERE id = '{$arr_data['user_app_id']}'";
+				mysql_query($sql, $conn);
+			}
 		}
-	
+		
 	/////////////////////////////////////////////////////////////////////////
 	// MERCHANT CALLBACK END
 	/////////////////////////////////////////////////////////////////////////
 	
 	return array('result' => 'Y');
 }
-
-?>	
+?>

@@ -80,6 +80,10 @@
 		.list .mactive-N 			{background:#999}
 		.list .mactive-N td			{color: #ddd}
 		
+		.list .appmactive-N 			{background:#888}
+		.list .appmactive-N td			{color: #ddd}
+		.list .appmactive-N:hover td 	{background:#aaa}
+		
 		.list tr:hover td 			{background:#dff}
 		.list tr.mactive-N:hover td {background:#888}
 		
@@ -203,8 +207,12 @@
 			else if ($row['pa_is_mactive'] == 'N') $ar_btn_theme = array('a','b');
 			
 			$td_onclick = "onclick=\"mvPage('merchant-campaign-modify', null, {mcode: '{$row['mcode']}', appkey: '{$row['app_key']}'})\"";
+			
+			// Packageid (Optional display)
+			$app_packageid = ($row['app_packageid'] ? "<div style='text-align:left; padding: 0; color:#888; font-size:9px'>{$row['app_packageid']}</div>" : "");
+			
 			?>
-			<tr id='list-<?=$row['id']?>' class='mactive-<?=$row['pa_is_mactive']?>' style='cursor:pointer'>
+			<tr id='list-<?=$row['id']?>' class='mactive-<?=$row['pa_is_mactive']?> appmactive-<?=$row['is_mactive']?>' style='cursor:pointer'>
 				<td <?=$td_onclick?>><?=$row['id']?></td>
 				<td>
 					<div class='btn-small-wrapper btn-wrapper'>
@@ -215,7 +223,7 @@
 				<td <?=$td_onclick?>><?=$row['merchant_name']?></td>
 				
 				<td <?=$td_onclick?>><?=$row['app_exec_type_name']?></td>
-				<td <?=$td_onclick?>><?=$row['app_title']?></td>
+				<td <?=$td_onclick?>><div style='text-align:left; padding-left:5px'><?=$row['app_title']?><?=$app_packageid?></div></td>
 				
 				<td <?=$td_onclick?>><?=$arr_mp_mactive[$row['m_is_mactive']]?></td>
 				<td <?=$td_onclick?>><?=$arr_mp_mactive[$row['p_is_mactive']]?></td>

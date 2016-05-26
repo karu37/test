@@ -50,6 +50,8 @@
 	// ----------------------------------------------------------------------------
 	// 광고가 없거나, 참여할 수 없는 상태입니다. ( edate, tot_exec 에 대한 N 처리는 list에서 수행 )
 	if (!$row_app || 
+		$row_app['is_active'] != 'Y' || 
+		$row_app['is_mactive'] != 'Y' || 
 		$row_app['m_mactive'] != 'Y' || 
 		$row_app['p_mactive'] != 'Y' || 
 		$row_app['pa_mactive'] != 'Y' || 
@@ -145,7 +147,7 @@
 					status = 'F',
 					permanent_fail = '{$err_nomorejoin}',
 					error = '{$ar_data['code']}'
-				WHERE id = '{$user_app_id}'";
+				WHERE id = '{$user_app_id}' AND status = 'A'";
 		return_die('N', $ar_data);
 		
 	}

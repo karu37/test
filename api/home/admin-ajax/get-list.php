@@ -156,6 +156,7 @@
 				echo "<tr>";
 				echo "<td><img src='{$row['app_iconurl']}' width=40px /></td>";
 				echo "<td>{$row['app_title']}</td>";
+				echo "<td>{$row['app_key']}</td>";
 				echo "<td>{$row['app_exec_type']}</td>";
 				echo "<td>{$row['app_merchant_fee']}</td>";
 				echo "<td>{$row['publisher_fee']}</td>";

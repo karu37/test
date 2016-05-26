@@ -23,7 +23,7 @@
 	// ---------------------------------------
 	// publisher info
 	// ---------------------------------------
-	$sql = "SELECT *, 
+	$sql = "SELECT app.*, 
 				m.is_mactive as 'm_is_mactive'
 			FROM al_app_t app 
 				INNER JOIN al_merchant_t m ON app.mcode = m.mcode 

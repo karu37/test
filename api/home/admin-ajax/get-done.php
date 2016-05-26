@@ -1,10 +1,27 @@
 <?
+
 	// SAMPLE URL for LOC2
 	// 요청 초기화 쿼리
 	/*
+		// 참여 테스트		
 		DELETE FROM al_user_app_t WHERE app_key = 'LOC2' AND pcode = 'aline';
 		DELETE FROM al_app_start_stat_t WHERE app_key = 'LOC2' AND pcode = 'aline';
+		DELETE FROM al_user_saving_t WHERE app_key = 'LOC2' AND pcode = 'aline';
+		DELETE FROM al_summary_user_sales_h_t WHERE pcode = 'aline' AND reg_day = CURRENT_DATE;
+
 	*/
+
+	// 완료 테스트 초기화
+/*
+	$test_adid = '0123456789012345-6789-0123-4567-8901';
+	$test_pcode = 'aline';
+	$test_appkey = 'LOC2';
+	mysql_query($sql = "UPDATE al_user_app_t SET status = 'A', permanent_fail = 'N', action_dtime = NULL, done_day = NULL, unique_key = NULL WHERE app_key = '{$test_appkey}' AND pcode = '{$test_pcode}' AND adid = '{$test_adid}';", $conn);
+	mysql_query($sql = "DELETE FROM al_user_app_saving_t WHERE app_key = '{$test_appkey}' AND pcode = '{$test_pcode}' AND adid = '{$test_adid}';", $conn);
+	mysql_query($sql = "DELETE FROM al_summary_user_sales_h_t WHERE pcode = '{$test_pcode}' AND reg_day = CURRENT_DATE;", $conn);
+	
+	// die("INITILIZED AND EXIT");
+*/
 	// 요청하기
 	// http://api.aline-soft.kr/ajax-request.php?id=get-done&pcode=aline&ad=LOC2&adid=0123456789012345-6789-0123-4567-8901
 
@@ -44,6 +61,8 @@
 	// ----------------------------------------------------------------------------
 	// 광고가 없거나, 참여할 수 없는 상태입니다. ( edate, tot_exec 에 대한 N 처리는 list에서 수행 )
 	if (!$row_app || 
+		$row_app['is_active'] != 'Y' || 
+		$row_app['is_mactive'] != 'Y' || 
 		$row_app['m_mactive'] != 'Y' || 
 		$row_app['p_mactive'] != 'Y' || 
 		$row_app['pa_mactive'] != 'Y' || 
@@ -74,7 +93,7 @@
 
 	// ---------------------------------------------	
 	// 해당 사용자의 참여 가능 여부를 확인한다.
-	$sql = "SELECT id, status, permanent_fail FROM al_user_app_t WHERE app_key = '{$db_appkey}' AND adid = '{$db_adid}' AND ( status = 'D' OR permanent_fail = 'Y' )";
+	$sql = "SELECT id, status, permanent_fail FROM al_user_app_t WHERE app_key = '{$db_appkey}' AND adid = '{$db_adid}' AND ( (status = 'D' AND forced_done = 'N') OR permanent_fail = 'Y' )";
 	$row = @mysql_fetch_assoc(mysql_query($sql, $conn));
 	if ($row) {
 		if ($row['status'] == 'D') {
@@ -83,7 +102,7 @@
 			return_die('N', array('code'=>'-106', 'type'=>'E-DONE'), '더 이상 참여할 수 없는 광고입니다.');
 		}
 	} 
-	
+
 	// ---------------------------------------------	
 	// pcode로 해당 사용자의 참여 기록을 찾고 없으면 추가한다.
 	$sql = "SELECT id, status, permanent_fail, uid, userdata FROM al_user_app_t WHERE pcode = '{$db_pcode}' AND app_key = '{$db_appkey}' AND adid = '{$db_adid}'";
@@ -128,13 +147,17 @@
 		$ar_result = local_request_done($appkey, $arr_param, $conn);
 		
 	} else {
+		
 		return_die('N', array('code'=>'-110', 'type'=>'E-CONFIG'), '광고 오류입니다.');
+		
 	}
 	
 	// --------------------------------------------------------
-	// 광고 오류상태를 저장
+	// 광고 오류상태를 저장 (단 status가 B인 경우에만 갱신함 - 요청시에 바로 답이 오는 경우 변경이 되므로 이 경우 손대지 않도록 함)
 	if ($ar_result['result'] == 'N') {
-		$sql = "UPDATE al_user_app_t SET action_ftime = '{$ar_time['now']}', status = 'F', error = '{$ar_data['code']}' WHERE id = '{$user_app_id}'";
+		$sql = "UPDATE al_user_app_t 
+				SET action_ftime = '{$ar_time['now']}', status = 'F', error = '{$ar_data['code']}' 
+				WHERE id = '{$user_app_id}' AND status = 'B'";
 		return_die('N', $ar_data);
 	}
 	
