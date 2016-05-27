@@ -68,26 +68,28 @@
 		display_query("ADID기준 진행 상태 - al_user_app_t", "", $sql, $ar_col_define, $conn);
 
 		echo "<br>";
-		$sql = "SELECT b.app_title, a.exec_time, IF(exec_time = '{$ar_time['datehour']}', a.exec_hour_cnt, 0), IF(DATE(exec_time) = '{$ar_time['day']}', a.exec_day_cnt, 0), a.exec_tot_cnt,
+		$sql = "SELECT b.app_title, a.exec_time, IFNULL(c.start_cnt, 0), IF(exec_time = '{$ar_time['datehour']}', a.exec_hour_cnt, 0), IF(DATE(exec_time) = '{$ar_time['day']}', a.exec_day_cnt, 0), a.exec_tot_cnt,
 					IFNULL(pa.exec_hour_max_cnt, b.exec_hour_max_cnt) as 'P-시간제한', 
 					IFNULL(pa.exec_day_max_cnt, b.exec_day_max_cnt) as 'P-일일제한', 
-					IFNULL(pa.exec_tot_max_cnt, b.exec_tot_max_cnt) as 'P-총제한' 				
+					IFNULL(pa.exec_tot_max_cnt, b.exec_tot_max_cnt) as 'P-총제한'
 				FROM al_app_exec_stat_t a
 					INNER JOIN al_app_t b ON a.app_key = b.app_key
 					LEFT OUTER JOIN al_publisher_app_t pa ON a.app_key = pa.app_key AND pa.pcode = '{$db_pcode}'
+					LEFT OUTER JOIN al_app_start_stat_t c ON a.app_key = c.app_key AND c.pcode = '{$db_pcode}' AND c.reg_day = '{$ar_time['day']}'
 				ORDER BY a.app_key DESC LIMIT 10";
 		$result = mysql_query($sql, $conn);
 		
 		unset($ar_col_define);
 		$ar_col_define[] = array('type' => '', 'col' => '<col width=2%></col>', 'title' => '제목');
 		$ar_col_define[] = array('type' => 'date', 'col' => '<col width=2%></col>', 'title' => '일/시');
-		$ar_col_define[] = array('type' => 'number', 'col' => '<col width=2%></col>', 'title' => '시간당');
-		$ar_col_define[] = array('type' => 'number', 'col' => '<col width=4%></col>', 'title' => '일일');
-		$ar_col_define[] = array('type' => 'number', 'col' => '<col width=2%></col>', 'title' => '총');
-		$ar_col_define[] = array('type' => 'number', 'col' => '<col width=2%></col>', 'title' => 'P-시간제한');
-		$ar_col_define[] = array('type' => 'number', 'col' => '<col width=4%></col>', 'title' => 'P-일일제한');
+		$ar_col_define[] = array('type' => 'number', 'col' => '<col width=2%></col>', 'title' => '시작수(일일)');
+		$ar_col_define[] = array('type' => 'number', 'col' => '<col width=2%></col>', 'title' => '시간당수');
+		$ar_col_define[] = array('type' => 'number', 'col' => '<col width=4%></col>', 'title' => '일일수');
+		$ar_col_define[] = array('type' => 'number', 'col' => '<col width=2%></col>', 'title' => '총수');
+		$ar_col_define[] = array('type' => '', 'col' => '<col width=2%></col>', 'title' => 'P-시간제한');
+		$ar_col_define[] = array('type' => '', 'col' => '<col width=4%></col>', 'title' => 'P-일일제한');
 		$ar_col_define[] = array('type' => 'number', 'col' => '<col width=2%></col>', 'title' => 'P-총제한');
-		display_query("Publisher 수행 수 - al_app_exec_stat_t", "", $sql, $ar_col_define, $conn);
+		display_query("수행 수 (모든 Pub들의 합)- al_app_exec_stat_t", "", $sql, $ar_col_define, $conn);
 		
 
 		echo "<br>";
