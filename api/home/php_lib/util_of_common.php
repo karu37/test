@@ -1,5 +1,10 @@
 <?
-
+/*
+// IF (IFNULL(pa.exec_hour_max_cnt, app.exec_hour_max_cnt) IS NULL OR IFNULL(pa.exec_hour_max_cnt, app.exec_hour_max_cnt) > IF(s.exec_time = '{$ar_time['datehour']}', s.exec_hour_cnt, 0), 'Y', 'N') as 'check_hour_executed',
+// IF (IFNULL(pa.exec_day_max_cnt, app.exec_day_max_cnt) IS NULL OR IFNULL(pa.exec_day_max_cnt, app.exec_day_max_cnt) > IF(s.exec_time = CURRENT_DATE, s.exec_day_cnt, 0), 'Y', 'N') as 'check_day_executed',
+	pa에 시간당 제한이 NULL이면 --> app의 제값을 사용하고, 모두 NULL이면 Y
+	아니면 값이 현재 실행 수보다 크면 Y (같아도 완료된것이므로 N 이됨)
+*/
 function get_query_publisher_app($pcode, $appkey, $ar_time, $conn)
 {
 	$db_pcode = mysql_real_escape_string($pcode);
@@ -36,9 +41,9 @@ function get_query_publisher_app($pcode, $appkey, $ar_time, $conn)
 					, 'Y', 'N') as 'check_time_period',
 
 				IF (pa.active_time IS NULL OR pa.active_time <= '{$ar_time['datehour']}', 'Y', 'N') as 'check_open_time',
-				IF (IFNULL(pa.exec_hour_max_cnt, app.exec_hour_max_cnt) IS NOT NULL AND IFNULL(pa.exec_hour_max_cnt, app.exec_hour_max_cnt) > IF(s.exec_time = '{$ar_time['datehour']}', s.exec_hour_cnt, 0), 'N', 'Y') as 'check_hour_executed',
-				IF (IFNULL(pa.exec_day_max_cnt, app.exec_day_max_cnt) IS NOT NULL AND IFNULL(pa.exec_day_max_cnt, app.exec_day_max_cnt) > IF(s.exec_time = CURRENT_DATE, s.exec_day_cnt, 0), 'N', 'Y' ) as 'check_day_executed',
-				IF (s.id IS NULL OR IFNULL(pa.exec_tot_max_cnt, app.exec_tot_max_cnt) < s.exec_tot_cnt, 'Y', 'N') as 'check_tot_executed'
+				IF (IFNULL(pa.exec_hour_max_cnt, app.exec_hour_max_cnt) IS NULL OR IFNULL(pa.exec_hour_max_cnt, app.exec_hour_max_cnt) > IF(s.exec_time = '{$ar_time['datehour']}', s.exec_hour_cnt, 0), 'Y', 'N') as 'check_hour_executed',
+				IF (IFNULL(pa.exec_day_max_cnt, app.exec_day_max_cnt) IS NULL OR IFNULL(pa.exec_day_max_cnt, app.exec_day_max_cnt) > IF(DATE(s.exec_time) = '{$ar_time['day']}', s.exec_day_cnt, 0), 'Y', 'N') as 'check_day_executed',
+				IF (s.app_key IS NULL OR IFNULL(pa.exec_tot_max_cnt, app.exec_tot_max_cnt) > s.exec_tot_cnt, 'Y', 'N') as 'check_tot_executed'
 
 			FROM al_app_t app
 				INNER JOIN al_merchant_t m ON app.mcode = m.mcode 
@@ -47,9 +52,8 @@ function get_query_publisher_app($pcode, $appkey, $ar_time, $conn)
 				LEFT OUTER JOIN al_app_exec_stat_t s ON app.app_key = s.app_key
 			WHERE
 				app.app_key = '{$db_appkey}'";	
-				
+	// echo $sql;
 	$ret = @mysql_fetch_assoc(mysql_query($sql, $conn));
-	// var_dump($ret);
 	return $ret;
 }
 
@@ -106,7 +110,7 @@ function callback_reward($pcode, $mcode, $appkey, $adid,
 				return array('result' => 'N', 'code' => '-3002');
 			}
 			$user_app_id = $row['id'];
-			$is_forceddone = $row['forced_done'];
+			$is_forceddone = ifempty($row['forced_done'], 'N');
 			$callback_done = $row['callback_done'];
 			
 			// unique_key 중복에 대한 처리
@@ -217,6 +221,17 @@ function callback_reward($pcode, $mcode, $appkey, $adid,
 							mysql_execute($sql, $conn);
 						}				
 			}
+			
+			// al_app_exec_stat_t 에 수행 개수를 추가한다.
+			$sql = "INSERT INTO al_app_exec_stat_t (app_key, exec_time, exec_hour_cnt, exec_day_cnt, exec_tot_cnt)
+					VALUES ('{$db_appkey}', '{$ar_time['datehour']}', '1', '1', '1')
+					ON DUPLICATE KEY UPDATE exec_hour_cnt = IF(exec_time = '{$ar_time['datehour']}', exec_hour_cnt + 1, 1),
+											exec_day_cnt = IF(DATE(exec_time) = '{$ar_time['day']}', exec_day_cnt + 1, 1),
+											exec_tot_cnt = exec_tot_cnt + 1,
+											exec_time = '{$ar_time['datehour']}'";
+			// echo $sql;											
+			mysql_execute($sql, $conn);
+				
 	
 		commit($conn);
 	} 

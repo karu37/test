@@ -73,8 +73,8 @@
 				
 				IFNULL(pa.app_offer_fee, FLOOR(app.app_merchant_fee * IFNULL(pa.app_offer_fee_rate, p.offer_fee_rate) / 100) ) AS 'publisher_fee', 
 				
-				IF (app.exec_edate IS NULL OR DATE(app.exec_edate) >= CURRENT_DATE, 'N', 'Y') as 'edate_expired',
-				IF (s.id IS NULL OR IFNULL(pa.exec_tot_max_cnt, app.exec_tot_max_cnt) < s.exec_tot_cnt, 'N', 'Y') as 'tot_complished'
+				IF (app.exec_edate IS NULL OR DATE(app.exec_edate) >= CURRENT_DATE, 'Y', 'N') as 'edate_not_expired',
+				IF (s.app_key IS NULL OR IFNULL(pa.exec_tot_max_cnt, app.exec_tot_max_cnt) > s.exec_tot_cnt, 'Y', 'N') as 'tot_not_complished'
 				
 			FROM al_app_t app
 				INNER JOIN al_merchant_t m ON app.mcode = m.mcode 
@@ -114,20 +114,8 @@
 
 				AND (pa.active_time IS NULL OR pa.active_time <= '{$ar_time['datehour']}')
 				
-				AND (
-					(
-					 IFNULL(pa.exec_hour_max_cnt, app.exec_hour_max_cnt) IS NULL
-					  AND
-					 IFNULL(pa.exec_day_max_cnt, app.exec_day_max_cnt) IS NULL
-					)
-					OR
-					(
-					 ( IFNULL(pa.exec_hour_max_cnt, app.exec_hour_max_cnt) IS NOT NULL AND IFNULL(pa.exec_hour_max_cnt, app.exec_hour_max_cnt) > IF(s.exec_time = '{$ar_time['datehour']}', s.exec_hour_cnt, 0) )
-					  OR
-					 ( IFNULL(pa.exec_day_max_cnt, app.exec_day_max_cnt) IS NOT NULL AND IFNULL(pa.exec_day_max_cnt, app.exec_day_max_cnt) > IF(s.exec_time = CURRENT_DATE, s.exec_day_cnt, 0) )
-					)
-				)
-				
+				AND ( IFNULL(pa.exec_hour_max_cnt, app.exec_hour_max_cnt) IS NULL OR IFNULL(pa.exec_hour_max_cnt, app.exec_hour_max_cnt) > IF(s.exec_time = '{$ar_time['datehour']}', s.exec_hour_cnt, 0) )
+				AND	( IFNULL(pa.exec_day_max_cnt, app.exec_day_max_cnt) IS NULL OR IFNULL(pa.exec_day_max_cnt, app.exec_day_max_cnt) > IF(DATE(s.exec_time) = '{$ar_time['day']}', s.exec_day_cnt, 0) )
 			";
 	$result = mysql_query($sql, $conn);
 	
@@ -144,7 +132,7 @@
 				
 				// exec_tot_max_cnt 가 초과한 대상은 is_active ==> "N" 으로 변경한다.
 				// exec_edate 가 지난 경우에도 is_active ==> "N" 으로 변경
-				if ($row['tot_complished'] == 'Y' || $row['edate_expired'] == 'Y') {
+				if ($row['tot_not_complished'] != 'Y' || $row['edate_not_expired'] != 'Y') {
 					$arr_inactive[] = "'" . $row['app_key'] . "'";
 					continue;
 				}

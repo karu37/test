@@ -4,69 +4,11 @@
 	
 	if (!$_REQUEST['pcode']) $_REQUEST['pcode'] = 'aline';
 	
-	$pub_mactive = get_publisher_info("reward_percent", $ar_publisher);
+	$pub_mactive = get_publisher_info();
 	if (!$pub_mactive || $pub_mactive == 'D') return_die('N', array('code'=>'-100', 'type'=>'E-REQUEST'), '유효하지 않은 매체코드입니다.');
 
-	$reward_percent = $ar_publisher['reward_percent'];
-
 	$pcode = $_REQUEST['pcode'];
-
 	$db_pcode = mysql_real_escape_string($pcode);
-
-	/* 
-		IFNULL(pa.app_offer_fee, FLOOR(app.app_merchant_fee * IFNULL(pa.app_offer_fee_rate, p.offer_fee_rate) / 100) ) AS 'publisher_fee', 
-			: pa에 지정된 가격이 있으면 그것을 사용하고
-			: 그렇지 않고 pa에 지정된 율이 있으면 그 율로 계산
-			: 그렇지 않으면 기본 계산법으로 계산
-	
-		1번 al_app_t.is_mactive						: [관리자]가 해당 광고 활성/중지/삭제 ( Y/N/D )
-		2번 al_app_t.is_active						: [Merchant]가 해당 광고 활성/중지 ( Y/N )
-		
-		3번 al_merchant_t.is_mactive				: [관리자]가 Merchant Code 활성/테스트/중지/삭제 ( Y/T/N/D )
-		4번 al_publisher_t.is_mactive				: [관리자]가 Publisher Code 활성/테스트/중지/삭제 ( Y/T/N/D )
-		
-		5번 al_publisher_app_t.is_mactive 			: [관리자]가 Publisher에게 app공급 활성/중지/삭제 ( Y/N/D )
-		6번 al_publisher_app_t.publisher_disabled 	: [Publisher]가 광고 받기를 중지 ( Y )
-	
-		7번 al_app_t.publisher_level				: Publisher 공급 레벨 지정
-				al_publisher_t.level				: 	app의 공급레벨보다 낮은 경우(숫자로는 높은경우) 공급 차단
-			
-		8번 al_app_t.is_public_mode					: [Merchant]의 public 모드 설정
-				al_publisher_app_t.merchant_disabled: is_public_mode = Y인 경우 참고함 'N'이면 차단
-				al_publisher_app_t.merchant_enabled	: is_public_mode = N인 경우 참고함 'Y'이면 차단
-	
-		-- 광고 자체 오픈 시간 조정 (아래조건은 모두 AND)
-	
-		 	al_app_t.exec_stime ~ exec_etime		: 광고에 설정된 광고 시작 시간
-		
-		 	al_publisher_app_t.active_time			: 광고 활성 시간 - 관리자가 설정함 - 해당 Publisher & 광고를 허용/금지
-		 	
-		 	@ al_app_t.exec_edate					: end 시간보다 이전일 때에만 동작 (해당일 23:59:59 까지 동작 )
-		 		IF (app.exec_edate IS NULL OR DATE(app.exec_edate) >= CURRENT_DATE, 'N', 'Y') as 'edate_expired' ## 오늘포함해서 미래까지모두 동작하도록 함 (어제날짜인경우 차단)
-		 		==> 초과 체크해서 app.is_active 를 'N'
-			
-			@ exec개수 정보가 없는 경우 또는 NOT( exec 개수 체크해서 개수가 0 이상으로 설정되어 있으면서 개수 초과를 한 경우 표시하지 않음 )
-				(
-					# 시간및 일일 제한이 없는 경우 그냥 OK
-					(
-					  IFNULL(pa.exec_hour_max_cnt, app.exec_hour_max_cnt) IS NULL 	# 시간당 제한이 없는 경우 
-					   AND
-					  IFNULL(pa.exec_day_max_cnt, app.exec_day_max_cnt) IS NULL		# 일일 제한이 없는 경우
-					)
-					OR
-					(
-					 # 시간당 제한이 설정되어 있고, 시간당 개수가 초과하지 않은 경우
-					 ( IFNULL(pa.exec_hour_max_cnt, app.exec_hour_max_cnt) IS NOT NULL AND IFNULL(pa.exec_hour_max_cnt, app.exec_hour_max_cnt) > IF(s.exec_time = '{$ar_time['datehour']}', s.exec_hour_cnt, 0) )
-					  OR
-					 # 일일 제한이 설정되어 있고, 일일 개수가 초과하지 않은 경우
-					 ( IFNULL(pa.exec_day_max_cnt, app.exec_day_max_cnt) IS NOT NULL AND IFNULL(pa.exec_day_max_cnt, app.exec_day_max_cnt) > IF(s.exec_time = CURRENT_DATE, s.exec_day_cnt, 0) )
-					)
-				)
-
-		 	@ al_publisher_app_t.exec_tot_max_cnt or al_app_t.exec_tot_max_cnt <vs> al_app_exec_stat_t.exec_tot_cnt	
-				==> 초과 체크해서 app.is_active 를 'N'
-
-	 */
 
 	$ar_time = mysql_get_time($conn);
 
@@ -75,8 +17,8 @@
 				
 				IFNULL(pa.app_offer_fee, FLOOR(app.app_merchant_fee * IFNULL(pa.app_offer_fee_rate, p.offer_fee_rate) / 100) ) AS 'publisher_fee', 
 				
-				IF (app.exec_edate IS NULL OR DATE(app.exec_edate) >= CURRENT_DATE, 'N', 'Y') as 'edate_expired',
-				IF (s.id IS NULL OR IFNULL(pa.exec_tot_max_cnt, app.exec_tot_max_cnt) < s.exec_tot_cnt, 'N', 'Y') as 'tot_complished'
+				IF (app.exec_edate IS NULL OR DATE(app.exec_edate) >= CURRENT_DATE, 'Y', 'N') as 'edate_not_expired',
+				IF (s.app_key IS NULL OR IFNULL(pa.exec_tot_max_cnt, app.exec_tot_max_cnt) > s.exec_tot_cnt, 'Y', 'N') as 'tot_not_complished'
 				
 			FROM al_app_t app
 				INNER JOIN al_merchant_t m ON app.mcode = m.mcode 
@@ -116,34 +58,27 @@
 
 				AND (pa.active_time IS NULL OR pa.active_time <= '{$ar_time['datehour']}')
 				
-				AND (
-					(
-					 IFNULL(pa.exec_hour_max_cnt, app.exec_hour_max_cnt) IS NULL
-					  AND
-					 IFNULL(pa.exec_day_max_cnt, app.exec_day_max_cnt) IS NULL
-					)
-					OR
-					(
-					 ( IFNULL(pa.exec_hour_max_cnt, app.exec_hour_max_cnt) IS NOT NULL AND IFNULL(pa.exec_hour_max_cnt, app.exec_hour_max_cnt) > IF(s.exec_time = '{$ar_time['datehour']}', s.exec_hour_cnt, 0) )
-					  OR
-					 ( IFNULL(pa.exec_day_max_cnt, app.exec_day_max_cnt) IS NOT NULL AND IFNULL(pa.exec_day_max_cnt, app.exec_day_max_cnt) > IF(s.exec_time = CURRENT_DATE, s.exec_day_cnt, 0) )
-					)
-				)
-				
+				AND ( IFNULL(pa.exec_hour_max_cnt, app.exec_hour_max_cnt) IS NULL OR IFNULL(pa.exec_hour_max_cnt, app.exec_hour_max_cnt) > IF(s.exec_time = '{$ar_time['datehour']}', s.exec_hour_cnt, 0) )
+				AND ( IFNULL(pa.exec_day_max_cnt, app.exec_day_max_cnt) IS NULL OR IFNULL(pa.exec_day_max_cnt, app.exec_day_max_cnt) > IF(DATE(s.exec_time) = '{$ar_time['day']}', s.exec_day_cnt, 0) )
 			";
 	$result = mysql_query($sql, $conn);
 	
 ?>	
 <head>
+	<title>A-Line 테스트 페이지</title>
 	<link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css" />
 	<script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
 	<script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>	
 	<style>
 		* {font-size:12px; }
 		td {padding: 0 2px}
+		.mini-btn 	{padding:2px; font-size:12px}
 	</style>
 </head>
 <body>
+	<!-- 
+	<?=$sql?>
+	-->
 	<table width=100% border=0 cellpadding=0 cellspacing=0>
 		<tr>
 			<td width=150px>
@@ -158,13 +93,32 @@
 				
 				<br>
 				<table border=1 cellpadding=0 cellspacing=0>
+				<tr>
+					<th>Idx</th>
+					<th>아이콘</th>
+					<th>제목/광고키</th>
+					<th>타입</th>
+					<th>M가격</th>
+					<th>P가격</th>
+					<th>나이</th>
+					<th>성별</th>
+					<th>시간</th>
+					<th></th>
+					<th></th>
+					<th></th>
+					<th></th>
+				</tr>
 				<?	
 					$arr_inactive = array();
+					$i = 0;
 					while ($row = mysql_fetch_assoc($result)) {
-						
+						$i++;
 						// exec_tot_max_cnt 가 초과한 대상은 is_active ==> "N" 으로 변경한다.
 						// exec_edate 가 지난 경우에도 is_active ==> "N" 으로 변경
-						if ($row['tot_complished'] == 'Y' || $row['edate_expired'] == 'Y') {
+						if ($row['tot_not_complished'] != 'Y' || $row['edate_not_expired'] != 'Y') {
+echo "<!-- \n";
+var_dump($row);							
+echo "\n-->";
 							$arr_inactive[] = "'" . $row['app_key'] . "'";
 							continue;
 						}
@@ -174,30 +128,33 @@
 						if ( intval($row['publisher_fee']) <= 0 ) continue;	
 						
 						echo "<tr>";
-						echo "<td><img src='{$row['app_iconurl']}' width=40px /></td>";
-						echo "<td>{$row['app_title']}</td>";
-						echo "<td>{$row['app_key']}</td>";
-						echo "<td>{$row['app_exec_type']}</td>";
-						echo "<td>{$row['app_merchant_fee']}</td>";
-						echo "<td>{$row['publisher_fee']}</td>";
-						echo "<td>{$row['app_agefrom']} ~ {$row['app_ageto']}</td>";
-						echo "<td>{$row['app_gender']}</td>";
-						echo "<td>{$row['exec_stime']} ~ {$row['exec_etime']}</td>";
-						echo "<td>{$row['edate_expired']}, {$row['tot_complished']}</td>";
+						echo "<td>{$i}</td>\n";
+						echo "<td><img src='{$row['app_iconurl']}' width=40px /></td>\n";
+						echo "<td>{$row['app_title']}<br>{$row['app_key']}</td>\n";
+						echo "<td>{$row['app_exec_type']}</td>\n";
+						echo "<td>{$row['app_merchant_fee']}</td>\n";
+						echo "<td>{$row['publisher_fee']}</td>\n";
+						echo "<td>{$row['app_agefrom']} ~ {$row['app_ageto']}</td>\n";
+						echo "<td>{$row['app_gender']}</td>\n";
+						echo "<td>{$row['exec_stime']} ~ {$row['exec_etime']}</td>\n";
+						echo "<td>{$row['edate_not_expired']}, {$row['tot_not_complished']}</td>\n";
 						?>
 						<td>
-							<a href='#' onclick="" data-role='button' data-mini='true'>광고 참여</a>
+							<a class='mini-btn' href='#' onclick="page.on_btn_start('<?=$pcode?>', $('#adid').val(), '<?=$row['app_key']?>', 'UID:'+$('#adid').val(), 'USERDATA:'+$('#adid').val())" data-role='button' data-mini='true'>광고 참여</a>
 						</td>
 						<td>
 							<? if ($row['app_exec_type'] == 'I') { ?>
-							<a href='#' onclick="" data-role='button' data-mini='true'>참여 확인</a>
+							<a class='mini-btn' href='#' onclick="page.on_btn_done('<?=$pcode?>', $('#adid').val(), '<?=$row['app_key']?>')" data-role='button' data-mini='true'>참여 확인</a>
 							<? } ?>
+						</td>
+						<td>
+							<a class='mini-btn' href='#' onclick="page.on_btn_undone('<?=$pcode?>', $('#adid').val(), '<?=$row['app_key']?>')" data-role='button' data-mini='true'>적립완료 취소</a>
 						</td>
 						<?
 						echo "<tr>";
 						
 					}
-					
+				
 					// Expire되거나, 모두 달성된 광고 is_active ==> 'N' 시키기
 					if (count($arr_inactive) > 0) {
 						$sql = "UPDATE al_app_t SET is_active = 'N' WHERE is_active <> 'N' AND app_key IN ( " . implode(",", $arr_inactive) . ")";
@@ -206,6 +163,7 @@
 				?>	
 				</table>					
 				<br>	
+				<a class='mini-btn' href='#' onclick="page.on_btn_deleteinfo('<?=$pcode?>')" data-role='button' data-theme='b' data-mini='true' data-inline='true'>적립 기록 모두 초기화 (수행 수는 전체 초기화됨)</a>
 				
 			</td>
 		</tr>
@@ -218,14 +176,146 @@
 			</td>
 		</tr>
 	</table>
-	<iframe id='status' src='about:blank' style='width:100%; min-height:600px' /></iframe>
+	<iframe id='status' src='about:blank' style='width:100%; height:1000px' /></iframe>
 <script>
 
-	if (!localStorage.getItem('adid')) localStorage.setItem('adid', '0000000000000000-0000-0000-0000-0001');
-	$("#adid").on('change', function(){
-		localStorage.setItem('adid', $("#adid").val());
-	});
-	$("#adid").val(localStorage.getItem('adid'));
+var basic_util = {
+	request: function(sz_url, callback_func, error_func) {
+		console.log('[__global.php] request: ' + sz_url);
+		$.ajax({
+			type:"GET",  
+			url:sz_url,      
+			success:function(sz_data){callback_func(sz_data);},   
+			error:function(e){if (error_func) error_func(e.statusText); else alert(e.statusText + "\n" + sz_url);}  
+		});		
+	},
+	json_to_urlparam: function(js_data) {
+	    var parts = [];
+	    for (var key in js_data) {
+	        if (js_data.hasOwnProperty(key)) {
+	        	if (js_data[key]) parts.push(encodeURIComponent(key) + '=' + encodeURIComponent(js_data[key]));
+	        }
+	    }
+	    return parts.join('&');
+	},
+	var_dump: function(obj) {
+		var out = '';
+    	for (var i in obj) {
+        	out += i + ": " + obj[i] + "\n";
+        }
+    	return out;
+	},
+};
+window.var_dump = basic_util.var_dump;
+	
+var page = function(){
+	
+	var fn = {
+		init: function() {
+			if (!localStorage.getItem('adid')) localStorage.setItem('adid', '0000000000000000-0000-0000-0000-0001');
+			$("#adid").on('change', function(){
+				localStorage.setItem('adid', $("#adid").val());
+				$("#status").attr('src', "http://api.aline-soft.kr/ajax-request.php?id=aline-test-status&pcode=<?=$pcode?>&adid=" + $("#adid").val());
+			});
+			$("#adid").val(localStorage.getItem('adid'));
+			
+			$("#status").attr('src', "http://api.aline-soft.kr/ajax-request.php?id=aline-test-status&pcode=<?=$pcode?>&adid=" + localStorage.getItem('adid'));
+		},
+		
+		on_btn_start: function(pcode, uadid, ad, uid, userdata) {
+			// http://api.aline-soft.kr/ajax-request.php?id=get-join&pcode=aline&os=A&ad=LOC2&adid=0123456789012345-6789-0123-4567-8901&ip=127.0.0.1&uid=heartman@gmail.com&userdata=USERDATA
+			var ar_param = {id: 'get-join',
+							'pcode': pcode,
+							'ad': ad,
+							'adid': uadid,
+							'ip': '127.0.0.1',
+							'uid' : uid,
+							'userdata': userdata};
+
+			alert(var_dump(ar_param));
+			basic_util.request('http://api.aline-soft.kr/ajax-request.php?' + basic_util.json_to_urlparam(ar_param), function(sz_data) {
+				try {
+					var js_data = JSON.parse(sz_data);
+					if (js_data['result'] == 'Y') {
+						alert("요청 성공\n\nUrl : " + js_data['url']);
+					} else {
+						alert("요청 실패\n\n code : " + js_data['code'] + "\n msg : " + js_data['msg']);
+					}
+				} catch(e) {alert(sz_data);}
+					
+				$("#status").attr('src', "http://api.aline-soft.kr/ajax-request.php?id=aline-test-status&pcode=<?=$pcode?>&adid=" + uadid);
+			});
+		},
+		
+		on_btn_done: function(pcode, uadid, ad) {
+			// http://api.aline-soft.kr/ajax-request.php?id=get-join&pcode=aline&os=A&ad=LOC2&adid=0123456789012345-6789-0123-4567-8901&ip=127.0.0.1&uid=heartman@gmail.com&userdata=USERDATA
+			var ar_param = {id: 'get-done',
+							'pcode': pcode,
+							'ad': ad,
+							'adid': uadid};
+							
+			alert(var_dump(ar_param));
+			basic_util.request('http://api.aline-soft.kr/ajax-request.php?' + basic_util.json_to_urlparam(ar_param), function(sz_data) {
+				try {
+					var js_data = JSON.parse(sz_data);
+					if (js_data['result'] == 'Y') {
+						alert("요청 성공");
+					} else {
+						alert("요청 실패\n\n code : " + js_data['code'] + "\n msg : " + js_data['msg']);
+					}
+				} catch(e) {alert(sz_data);}
+
+				$("#status").attr('src', "http://api.aline-soft.kr/ajax-request.php?id=aline-test-status&pcode=<?=$pcode?>&adid=" + uadid);
+					
+			});
+		},		
+		on_btn_undone: function(pcode, uadid, ad) {
+			// http://api.aline-soft.kr/ajax-request.php?id=get-join&pcode=aline&os=A&ad=LOC2&adid=0123456789012345-6789-0123-4567-8901&ip=127.0.0.1&uid=heartman@gmail.com&userdata=USERDATA
+			var ar_param = {id: 'aline-test-status-undone',
+							'pcode': pcode,
+							'appkey': ad,
+							'adid': uadid};
+							
+			alert(var_dump(ar_param));
+			basic_util.request('http://api.aline-soft.kr/ajax-request.php?' + basic_util.json_to_urlparam(ar_param), function(sz_data) {
+				try {
+					var js_data = JSON.parse(sz_data);
+					if (js_data['result'] == 'Y') {
+						alert("요청 성공");
+					} else {
+						alert("요청 실패\n\n code : " + js_data['code'] + "\n msg : " + js_data['msg']);
+					}
+				} catch(e) {alert(sz_data);}
+
+				$("#status").attr('src', "http://api.aline-soft.kr/ajax-request.php?id=aline-test-status&pcode=<?=$pcode?>&adid=" + uadid);
+					
+			});
+		},	
+		on_btn_deleteinfo: function(pcode, uadid, ad) {
+			// http://api.aline-soft.kr/ajax-request.php?id=get-join&pcode=aline&os=A&ad=LOC2&adid=0123456789012345-6789-0123-4567-8901&ip=127.0.0.1&uid=heartman@gmail.com&userdata=USERDATA
+			var ar_param = {id: 'aline-test-reset',
+							'pcode': pcode};
+							
+			alert(var_dump(ar_param));
+			basic_util.request('http://api.aline-soft.kr/ajax-request.php?' + basic_util.json_to_urlparam(ar_param), function(sz_data) {
+				try {
+					var js_data = JSON.parse(sz_data);
+					if (js_data['result'] == 'Y') {
+						alert("요청 성공");
+					} else {
+						alert("요청 실패\n\n code : " + js_data['code'] + "\n msg : " + js_data['msg']);
+					}
+				} catch(e) {alert(sz_data);}
+
+				$("#status").attr('src', "http://api.aline-soft.kr/ajax-request.php?id=aline-test-status&pcode=<?=$pcode?>&adid=" + uadid);
+					
+			});
+		},	
+	};
+	
+	fn.init();
+	return fn;
+}();
 
 </script>
 
