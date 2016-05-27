@@ -353,11 +353,21 @@ function set_error_msg(&$arr_data) {
 	else if ($arr_data['code'] == '-103') $arr_data['msg'] = '광고가 없거나 참여할 수 없는 상태입니다.';
 	else if ($arr_data['code'] == '-104') $arr_data['msg'] = '광고가 임시 중단된 상태입니다.';
 	else if ($arr_data['code'] == '-105') $arr_data['msg'] = '이미 참여한 광고입니다.';
-	else if ($arr_data['code'] == '-106') $arr_data['msg'] = '더 이상 참여할 수 없는 광고입니다.';
+	else if ($arr_data['code'] == '-106') $arr_data['msg'] = '더 이상 참여할 수 없는 광고입니다.';	// permanent_fail = 'Y'
+	
+	else if ($arr_data['code'] == '-107') $arr_data['msg'] = '광고 참여한 기록이 없습니다.';
+	else if ($arr_data['code'] == '-109') $arr_data['msg'] = '유효하지 않은 요청입니다';			// DONE을 실행형이 아닌데 요청함.
+	else if ($arr_data['code'] == '-110') $arr_data['msg'] = '광고 오류입니다.';					// 광고 LIB에 대한 처리가 존재하지 않음
 	
 	else if ($arr_data['code'] == '-1001') $arr_data['msg'] = '광고 오류입니다. (no-packageid)';
 	else if ($arr_data['code'] == '-1002') $arr_data['msg'] = '광고 오류입니다. (unknown-market)';
 	else if ($arr_data['code'] == '-1003') $arr_data['msg'] = '광고 오류입니다. (no-url)';
+
+	// DB에 적립 중 발생 오류
+	else if ($arr_data['code'] == '-3001') $arr_data['msg'] = '중복 적립 오류';
+	else if ($arr_data['code'] == '-3002') $arr_data['msg'] = '적립 시도 기록이 없음';
+	else if ($arr_data['code'] == '-3003') $arr_data['msg'] = 'UNIQUE 키 중복 오류';
+	else if ($arr_data['code'] == '-3004') $arr_data['msg'] = 'DB 처리 중 오류 발생';
 
 }
 

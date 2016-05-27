@@ -158,68 +158,72 @@ function return_die($result, $object = null, $msg = null, $error_sql = null) {
 		$sql = "INSERT INTO _error_sql_log (`type`, `sql`, errno, error, reg_date) VALUES('M', '{$db_sql}', '{$db_errno}', '{$db_error}', NOW());";
 		@mysql_query($sql, $conn);
 	}
+	make_visit_log($result, $object);
 	die();
 }
-function make_action_log($elapsed_time, $file_name, $adid, $proc_name, $req_url, $post_param, $response, $conn)
-{
-	
-}
-/*
-function make_visit_log($elapsed_time, $file_name, $adid, $proc_name, $req_url, $post_param, $response, $conn) 
-{
-	global $g_user_id, $page_id, $dev_mode;
 
-	$db_list_id = @mysql_real_escape_string($_REQUEST['listid']);
-	$db_user_id = @mysql_real_escape_string($g_user_id);
-	$db_page_id = @mysql_real_escape_string($page_id);
-	$db_error_msg = @mysql_real_escape_string($error_msg);
-	$db_file_name = @mysql_real_escape_string(basename(__FILE__));
+function make_visit_log($result, $ar_response, $elapsed_time = null, $pageid = null, $adid = null, $req_url = null, $ar_post_param = null, $connect = null) {
+	_make_log($result, $ar_response, $elapsed_time, $pageid, $adid, $req_url, $ar_post_param, $connect, 'V');
+}
+function make_action_log($result, $ar_response, $elapsed_time = null, $pageid = null, $adid = null, $req_url = null, $ar_post_param = null, $connect = null) {
+	_make_log($result, $ar_response, $elapsed_time, $pageid, $adid, $req_url, $ar_post_param, $connect, 'A');
+}
+
+function _make_log($result, $ar_response, $elapsed_time = null, $pageid = null, $adid = null, $req_url = null, $ar_post_param = null, $connect = null, $tb_target = 'V')
+{
+	global $dev_mode, $_start_api_tm, $conn;
+	
+	if ($elapsed_time === null) $elapsed_time = get_timestamp() - $_start_api_tm;
+	if ($pageid === null) $pageid = $_REQUEST['id'];
+	if ($adid === null) $adid = $_REQUEST['adid'];
+	if ($req_url === null) $req_url = 'http://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'];
+	if ($ar_post_param === null) $ar_post_param = $_POST;
+	if ($connect === null) $connect = $conn;
+	
+	$db_result = @mysql_real_escape_string($result);
+	$db_pageid = @mysql_real_escape_string($pageid);
+	$db_adid = @mysql_real_escape_string($adid);
+	$db_req_url = @mysql_real_escape_string($req_url);
 	$db_remote_addr = @mysql_real_escape_string($_SERVER['REMOTE_ADDR']);
-	$db_host = @mysql_real_escape_string($_SERVER['HTTP_HOST']);
-	$db_user_agent = ''; @mysql_real_escape_string($_SERVER['HTTP_USER_AGENT']);
-	$db_user_agent = @mysql_real_escape_string($_SERVER['HTTP_USER_AGENT']);
-	$db_request_uri = @mysql_real_escape_string('http://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI']);
-	$db_did = @mysql_real_escape_string($_REQUEST['did']);
-	$db_device_uuid = @mysql_real_escape_string($_REQUEST['device_uuid']);
+	$db_elapsed_time = @mysql_real_escape_string($elapsed_time);
 	
 	$db_post = '';
-	foreach($_POST as $key => $val) {
-		$db_post .= @mysql_real_escape_string("{$key}={$val}\n");
-	}
-	
-	$db_result = '';
-	if ($result) {
-		if (gettype($result) == 'string') {
-			$db_result = @mysql_real_escape_string("{$key}={$val}\n");
-		}
-		else if (gettype($result) == 'array') {
-			foreach($result as $key => $val) {
-				$db_result .= @mysql_real_escape_string("{$key}={$val}\n");
+	if ($ar_post_param) {
+		if (gettype($ar_post_param) == 'string')
+			$db_post = @mysql_real_escape_string($ar_post_param);
+		else if (gettype($ar_post_param) == 'array') {
+			foreach($ar_post_param as $key => $val) {
+				$db_post .= @mysql_real_escape_string("{$key}={$val}\n");
 			}
 		}
 	}
 	
-	$sql = "INSERT INTO site_visit_log (error, userip, userid, reqfile, pageid, listid, uagent, host, url, post, result, delay, msg, did, device_uuid) 
-			VALUES (
-				'{$error_flag}',
-				'{$db_remote_addr}', 
-				'{$db_user_id}', 
-				'{$db_file_name}', 
-				'{$db_page_id}', 
-				'{$db_list_id}',
-				'{$db_user_agent}', 
-				'{$db_host}', 
-				'{$db_request_uri}', 
-				'{$db_post}', 
-				'{$db_result}', 
-				'{$elapsed}',
-				'{$db_error_msg}',
-				'{$db_did}',
-				'{$db_device_uuid}'
-			);";
-	mysql_query($sql, $conn);
+	$db_response = '';
+	if ($ar_response) {
+		if (gettype($ar_response) == 'string') {
+			$db_response = @mysql_real_escape_string($ar_response);
+		}
+		else if (gettype($ar_response) == 'array') {
+			foreach($ar_response as $key => $val) {
+				$db_response .= @mysql_real_escape_string("{$key}={$val}\n");
+			}
+		}
+	}
+	
+	if ($tb_target == 'A') $tbname = 'site_action_log';
+	else $tbname = 'site_visit_log';
+	
+	$sql = "INSERT INTO {$tbname} (result, pageid, adid, requrl, ip, elapsed, post, response)
+			VALUES ('$db_result', 
+					'$db_pageid',
+					'$db_adid',
+					'$db_req_url',
+					'$db_remote_addr',
+					'$db_elapsed_time',
+					'$db_post',
+					'$db_response');";
+	mysql_query($sql, $connect);	
 }
-*/
 
 function post($url, $ar_post_param, $timeout_sec = 60)
 {

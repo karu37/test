@@ -111,8 +111,10 @@ function local_request_done($app_key, $arr_data, $conn)
 			// ----------------------------------------------------------------------
 			$start_tm = get_timestamp();
 			$response_data = post($req_base_url, $url_param, 3);
-			make_action_log(get_timestamp() - $start_tm, basename(__FILE__), "p-callback", $arr_data['adid'], $req_base_url, http_build_query($url_param), $response_data, $conn);
 			$ar_resp = json_decode($response_data, true);
+			
+			echo "make_action_log({$ar_resp['result']}, {$response_data}, 0, 'local-cb-call', null, {$req_base_url}, {$url_param});";
+			make_action_log($ar_resp['result'], $response_data, get_timestamp() - $start_tm, 'local-cb-call', null, $req_base_url, $url_param);
 		
 			// ----------------------------------------------------------------------
 			// 리턴 데이터 구성 (리턴 불필요 -- 자체 해결해야 함)

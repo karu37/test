@@ -10,6 +10,8 @@ $id = $_REQUEST['id'];
 $path_queries = dirname(__FILE__) . "/admin-ajax";
 $file = $path_queries . "/{$id}.php";
 
+$_start_api_tm = get_timestamp();
+
 $conn = dbConn();
 
 if (!$conn) return_die(false, null, '서비스 연결이 원활하지 않습니다.(20)');
