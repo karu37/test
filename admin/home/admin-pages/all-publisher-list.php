@@ -81,7 +81,7 @@
 			<th>이름</th>
 			<th>코드</th>
 			<th width=50px>제공(%)</th>
-			<th width=30px>그룹</th>
+			<th width=30px>레벨</th>
 			<th width=1px></th>
 			<th width=1px></th>
 		</tr>

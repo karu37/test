@@ -156,7 +156,7 @@
 				<td valign=top align=right><t4 style='padding-top:6px; line-height:22px'>매체 코드 :<t4></td>
 				<td valign=center>
 					<t3 style='padding-top: 4px'>
-						<?=$row_publisher['pcode']?>
+						<?=$row_publisher['pcode']?> (<?=$row_publisher['level']?> 레벨)
 					</t3>
 				</td>
 			</tr><tr>	
@@ -331,7 +331,7 @@
 				<td <?=$td_onclick?>><?=$arr_block_mode[$row['is_mactive']]?></td>
 				<td <?=$td_onclick?>><?=$arr_mp_mactive[$row['m_is_mactive']]?></td>
 				<td <?=$td_onclick?>><?=$arr_mp_mactive[$row['p_is_mactive']]?></td>
-				<td <?=$td_onclick?>><?=$arr_block_mode[$row['p_lvmode']]?></td>
+				<td <?=$td_onclick?>><?=admin_number($row['publisher_level'])?><br><?=$arr_block_mode[$row['p_lvmode']]?></td>
 				<td <?=$td_onclick?>><?=$arr_block_mode[$row['pa_pmode']]?></td>
 								
 				<td <?=$td_onclick?>><?=admin_number($row['app_offer_fee'], "-", "0")?></td>
