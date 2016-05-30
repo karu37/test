@@ -229,6 +229,8 @@ var page = function(){
 							'ad': ad,
 							'adid': uadid,
 							'ip': '127.0.0.1',
+							'account': '1234567890123456789012345678901234567890',
+							'imei': '123456789012345',
 							'uid' : uid,
 							'userdata': userdata};
 

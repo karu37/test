@@ -15,18 +15,22 @@
 	$appkey = $_REQUEST['ad'];
 	$adid = $_REQUEST['adid'];
 	$ip = $_REQUEST['ip'];
+	$account = $_REQUEST['account'];
+	$imei = $_REQUEST['imei'];
 	$uid = $_REQUEST['uid'];		// publisher사의 사용자 구별값 varchar(64)
 	$userdata = $_REQUEST['userdata'];	// publisher사의 사용자 context text
 	
 	// $arr_param 기본 정보는 $_REQUEST 파라미터로 초기화
 	$arr_param = $_REQUEST;
 	
-	if (!$pcode || !$appkey || !$uid || !$adid || !$ip) return_die('N', array('code'=>'-101', 'type'=>'E-REQUEST'), '파라미터 오류입니다..');
+	if (!$pcode || !$appkey || !$uid || !$adid || !$ip || !$account || !$imei) return_die('N', array('code'=>'-101', 'type'=>'E-REQUEST'), '파라미터 오류입니다..');
 	
 	$db_pcode = mysql_real_escape_string($pcode);
 	$db_appkey = mysql_real_escape_string($appkey);
 	$db_adid = mysql_real_escape_string($adid);
 	$db_ip = mysql_real_escape_string($ip);
+	$db_account = mysql_real_escape_string($account);
+	$db_imei = mysql_real_escape_string($imei);
 	$db_uid = mysql_real_escape_string($uid);
 	$db_userdata = mysql_real_escape_string($userdata);
 	
@@ -101,6 +105,8 @@
 	if ($row_userapp) {
 		$sql = "UPDATE al_user_app_t 
 				SET ip = '{$db_ip}',
+						account = '{$db_account}',
+						imei = '{$db_imei}',
 						uid = '{$db_uid}', 
 						userdata = '{$db_userdata}', 
 						merchant_fee = '{$row_app['app_merchant_fee']}', 
@@ -111,8 +117,8 @@
 		mysql_query($sql, $conn);
 		$user_app_id = $row_userapp['id'];	
 	} else {
-		$sql = "INSERT al_user_app_t (mcode, pcode, app_key, adid, ip, uid, userdata, merchant_fee, publisher_fee, action_atime, status, reg_day, reg_date)
-				VALUES ('{$row_app['mcode']}', '{$db_pcode}', '{$db_appkey}', '{$db_adid}', '{$db_ip}', '{$db_uid}', '{$db_userdata}', '{$row_app['app_merchant_fee']}', '{$row_app['publisher_fee']}', '{$ar_time['now']}', 'A', '{$ar_time['day']}', '{$ar_time['now']}')";
+		$sql = "INSERT al_user_app_t (mcode, pcode, app_key, adid, ip, account, imei, uid, userdata, merchant_fee, publisher_fee, action_atime, status, reg_day, reg_date)
+				VALUES ('{$row_app['mcode']}', '{$db_pcode}', '{$db_appkey}', '{$db_adid}', '{$db_ip}', '{$db_account}', '{$db_imei}', '{$db_uid}', '{$db_userdata}', '{$row_app['app_merchant_fee']}', '{$row_app['publisher_fee']}', '{$ar_time['now']}', 'A', '{$ar_time['day']}', '{$ar_time['now']}')";
 		mysql_query($sql, $conn);
 		$user_app_id = mysql_insert_id($conn);
 	}
