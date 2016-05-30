@@ -79,14 +79,23 @@
 	<!-- 
 	<?=$sql?>
 	-->
+	<div style='padding:10px'>
+		* A-Line 관리자 : <a href='http://admin.aline-soft.kr/login.php' target='_blank'>새창으로 관리자 이동</a>
+	</div>
 	<table width=100% border=0 cellpadding=0 cellspacing=0>
 		<tr>
-			<td width=150px>
-				Publisher Code : 
-			</td>
-			<td>
-				<input type="text" name="pcode" id="pcode" value="<?=$_REQUEST['pcode']?>" style='display: block; width: 100%' />
-			</td>
+			<form onsubmit='return page.on_btn_set_publisher()'>
+				<td width=150px>
+					Publisher Code : 
+				</td>
+				<td>
+					<div style='float:left'>
+						<input type="text" name="pcode" id="pcode" value="<?=$_REQUEST['pcode']?>" style='display: block; width: 100%' />
+					</div>
+					<a href='#' onclick='page.on_btn_set_publisher()' data-role='button' data-mini='true' data-inline='true' data-theme='b'>변경</a>
+				</td>
+			</form>
+			
 		</tr>
 		<tr>
 			<td colspan=2>
@@ -313,6 +322,10 @@ var page = function(){
 					
 			});
 		},	
+		on_btn_set_publisher: function() {
+			window.location.href="?id=aline-test&pcode=" + $("#pcode").val();
+			return false;
+		},
 	};
 	
 	fn.init();
