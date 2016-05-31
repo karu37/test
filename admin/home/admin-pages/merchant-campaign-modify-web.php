@@ -5,12 +5,9 @@
 		#app-info	.ui-block-a	{height: 45px; line-height:45px; padding-left: 10px; width:100px; border-bottom: 1px solid #ddd; font-weight: bold}
 		#app-info	.ui-block-b	{height: 45px; width:500px; border-bottom: 1px solid #ddd}
 		
-		#app-info	#app-exec-desc-wrapper	.cleditorMain	{height: 85px !important}
-		#app-info	#app-exec-desc-wrapper	.cleditorMain iframe	{height: 32px !important}
-		
-		#app-info	#app-content-wrapper	.cleditorMain	{height: 285px !important}
-		#app-info	#app-content-wrapper	.cleditorMain iframe	{height: 232px !important}
-		
+		#app-content	{height: 80px !important; overflow-y: scroll !important}
+		#app-exec-desc 	{height: 180px !important; overflow-y: scroll !important}
+
 		.required			{background-color:lightyellow}
 	</style>
 	<div style='padding: 10px'>
@@ -97,16 +94,16 @@
 				<div style='clear:both'></div>
 			</div>
 		</div>
-		<div class='ui-block-a' style='height:100px'>참여 설명</div>
-		<div class='ui-block-b' style='height:100px' id='app-exec-desc-wrapper'>
-			<div style='width:400px; display: inline-block; padding-top: 5px'>
-				<textarea id="app-exec-desc" name="app-exec-desc"><?=$row['app_exec_desc']?></textarea>
-			</div>
-		</div>
-		<div class='ui-block-a' style='height:300px'>광고 설명</div>
-		<div class='ui-block-b' style='height:300px' id='app-content-wrapper'>
+		<div class='ui-block-a' style='height:100px'>광고 설명</div>
+		<div class='ui-block-b' style='height:100px' id='app-content-wrapper'>
 			<div style='width:400px; display: inline-block; padding-top: 5px'>
 				<textarea id="app-content" name="app-content"><?=$row['app_content']?></textarea>
+			</div>
+		</div>
+		<div class='ui-block-a' style='height:200px'>적립 방법</div>
+		<div class='ui-block-b' style='height:200px' id='app-exec-desc-wrapper'>
+			<div style='width:400px; display: inline-block; padding-top: 5px'>
+				<textarea id="app-exec-desc" name="app-exec-desc"><?=$row['app_exec_desc']?></textarea>
 			</div>
 		</div>
 		<div class='ui-block-a required'>광고원가</div>

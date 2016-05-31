@@ -6,12 +6,9 @@
 		#add_app	.ui-block-a	{height: 45px; line-height:45px; padding-left: 10px; width:100px; border-bottom: 1px solid #ddd; font-weight: bold}
 		#add_app	.ui-block-b	{height: 45px; width:500px; border-bottom: 1px solid #ddd}
 		
-		#add_app	#app-exec-desc-wrapper	.cleditorMain	{height: 85px !important}
-		#add_app	#app-exec-desc-wrapper	.cleditorMain iframe	{height: 32px !important}
-		
-		#add_app	#app-content-wrapper	.cleditorMain	{height: 285px !important}
-		#add_app	#app-content-wrapper	.cleditorMain iframe	{height: 232px !important}
-		
+		#app-content	{height: 80px !important; overflow-y: scroll !important}
+		#app-exec-desc 	{height: 180px !important; overflow-y: scroll !important}
+
 		.required			{background-color:lightyellow}
 	</style>
 	<t3 style='height:40px; padding-top:20px'>WEB 방식 광고 등록</t3>
@@ -74,21 +71,22 @@
 				<div style='clear:both'></div>
 			</div>
 		</div>
-		<div class='ui-block-a' style='height:100px'>참여 설명</div>
-		<div class='ui-block-b' style='height:100px' id='app-exec-desc-wrapper'>
+		<div class='ui-block-a' style='height:100px'>광고 설명</div>
+		<div class='ui-block-b' style='height:100px' id='app-content-wrapper'>
 			<div style='width:400px; display: inline-block; padding-top: 5px'>
-				<textarea id="app-exec-desc" name="app-exec-desc"></textarea>
+				<textarea id="app-content" name="app-content"></textarea>
 			</div>
 		</div>
 		
-		<div class='ui-block-a' style='height:300px'>광고 설명</div>
-		<div class='ui-block-b' style='height:300px' id='app-content-wrapper'>
+		<div class='ui-block-a' style='height:200px'>적립 방법</div>
+		<div class='ui-block-b' style='height:200px' id='app-exec-desc-wrapper'>
 			<div style='width:400px; display: inline-block; padding-top: 5px'>
-				<textarea id="app-content" name="app-content">
-<br><br>				
-[참여안내]<br>
-1. 시작하기를 클릭하여 광고에 참여<br>
-2. 페이스북 로그인 > 좋아요 클릭<br>
+				<textarea id="app-exec-desc" name="app-exec-desc">
+
+
+[참여안내]
+1. 시작하기를 클릭하여 광고에 참여
+2. 페이스북 로그인 > 좋아요 클릭
 3. 적립하기
 				</textarea>
 			</div>

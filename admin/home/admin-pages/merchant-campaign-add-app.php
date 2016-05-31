@@ -8,12 +8,9 @@
 	<style>
 		#app-info	.ui-block-a	{height: 45px; line-height:45px; padding-left: 10px; width:100px; border-bottom: 1px solid #ddd; font-weight: bold}
 		#app-info	.ui-block-b	{height: 45px; width:500px; border-bottom: 1px solid #ddd}
-		
-		#app-info	#app-exec-desc-wrapper	.cleditorMain	{height: 85px !important}
-		#app-info	#app-exec-desc-wrapper	.cleditorMain iframe	{height: 32px !important}
-		
-		#app-info	#app-content-wrapper	.cleditorMain	{height: 285px !important}
-		#app-info	#app-content-wrapper	.cleditorMain iframe	{height: 232px !important}
+
+		#app-content	{height: 80px !important; overflow-y: scroll !important}
+		#app-exec-desc 	{height: 180px !important; overflow-y: scroll !important}
 
 		.required			{background-color:lightyellow}
 		.app-keyword-wrapper					{background-color: lightgreen}
@@ -89,21 +86,22 @@
 				<div style='clear:both'></div>
 			</div>
 		</div>
-		<div class='ui-block-a' style='height:100px'>참여 설명</div>
-		<div class='ui-block-b' style='height:100px' id='app-exec-desc-wrapper'>
+		<div class='ui-block-a' style='height:100px'>광고 설명</div>
+		<div class='ui-block-b' style='height:100px' id='app-content-wrapper'>
 			<div style='width:400px; display: inline-block; padding-top: 5px'>
-				<textarea id="app-exec-desc" name="app-exec-desc"></textarea>
+				<textarea id="app-content" name="app-content"></textarea>
 			</div>
 		</div>
 		
-		<div class='ui-block-a' style='height:300px'>광고 설명</div>
-		<div class='ui-block-b' style='height:300px' id='app-content-wrapper'>
+		<div class='ui-block-a' style='height:200px'>적립 방법</div>
+		<div class='ui-block-b' style='height:200px' id='app-exec-desc-wrapper'>
 			<div style='width:400px; display: inline-block; padding-top: 5px'>
-				<textarea id="app-content" name="app-content">
-<br><br>				
-[참여안내]<br>
-1. 시작하기를 클릭하여 광고에 참여한다.<br>
-2. 참여안내페이지가 있을 경우 반드시 해당 안내페이지의 내용을 숙지하시고 참여를 하셔야 합니다.<br>
+				<textarea id="app-exec-desc" name="app-exec-desc">
+
+
+[참여안내]
+1. 시작하기를 클릭하여 광고에 참여한다.
+2. 참여안내페이지가 있을 경우 반드시 해당 안내페이지의 내용을 숙지하시고 참여를 하셔야 합니다.
 3. 참여완료 후에 반드시 적립하기를 클릭하여 적립받으세요!
 				</textarea>
 			</div>
