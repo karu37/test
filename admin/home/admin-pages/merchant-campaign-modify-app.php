@@ -19,6 +19,7 @@
 		<a href='?id=campaign-by-appkey-list&appkey=<?=urlencode($row['app_key'])?>' data-theme='b' data-role='button' data-mini='true' data-inline='true'>참가자</a>
 		
 		<a href='?id=campaign-app-exec-view&appkey=<?=urlencode($row['app_key'])?>' data-role='button' data-theme='b' data-inline='true' data-mini='true' >일자별 수행수</a>
+		<a href='#' onclick='goPage("dlg-upload-app-adid", null, {appkey: "<?=$row['app_key']?>"})' data-theme='b' data-role='button' data-mini='true' data-inline='true'>ADID 등록(중복방지)</a>
 	</div>	
 	<hr>
 	<div id='app-info' class='ui-grid-a'>

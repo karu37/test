@@ -190,8 +190,8 @@
 			$item['ad'] = $row['app_key'];
 			$item['title'] = str_replace("\n", "<br>\n", htmlspecialchars($row['app_title']));
 			$item['type'] = $row['app_exec_type'];
-			$item['desc'] = str_replace("\n", "<br>\n", htmlspecialchars($row['app_exec_desc']));
-			$item['content'] = str_replace("\n", "<br>\n", htmlspecialchars($row['app_content']));
+			$item['desc'] = $row['app_exec_desc'];
+			$item['content'] = $row['app_content'];
 			$item['icon'] = $row['app_iconurl'];
 
 			$item['reward'] = floor($row['publisher_fee'] * $reward_percent / 100);
