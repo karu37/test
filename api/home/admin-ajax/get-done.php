@@ -92,6 +92,14 @@
 	}
 
 	// ---------------------------------------------	
+	// 해당 사용자의 업로드된 ADID에서의 참여 가능 여부 체크
+	$sql = "SELECT adid FROM al_app_adid_uploaded_t WHERE app_key = '{$db_appkey}' AND adid = '{$db_adid}'";
+	$row = @mysql_fetch_assoc(mysql_query($sql, $conn));
+	if ($row) {
+		return_die('N', array('code'=>'-106', 'type'=>'E-DONE'), '더 이상 참여할 수 없는 광고입니다.');
+	}	
+	
+	// ---------------------------------------------	
 	// 해당 사용자의 참여 가능 여부를 확인한다.
 	$sql = "SELECT id, status, permanent_fail FROM al_user_app_t WHERE app_key = '{$db_appkey}' AND adid = '{$db_adid}' AND ( (status = 'D' AND forced_done = 'N') OR permanent_fail = 'Y' )";
 	$row = @mysql_fetch_assoc(mysql_query($sql, $conn));
@@ -117,6 +125,7 @@
 	} else {
 		return_die('N', array('code'=>'-107', 'type'=>'E-FLOW'), '광고 참여한 기록이 없습니다.');
 	}
+
 	
 	// user_app의 정보를 그대로 저장함.
 	$arr_param['userapp'] = $row_userapp;
