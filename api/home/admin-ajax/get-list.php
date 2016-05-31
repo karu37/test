@@ -199,7 +199,7 @@
 			
 			$item['platform'] = $row['app_platform'];
 			if ($row['app_market']) $item['market'] = $row['app_market'];
-			if ($row['app_packageid']) $item['packageid'] = $row['app_packageid'];
+			if ($row['app_packageid']) $item['package'] = $row['app_packageid'];
 			if ($row['app_scheme']) $item['scheme'] = $row['app_scheme'];
 			
 			if ($row['app_agefrom']) $item['age_from'] = $row['app_agefrom'];
