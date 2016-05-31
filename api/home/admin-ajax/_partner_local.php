@@ -60,7 +60,7 @@ function local_request_done($app_key, $arr_data, $conn)
 	global $g_local, $dev_mode;
 
 	$ar_app = $arr_data['ad'];
-	$ar_userapp = $arr_data['user_app'];
+	$ar_userapp = $arr_data['userapp'];
 	$unique_key = $g_local['unique_prefix'].$arr_data['user_app_id'];
 	$ar_result = array();
 	
@@ -113,7 +113,7 @@ function local_request_done($app_key, $arr_data, $conn)
 			$response_data = post($req_base_url, $url_param, 3);
 			$ar_resp = json_decode($response_data, true);
 			
-			echo "make_action_log({$ar_resp['result']}, {$response_data}, 0, 'local-cb-call', null, {$req_base_url}, {$url_param});";
+			// echo "make_action_log({$ar_resp['result']}, {$response_data}, 0, 'local-cb-call', null, {$req_base_url}, {$url_param});";
 			make_action_log($ar_resp['result'], $response_data, get_timestamp() - $start_tm, 'local-cb-call', null, $req_base_url, $url_param);
 		
 			// ----------------------------------------------------------------------
