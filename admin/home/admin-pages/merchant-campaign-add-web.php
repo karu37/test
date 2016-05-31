@@ -313,8 +313,8 @@ var <?=$js_page_id?> = function()
 				util.initPage($('#page'));
 				_$("div[data-role='popup']").on("popupbeforeposition", function(){ util.initPage($(this)); });
 				
-				$("#app-exec-desc").cleditor();
-				$("#app-content").cleditor();				
+				// $("#app-exec-desc").cleditor();
+				// $("#app-content").cleditor();				
 				
 				page.action.on_change_app_type();
 			},
