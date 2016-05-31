@@ -1,0 +1,5 @@
+RewriteEngine On
+
+RewriteRule ^list\.json	/ajax-request.php?id=get-list	[QSA]
+RewriteRule ^join\.json	/ajax-request.php?id=get-join	[QSA]
+RewriteRule ^done\.json	/ajax-request.php?id=get-done	[QSA]
