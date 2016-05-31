@@ -138,7 +138,7 @@ var <?=$js_page_id?> = function()
 					'rewardpercent' : _$("#txt-reward-percent").val()
 				};
 				
-				if (!ar_param.callbackurl.match(/^https?\:\/\/[a-z_\-\.]+\/.*$/)) {
+				if (!ar_param.callbackurl.match(/^https?\:\/\/[0-9a-z_\-\.]+\/.*$/)) {
 					alert("URL 형식이 올바르지 않습니다.");
 					return;	
 				}
@@ -184,7 +184,7 @@ var <?=$js_page_id?> = function()
 				
 				var url = $("#txt-callback-url").val();
 				var param = page.action.gen_post_parameter();
-				if (!url.match(/^https?\:\/\/[a-z_.-]+\/.*$/)) {
+				if (!url.match(/^https?\:\/\/[0-9a-z\_\.\-]+\/.*$/)) {
 					alert("URL 형식이 올바르지 않습니다.");
 					return;	
 				}
