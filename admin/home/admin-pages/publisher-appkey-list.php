@@ -270,7 +270,7 @@
 			
 			$app_status = 'Y';
 			if ($row['is_active'] == 'N' || 
-				$row['is_mactive'] == 'N' || $row['is_mactive'] == 'D' ||
+				$row['is_mactive'] == 'N' || $row['is_mactive'] == 'D' || $row['exec_edate_check'] == 'N' || 
 				$row['p_is_mactive'] == 'N' || $row['p_is_mactive'] == 'T' ||
 				$row['check_time_period'] == 'N' || 
 				$row['p_lvmode'] == 'N' || $row['p_level_active_mode'] == 'N' || $row['pa_active_time_mode'] == 'N' ||

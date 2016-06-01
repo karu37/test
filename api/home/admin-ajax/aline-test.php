@@ -11,56 +11,7 @@
 	$db_pcode = mysql_real_escape_string($pcode);
 
 	$ar_time = mysql_get_time($conn);
-
-	$sql = "SELECT app.*, 
-				m.name AS 'merchant_name', 
-				
-				IFNULL(pa.app_offer_fee, FLOOR(app.app_merchant_fee * IFNULL(pa.app_offer_fee_rate, p.offer_fee_rate) / 100) ) AS 'publisher_fee', 
-				
-				IF (app.exec_edate IS NULL OR DATE(app.exec_edate) >= CURRENT_DATE, 'Y', 'N') as 'edate_not_expired',
-				IF (s.app_key IS NULL OR IFNULL(pa.exec_tot_max_cnt, app.exec_tot_max_cnt) > s.exec_tot_cnt, 'Y', 'N') as 'tot_not_complished'
-				
-			FROM al_app_t app
-				INNER JOIN al_merchant_t m ON app.mcode = m.mcode 
-				INNER JOIN al_publisher_t p ON p.pcode = '{$db_pcode}' 
-				LEFT OUTER JOIN al_publisher_app_t pa ON app.app_key = pa.app_key AND pa.pcode = '{$db_pcode}' 
-				LEFT OUTER JOIN al_app_exec_stat_t s ON app.app_key = s.app_key
-			WHERE 1=1
-				AND app.is_active = 'Y'
-				AND app.is_mactive = 'Y'
-
-				AND m.is_mactive = 'Y'
-				AND p.is_mactive = 'Y'
-				
-				AND IFNULL(pa.is_mactive, 'Y') = 'Y'
-				AND IFNULL(pa.publisher_disabled, 'N') = 'N'
-				
-				AND (app.publisher_level IS NULL OR p.level <= app.publisher_level)
-				
-				AND IF (app.is_public_mode = 'Y', 
-					IF(IFNULL(pa.merchant_disabled,'N')='N','Y', 'N'),
-					IF(IFNULL(pa.merchant_enabled,'N')='Y', 'Y', 'N')) = 'Y'
-				
-				AND (CASE 
-					WHEN p.level = 1 AND (level_1_active_date IS NULL OR level_1_active_date <= '{$ar_time['datehour']}') THEN 'Y'
-					WHEN p.level = 2 AND (level_2_active_date IS NULL OR level_2_active_date <= '{$ar_time['datehour']}') THEN 'Y'
-					WHEN p.level = 3 AND (level_3_active_date IS NULL OR level_3_active_date <= '{$ar_time['datehour']}') THEN 'Y'
-					WHEN p.level = 4 AND (level_4_active_date IS NULL OR level_4_active_date <= '{$ar_time['datehour']}') THEN 'Y'
-					WHEN p.level >= 5 THEN 'Y'
-					ELSE 'N' END) = 'Y'
-					
-					
-				AND ( ( app.exec_stime IS NULL OR app.exec_etime IS NULL ) OR
-				  	  IF ( app.exec_stime <= app.exec_etime, 
-				  	 	 app.exec_stime <= '{$ar_time['hour']}' AND app.exec_etime > '{$ar_time['hour']}', 
-				  	 	 app.exec_stime < '{$ar_time['hour']}' OR app.exec_etime >= '{$ar_time['hour']}' )
-				)
-
-				AND (pa.active_time IS NULL OR pa.active_time <= '{$ar_time['datehour']}')
-				
-				AND ( IFNULL(pa.exec_hour_max_cnt, app.exec_hour_max_cnt) IS NULL OR IFNULL(pa.exec_hour_max_cnt, app.exec_hour_max_cnt) > IF(s.exec_time = '{$ar_time['datehour']}', s.exec_hour_cnt, 0) )
-				AND ( IFNULL(pa.exec_day_max_cnt, app.exec_day_max_cnt) IS NULL OR IFNULL(pa.exec_day_max_cnt, app.exec_day_max_cnt) > IF(DATE(s.exec_time) = '{$ar_time['day']}', s.exec_day_cnt, 0) )
-			";
+	$sql = get_query_app_list($pcode, $ar_time, false, $conn);
 	$result = mysql_query($sql, $conn);
 	
 ?>	
@@ -126,7 +77,7 @@
 						// exec_edate 가 지난 경우에도 is_active ==> "N" 으로 변경
 						if ($row['tot_not_complished'] != 'Y' || $row['edate_not_expired'] != 'Y') {
 echo "<!-- \n";
-var_dump($row);							
+// var_dump($row);							
 echo "\n-->";
 							$arr_inactive[] = "'" . $row['app_key'] . "'";
 							continue;

@@ -126,7 +126,7 @@
 		
 		$arr_active = array('Y' => '적립 가능', 'N' => '<span style="color:red; font-weight: bold">적립 불가</span>');
 		$arr_mp_mactive = array('Y' => '연동', 'N' => '<span style="color:red; font-weight: bold">중지</span>', 'T' => '<span style="color:red; font-weight: bold">개발</span>', 'D' => '<span style="color:red; font-weight: bold">삭제</span>');
-		$arr_public_mode = array('Y' => '공개', 'N' => '<span style="color:blue;font-weight:bold">비공개</span>');
+		$arr_public_mode = array('Y' => '공개', 'N' => '<span style="color:blue;font-weight:bold">제한</span>');
 		while ($appkey = mysql_fetch_assoc($result)) {
 			
 			$url_appkey = urlencode($appkey['app_key']);
