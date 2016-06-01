@@ -75,20 +75,23 @@ function local_request_done($app_key, $arr_data, $conn)
 	
 		$ar_time = mysql_get_time($conn);
 
-		// ----------------------------------------------------------------------
-		// 사용자 적립하기 (사용자 적립 및 al_user_app_t 상태 변경 모두 처리)
-		// ----------------------------------------------------------------------
-		$ar_reward = callback_reward($arr_data['pcode'], $arr_data['mcode'], $app_key, $arr_data['adid'], 
-									$ar_app['app_merchant_fee'], $ar_app['publisher_fee'], $unique_key, 
-									$ar_time, $conn);
+		$ar_reward['callback_done']	= 'N';
+		if ($row_app['is_mactive'] == 'Y') {
+			// ----------------------------------------------------------------------
+			// 사용자 적립하기 (사용자 적립 및 al_user_app_t 상태 변경 모두 처리)
+			// ----------------------------------------------------------------------
+			$ar_reward = callback_reward($arr_data['pcode'], $arr_data['mcode'], $app_key, $arr_data['adid'], 
+										$ar_app['app_merchant_fee'], $ar_app['publisher_fee'], $unique_key, 
+										$ar_time, $conn);
+										
+//			강제적립 테스트 함수
+//			$ar_reward = force_reward($arr_data['pcode'], $arr_data['mcode'], $app_key, $arr_data['adid'], $ar_app['publisher_fee'], $ar_time, $conn);
 
-//		강제적립 테스트 함수
-//		$ar_reward = force_reward($arr_data['pcode'], $arr_data['mcode'], $app_key, $arr_data['adid'], $ar_app['publisher_fee'], $ar_time, $conn);
-
-		if ($ar_reward['result'] == 'N') {
-			$code = $ar_reward['code'];
-			$msg = $ar_reward['msg'];
-			return array('result' => 'N', 'code' => $code, 'msg' => $msg);
+			if ($ar_reward['result'] == 'N') {
+				$code = $ar_reward['code'];
+				$msg = $ar_reward['msg'];
+				return array('result' => 'N', 'code' => $code, 'msg' => $msg);
+			}
 		}
 
 		// 강제적립된 대상을 적립한 경우 콜백호출하면 안됨 (Y 가 아닌 N 또는 F 인 경우에 호출함)

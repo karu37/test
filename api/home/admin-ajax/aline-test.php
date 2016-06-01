@@ -5,13 +5,13 @@
 	if (!$_REQUEST['pcode']) $_REQUEST['pcode'] = 'aline';
 	
 	$pub_mactive = get_publisher_info();
-	if (!$pub_mactive || $pub_mactive == 'D') return_die('N', array('code'=>'-100', 'type'=>'E-REQUEST'), '유효하지 않은 매체코드입니다.');
+	if (!$pub_mactive || $pub_mactive == 'N' || $pub_mactive == 'D') return_die('N', array('code'=>'-100', 'type'=>'E-REQUEST'), '유효하지 않은 매체코드입니다.');
 
 	$pcode = $_REQUEST['pcode'];
 	$db_pcode = mysql_real_escape_string($pcode);
 
 	$ar_time = mysql_get_time($conn);
-	$sql = get_query_app_list($pcode, $ar_time, false, $conn);
+	$sql = get_query_app_list($pcode, $ar_time, false, ($pub_mactive == 'T'), $conn);
 	$result = mysql_query($sql, $conn);
 	
 ?>	

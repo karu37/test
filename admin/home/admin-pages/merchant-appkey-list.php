@@ -49,7 +49,6 @@
 	$sql = "SELECT * FROM al_merchant_t WHERE mcode = '{$db_mcode}'";
 	$row_merchant = @mysql_fetch_assoc(mysql_query($sql, $conn));
 
-
 	$sql = "SELECT app.*,
 				t.short_txt AS 'app_exec_type_name' 
 			FROM al_app_t app
@@ -63,13 +62,13 @@
 		.list tr.mactive-N:hover td 	{background:#ddd}
 		.list tr.mactive-D td 			{background:#aaa; color:#000}
 		.list tr.mactive-D:hover td 	{background:#bbb}
+		.list tr.mactive-T td 			{background:#aaa; color:#000}
+		.list tr.mactive-T:hover td 	{background:#bbb}
 		
-		.list tr			{line-height:25px}
-		.list th			{padding: 2px 4px}
-		.list td			{padding: 2px 4px}
+		.list tr > * 	{height:25px; line-height:1em; padding: 4px 4px}
 				
 		.btn-small-wrapper a	{font-size: 10px}
-		.btn-wrapper			{width: 70px}
+		.btn-wrapper			{width: 90px}
 		.btn-wrapper a			{padding:7px 4px; letter-spacing:0px; margin: 2px -2px 2px -1px; box-shadow:none;}
 	</style>
 	<t4 style='line-height: 40px'><a href='?id=partner-detail&partnerid=<?=$partner_id?>'><b3 style='color:darkred'><?=$row_merchant['name']?></b3></a> 의 광고별 설정</t4>
@@ -133,7 +132,7 @@
 	<thead>
 		<tr>
 			<th width=30px>IDX</th>
-			<th width=50px>ON/OFF</th>
+			<th width=1px>관리자<br>차단</th>
 			<th>타입</th>
 			<th>제목</th>
 			<th>원가</th>
@@ -143,14 +142,17 @@
 	</thead>
 	<tbody>
 		<?
+		$arr_public_mode = array('Y' => '공개', 'N' => '<span style="color:blue;font-weight:bold">제한</span>');
+		
 		while ($row = mysql_fetch_assoc($result)) {
 			$id = $row['id'];
 			
 			// 현재의 Merchant의 active상태 : Y / T / N 만 가능함.					
-			$ar_btn_theme = array('a','a','a');
-			if ($row['is_mactive'] == 'Y') $ar_btn_theme = array('b','a','a');
-			else if ($row['is_mactive'] == 'N') $ar_btn_theme = array('a','b','a');
-			else if ($row['is_mactive'] == 'D') $ar_btn_theme = array('a','a','b');
+			$ar_btn_theme = array('a','a','a','a');
+			if ($row['is_mactive'] == 'Y') $ar_btn_theme[0] = 'b';
+			else if ($row['is_mactive'] == 'N') $ar_btn_theme[1] = 'b';
+			else if ($row['is_mactive'] == 'D') $ar_btn_theme[2] = 'b';
+			else if ($row['is_mactive'] == 'T') $ar_btn_theme[3] = 'b';			
 			
 			$url_mcode = urlencode($mcode);
 			$url_appkey = urlencode($row['app_key']);
@@ -163,12 +165,13 @@
 						<a class='btn-<?=$row['app_key']?> btn-Y' href='#' onclick='<?=$js_page_id?>.action.on_btn_set_merchantapp_active("<?=$row_merchant['mcode']?>", "<?=$row['app_key']?>", "<?=$row['id']?>", "Y")' data-theme='<?=$ar_btn_theme[0]?>' data-role='button' data-mini='true' data-inline='true'>정<br>상</a>
 						<a class='btn-<?=$row['app_key']?> btn-N' href='#' onclick='<?=$js_page_id?>.action.on_btn_set_merchantapp_active("<?=$row_merchant['mcode']?>", "<?=$row['app_key']?>", "<?=$row['id']?>", "N")' data-theme='<?=$ar_btn_theme[1]?>' data-role='button' data-mini='true' data-inline='true'>중<br>지</a>
 						<a class='btn-<?=$row['app_key']?> btn-D' href='#' onclick='<?=$js_page_id?>.action.on_btn_set_merchantapp_active("<?=$row_merchant['mcode']?>", "<?=$row['app_key']?>", "<?=$row['id']?>", "D")' data-theme='<?=$ar_btn_theme[2]?>' data-role='button' data-mini='true' data-inline='true'>삭<br>제</a>
+						<a class='btn-<?=$row['app_key']?> btn-T' href='#' onclick='<?=$js_page_id?>.action.on_btn_set_merchantapp_active("<?=$row_merchant['mcode']?>", "<?=$row['app_key']?>", "<?=$row['id']?>", "T")' data-theme='<?=$ar_btn_theme[3]?>' data-role='button' data-mini='true' data-inline='true'>개<br>발</a>
 					</div>
 				</td>
 				<td <?=$td_onclick?>><?=$row['app_exec_type_name']?></td>
 				<td <?=$td_onclick?>><?=$row['app_title']?></td>
 				<td <?=$td_onclick?>><?=number_format($row['app_merchant_fee'])?></td>
-				<td <?=$td_onclick?>><?=$row['is_public_mode']?></td>
+				<td <?=$td_onclick?>><?=$arr_public_mode[$row['is_public_mode']]?></td>
 				<td>
 					<a href='#' onclick='mvPage("dlgpage-merchantapp-config", null, {partnerid: "<?=$partner_id?>", mcode: "<?=$row_merchant['mcode']?>", appkey:"<?=$row['app_key']?>"})' data-theme='b' data-role='button' data-mini='true' data-inline='true'>Publisher별 설정</a>
 				</td>

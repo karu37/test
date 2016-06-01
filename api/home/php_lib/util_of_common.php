@@ -56,13 +56,21 @@
 		if ($row['tot_not_complished'] != 'Y' || $row['edate_not_expired'] != 'Y')
 
 */
-function get_query_app_list($pcode, $ar_time, $b_hide_exhauseted, $conn)
+function get_query_app_list($pcode, $ar_time, $b_hide_exhauseted, $b_test_publisher, $conn)
 {
 	$where_add = "";
 	// 기간 종료 및 최대 개수 초과를 미리 제거할지 리턴시킬지 여부 ==> 이 광고는 is_active='N' 변경 대상 처리
 	if ($b_hide_exhauseted) {
 		$where_add = "AND IF (app.exec_edate IS NULL OR DATE(app.exec_edate) >= CURRENT_DATE, 'Y', 'N') = 'N'
 					AND IF (s.app_key IS NULL OR IFNULL(pa.exec_tot_max_cnt, app.exec_tot_max_cnt) > s.exec_tot_cnt, 'Y', 'N') = 'N'";
+	}
+	
+	$app_is_mactive = 'Y';
+	$p_is_mactive = 'Y';
+	// 테스트 모드는 app.is_mactive = 'T' 로 조회
+	if ($b_test_publisher) {
+		$app_is_mactive = 'T';
+		$p_is_mactive = " IN ('Y', 'T')";
 	}
 	
 	$db_pcode = mysql_real_escape_string($pcode);
@@ -81,10 +89,10 @@ function get_query_app_list($pcode, $ar_time, $b_hide_exhauseted, $conn)
 				LEFT OUTER JOIN al_app_exec_stat_t s ON app.app_key = s.app_key
 			WHERE 1=1
 				AND app.is_active = 'Y'
-				AND app.is_mactive = 'Y'
+				AND app.is_mactive = '{$app_is_mactive}'
 
 				AND m.is_mactive = 'Y'
-				AND p.is_mactive = 'Y'
+				AND p.is_mactive {$p_is_mactive}
 				
 				AND IFNULL(pa.is_mactive, 'Y') = 'Y'
 				AND IFNULL(pa.publisher_disabled, 'N') = 'N'

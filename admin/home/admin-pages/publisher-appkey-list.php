@@ -1,6 +1,8 @@
 <?
 /* 광고 목록 리스팅 대상
 
+** 개발 테스트용 앱 (T)는 대상에서 제외한다
+
 -- Merchant 기준
 # al_merchant_t.is_active	: 해당 Merchat 전체 광고 허용/금지 (Merchant가 자기의 모든 광고들을 설정)
 # al_merchant_t.is_deleted	: 해당 Merchat 전체 광고 허용/금지/삭제 (관리자가 Merchant의 모든 광고들을 설정)-Y/H/N
@@ -40,7 +42,7 @@
 	$order_by = "ORDER BY app.id DESC";
 	// --------------------------------
 	// Paginavigator initialize	
-	$sql = "SELECT COUNT(*) as cnt FROM al_app_t app WHERE 1=1 {$where}";
+	$sql = "SELECT COUNT(*) as cnt FROM al_app_t app WHERE app.is_mactive <> 'T' {$where}";
 	$row = mysql_fetch_assoc(mysql_query($sql, $conn));
 	$pages = new Paginator($row['cnt']);
 	$limit = "LIMIT " . $pages->limit_start . "," . $pages->limit_end;
@@ -120,7 +122,7 @@
 				INNER JOIN al_publisher_t p ON p.pcode = '{$db_pcode}' 
 				LEFT OUTER JOIN al_app_exec_stat_t s ON app.app_key = s.app_key
 				LEFT OUTER JOIN string_t t ON t.type = 'app_exec_type' AND app.app_exec_type = t.code 
-			WHERE 1=1 {$where} {$order_by} {$limit}";
+			WHERE app.is_mactive <> 'T' {$where} {$order_by} {$limit}";
 	$result = mysql_query($sql, $conn);
 ?>
 	<style>
@@ -222,11 +224,11 @@
 	<table class='list single-line' cellpadding=0 cellspacing=0 width=100%>
 	<thead>
 		<tr>
-			<th>IDX</th>
+			<th width=20px>IDX</th>
 			<th width=1px>P<br>수신<br>거부</th>
-			<th>M 이름</th>
-			<th>타입</th>
-			<th>제목</th>
+			<th width=80px>M 이름</th>
+			<th width=40px>타입</th>
+			<th width=80px>제목</th>
 
 			<th>오픈<br>시간</th>
 			

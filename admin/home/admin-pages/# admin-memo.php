@@ -45,7 +45,7 @@ ALine - 광고 공급되는 조건
 # ON/OFF flags 존재하는 테이블 목록
 	al_partner_t.is_mactive						: [관리자]가 Partner ID 활성/중지/삭제 ( Y/N/D )
 	
-	1번 al_app_t.is_mactive						: [관리자]가 해당 광고 활성/중지/삭제 ( Y/N/D )
+	1번 al_app_t.is_mactive						: [관리자]가 해당 광고 활성/중지/삭제 ( Y/N/D/T )	: T는 테스트용 앱 (과정 로깅만하고 나머지는 모두 무시됨)
 	2번 al_app_t.is_active						: [Merchant]가 해당 광고 활성/중지 ( Y/N )
 	
 	3번 al_merchant_t.is_mactive				: [관리자]가 Merchant Code 활성/테스트/중지/삭제 ( Y/T/N/D )

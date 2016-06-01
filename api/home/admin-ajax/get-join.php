@@ -9,15 +9,15 @@
 	// http://api.aline-soft.kr/ajax-request.php?id=get-join&pcode=aline&os=A&ad=LOC2&adid=0123456789012345-6789-0123-4567-8901&ip=127.0.0.1&uid=heartman@gmail.com&userdata=USERDATA
 
 	$pub_mactive = get_publisher_info();
-	if (!$pub_mactive || $pub_mactive == 'D') return_die('N', array('code'=>'-100', 'type'=>'E-REQUEST'), '유효하지 않은 매체코드입니다.');
-
+	if (!$pub_mactive || $pub_mactive == 'N' || $pub_mactive == 'D') return_die('N', array('code'=>'-100', 'type'=>'E-REQUEST'), '유효하지 않은 매체코드입니다.');
+	
 	$pcode = $_REQUEST['pcode'];
 	$appkey = $_REQUEST['ad'];
 	$adid = $_REQUEST['adid'];
 	$ip = $_REQUEST['ip'];
 	$account = $_REQUEST['account'];
 	$imei = $_REQUEST['imei'];
-	$uid = $_REQUEST['uid'];		// publisher사의 사용자 구별값 varchar(64)
+	$uid = $_REQUEST['uid'];			// publisher사의 사용자 구별값 varchar(64)
 	$userdata = $_REQUEST['userdata'];	// publisher사의 사용자 context text
 	
 	// $arr_param 기본 정보는 $_REQUEST 파라미터로 초기화
@@ -51,9 +51,9 @@
 	// 광고가 없거나, 참여할 수 없는 상태입니다. ( edate, tot_exec 에 대한 N 처리는 list에서 수행 )
 	if (!$row_app || 
 		$row_app['is_active'] != 'Y' || 
-		$row_app['is_mactive'] != 'Y' || 
+		($pub_mactive == 'Y' && $row_app['is_mactive'] != 'Y') || 
 		$row_app['m_mactive'] != 'Y' || 
-		$row_app['p_mactive'] != 'Y' || 
+		($pub_mactive == 'Y' && $row_app['p_mactive'] != 'Y') || 
 		$row_app['pa_mactive'] != 'Y' || 
 		$row_app['pa_disabled'] != 'Y' || 
 		$row_app['p_level_block'] != 'Y' || 
@@ -134,7 +134,7 @@
 	// ## al_user_app_t.id 값을 저장
 	$arr_param['user_app_id'] = $user_app_id;
 	
-// var_dump($arr_param);
+	// var_dump($arr_param);
 	
 	// --------------------------------------------------------
 	if ($row_app['lib'] == 'LOCAL') {

@@ -6,7 +6,7 @@
 	if (!$searchfor) $searchfor = 'title';
 	$db_search = mysql_real_escape_string($search);
 
-	$where = "AND app.is_mactive <> 'T' AND (app.is_mactive = 'D' OR app.is_active = 'N')";
+	$where = "AND app.is_mactive = 'T'";
 	if ($searchfor == "title" && $search) $where .= " AND app.app_title LIKE '%{$db_search}%'";
 	if ($searchfor == "packageid" && $search) $where .= " AND app.app_packageid LIKE '{$db_search}%'";
 	if ($searchfor == "mcode" && $search) $where .= " AND app.mcode = '{$db_search}'";
@@ -104,7 +104,6 @@
 			<th>필터</th>
 			<th>활성일</th>
 			<th>등록일</th>
-			<th width=30px></th>
 		</tr>
 	</thead>
 	<tbody>
@@ -170,7 +169,6 @@
 				<td <?=$td_onclick?>><?=$filter?></td>
 				<td <?=$td_onclick?>><?=$appkey['is_active'] == 'Y' ? admin_to_date($appkey['last_active_time']).'<br>'.admin_to_time($appkey['last_active_time']) : ""?></td>
 				<td <?=$td_onclick?>><?=admin_to_date($appkey['reg_date']).'<br>'.admin_to_time($appkey['reg_date'])?></td>
-				<td><a href='#' onclick='<?=$js_page_id?>.action.on_btn_set_appkey_mactive("<?=$appkey['mcode']?>", "<?=$appkey['app_key']?>", "T")' data-role='button' data-theme='c' data-inline='true' data-mini='true'>테스트앱<br>설정</a></td>
 			</tr>
 			<?
 		}

@@ -6,7 +6,8 @@
 	if (!$searchfor) $searchfor = 'title';
 	$db_search = mysql_real_escape_string($search);
 
-	$where = "AND app.is_mactive <> 'D' AND app.is_active <> 'N'";
+	// is_mactive : Y/N/D/T
+	$where = "AND app.is_mactive IN ('Y','N') AND app.is_active <> 'N'";
 	if ($searchfor == "title" && $search) $where .= " AND app.app_title LIKE '%{$db_search}%'";
 	if ($searchfor == "packageid" && $search) $where .= " AND app.app_packageid LIKE '{$db_search}%'";
 	if ($searchfor == "mcode" && $search) $where .= " AND app.mcode = '{$db_search}'";
@@ -49,11 +50,13 @@
 		.list tr.mactive-N:hover td 	{background:#ddd}
 		.list tr.mactive-D td 			{background:#aaa; color:#000}
 		.list tr.mactive-D:hover td 	{background:#bbb}
+		.list tr.mactive-T td 			{background:#aaa; color:#000}
+		.list tr.mactive-T:hover td 	{background:#bbb}
 		
 		.list tr > * 	{height:25px; line-height:1em; padding: 4px 4px}
 		
 		.list .btn-td									{padding-left: 0px padding-right: 0px}
-		.list .th_status, .list .btn-td .btn-wrapper	{width: 66px}
+		.list .th_status, .list .btn-td .btn-wrapper	{width: 86px}
 		.list .btn-td a									{padding:7px 4px; font-size: 10px; letter-spacing:0px; margin: 2px -2px 2px -1px; box-shadow:none;}
 		
 	</style>
@@ -134,10 +137,11 @@
 			$td_onclick = "onclick=\"mvPage('merchant-campaign-modify', null, {mcode: '{$appkey['mcode']}', appkey: '{$appkey['app_key']}'})\"";
 
 			// 현재의 Publisher의 active상태 : Y / T / N 만 가능함.					
-			$ar_btn_theme = array('a','a','a');
-			if ($appkey['is_mactive'] == 'Y') $ar_btn_theme = array('b','a','a');
-			else if ($appkey['is_mactive'] == 'N') $ar_btn_theme = array('a','b','a');
-			else if ($appkey['is_mactive'] == 'D') $ar_btn_theme = array('a','a','b');
+			$ar_btn_theme = array('a','a','a','a');
+			if ($appkey['is_mactive'] == 'Y') $ar_btn_theme[0] = 'b';
+			else if ($appkey['is_mactive'] == 'N') $ar_btn_theme[1] = 'b';
+			else if ($appkey['is_mactive'] == 'D') $ar_btn_theme[2] = 'b';
+			else if ($appkey['is_mactive'] == 'T') $ar_btn_theme[3] = 'b';			
 			
 			// 필터 정보
 			$filter = "";
@@ -179,6 +183,7 @@
 						<a class='btn-<?=$appkey['app_key']?> btn-Y' href='#' onclick='<?=$js_page_id?>.action.on_btn_set_appkey_mactive("<?=$appkey['mcode']?>", "<?=$appkey['app_key']?>", "Y")' data-theme='<?=$ar_btn_theme[0]?>' data-role='button' data-mini='true' data-inline='true'>정<br>상</a>
 						<a class='btn-<?=$appkey['app_key']?> btn-N' href='#' onclick='<?=$js_page_id?>.action.on_btn_set_appkey_mactive("<?=$appkey['mcode']?>", "<?=$appkey['app_key']?>", "N")' data-theme='<?=$ar_btn_theme[1]?>'  data-role='button' data-mini='true' data-inline='true'>중<br>지</a>
 						<a class='btn-<?=$appkey['app_key']?> btn-D' href='#' onclick='<?=$js_page_id?>.action.on_btn_set_appkey_mactive("<?=$appkey['mcode']?>", "<?=$appkey['app_key']?>", "D")' data-theme='<?=$ar_btn_theme[2]?>' data-role='button' data-mini='true' data-inline='true'>삭<br>제</a>
+						<a class='btn-<?=$appkey['app_key']?> btn-T' href='#' onclick='<?=$js_page_id?>.action.on_btn_set_appkey_mactive("<?=$appkey['mcode']?>", "<?=$appkey['app_key']?>", "T")' data-theme='<?=$ar_btn_theme[3]?>' data-role='button' data-mini='true' data-inline='true'>개<br>발</a>
 					</div>
 				</td>
 				<td <?=$td_onclick?>><img src='<?=$appkey['app_iconurl']?>' width=40px style='width:40px;height:40px;overflow:hidden;border-radius:0.5em;border:1px solid #888' /></td>

@@ -3,7 +3,7 @@
 	$appkey = $_REQUEST['appkey'];
 	$db_appkey = mysql_real_escape_string($appkey);
 
-	$sql = "SELECT * FROM al_app_t app WHERE app.app_key = '{$db_appkey}'";
+	$sql = "SELECT * FROM al_app_t app WHERE app.app_key = '{$db_appkey}' AND app.is_mactive <> 'T'";
 	$row_app = @mysql_fetch_assoc(mysql_query($sql, $conn));
 
 	// --------------------------------

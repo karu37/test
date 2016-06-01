@@ -26,7 +26,7 @@
 	// http://api.aline-soft.kr/ajax-request.php?id=get-done&pcode=aline&ad=LOC2&adid=0123456789012345-6789-0123-4567-8901
 
 	$pub_mactive = get_publisher_info("reward_percent, callback_url", $ar_publisher);
-	if (!$pub_mactive || $pub_mactive == 'D') return_die('N', array('code'=>'-100', 'type'=>'E-REQUEST'), '유효하지 않은 매체코드입니다.');
+	if (!$pub_mactive || $pub_mactive == 'N' || $pub_mactive == 'D') return_die('N', array('code'=>'-100', 'type'=>'E-REQUEST'), '유효하지 않은 매체코드입니다.');
 
 	$pcode = $_REQUEST['pcode'];
 	$appkey = $_REQUEST['ad'];
@@ -62,9 +62,9 @@
 	// 광고가 없거나, 참여할 수 없는 상태입니다. ( edate, tot_exec 에 대한 N 처리는 list에서 수행 )
 	if (!$row_app || 
 		$row_app['is_active'] != 'Y' || 
-		$row_app['is_mactive'] != 'Y' || 
+		($pub_mactive == 'Y' && $row_app['is_mactive'] != 'Y') || 
 		$row_app['m_mactive'] != 'Y' || 
-		$row_app['p_mactive'] != 'Y' || 
+		($pub_mactive == 'Y' && $row_app['p_mactive'] != 'Y') || 
 		$row_app['pa_mactive'] != 'Y' || 
 		$row_app['pa_disabled'] != 'Y' || 
 		$row_app['p_level_block'] != 'Y' || 
