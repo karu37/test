@@ -95,7 +95,7 @@
 
 		echo "<br>";
 		$sql = "SELECT b.app_title, SUM(a.merchant_cnt), SUM(a.merchant_fee), SUM(a.publisher_cnt), SUM(a.publisher_fee) 
-				FROM al_summary_user_sales_h_t a
+				FROM al_summary_sales_h_t a
 					INNER JOIN al_app_t b ON a.app_key = b.app_key
 				WHERE a.pcode = '{$db_pcode}'
 				GROUP BY a.app_key";
@@ -107,7 +107,7 @@
 		$ar_col_define[] = array('type' => 'number', 'col' => '<col width=2%></col>', 'title' => 'M-매출');
 		$ar_col_define[] = array('type' => 'number', 'col' => '<col width=4%></col>', 'title' => 'P-수행수');
 		$ar_col_define[] = array('type' => 'number', 'col' => '<col width=2%></col>', 'title' => 'P-매출');
-		display_query("Publisher 매출 - al_summary_user_sales_h_t", "", $sql, $ar_col_define, $conn);		
+		display_query("Publisher 매출 - al_summary_sales_h_t", "", $sql, $ar_col_define, $conn);		
 ?>
 </body>
 <?

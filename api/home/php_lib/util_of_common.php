@@ -276,11 +276,11 @@ function callback_reward($pcode, $mcode, $appkey, $adid,
 				// echo $sql . "\n";
 				mysql_execute($sql, $conn);
 				
-				$sql = "SELECT id FROM al_summary_user_sales_h_t WHERE pcode = '{$db_pcode}' AND adid = '{$db_adid}' AND app_key = '{$db_appkey}' AND reg_day = '{$ar_time['day']}' AND hr = HOUR('{$ar_time['now']}') FOR UPDATE";
+				$sql = "SELECT id FROM al_summary_sales_h_t WHERE pcode = '{$db_pcode}' AND app_key = '{$db_appkey}' AND reg_day = '{$ar_time['day']}' AND hr = HOUR('{$ar_time['now']}') FOR UPDATE";
 				//echo $sql . "\n";
 				$row = @mysql_fetch_assoc(mysql_query($sql, $conn));
 				if ($row['id']) {
-					$sql = "UPDATE al_summary_user_sales_h_t 
+					$sql = "UPDATE al_summary_sales_h_t 
 							SET merchant_cnt = merchant_cnt + 1, 
 								merchant_fee = merchant_fee + '{$merchant_fee}',
 								publisher_cnt = publisher_cnt + 1,
@@ -290,8 +290,8 @@ function callback_reward($pcode, $mcode, $appkey, $adid,
 					mysql_execute($sql, $conn);
 				} else {
 					// Merchant Fee가 0보다 큰경우에 Merchant_cnt를 1 증가시킨다.
-					$sql = "INSERT al_summary_user_sales_h_t (mcode, pcode, adid, app_key, merchant_cnt, merchant_fee, publisher_cnt, publisher_fee, reg_day, hr)
-							VALUES ('{$db_mcode}', '{$db_pcode}', '{$db_adid}', '{$db_appkey}', '1', '{$merchant_fee}', '1', '{$publisher_fee}', '{$ar_time['day']}', HOUR('{$ar_time['now']}'))
+					$sql = "INSERT al_summary_sales_h_t (mcode, pcode, app_key, merchant_cnt, merchant_fee, publisher_cnt, publisher_fee, reg_day, hr)
+							VALUES ('{$db_mcode}', '{$db_pcode}', '{$db_appkey}', '1', '{$merchant_fee}', '1', '{$publisher_fee}', '{$ar_time['day']}', HOUR('{$ar_time['now']}'))
 							ON DUPLICATE KEY UPDATE merchant_cnt = merchant_cnt + 1, 
 													merchant_fee = merchant_fee + '{$merchant_fee}',
 													publisher_cnt = publisher_cnt + 1,
@@ -299,7 +299,6 @@ function callback_reward($pcode, $mcode, $appkey, $adid,
 					// echo $sql . "\n";
 					mysql_execute($sql, $conn);
 				}
-				
 			}
 			else
 			{
@@ -329,12 +328,11 @@ function callback_reward($pcode, $mcode, $appkey, $adid,
 						// echo $sql . "\n";
 						mysql_execute($sql, $conn);
 						
-						
 						// <== [강제적립한경우]에는 Merchant매출 만 갱신한다.
-						$sql = "SELECT id FROM al_summary_user_sales_h_t WHERE pcode = '{$db_pcode}' AND adid = '{$db_adid}' AND app_key = '{$db_appkey}' AND reg_day = '{$ar_time['day']}' AND hr = HOUR('{$ar_time['now']}') FOR UPDATE";
+						$sql = "SELECT id FROM al_summary_sales_h_t WHERE pcode = '{$db_pcode}' AND app_key = '{$db_appkey}' AND reg_day = '{$ar_time['day']}' AND hr = HOUR('{$ar_time['now']}') FOR UPDATE";
 						$row = @mysql_fetch_assoc(mysql_query($sql, $conn));
 						if ($row['id']) {
-							$sql = "UPDATE al_summary_user_sales_h_t 
+							$sql = "UPDATE al_summary_sales_h_t 
 									SET merchant_cnt = merchant_cnt + 1, 
 										merchant_fee = merchant_fee + '{$merchant_fee}'
 									WHERE id = '{$row['id']}'";
@@ -342,13 +340,14 @@ function callback_reward($pcode, $mcode, $appkey, $adid,
 							mysql_execute($sql, $conn);
 						} else {
 							// <== [강제적립한경우]에는 Merchant 만 갱신한다. (Publisher는 0건, 0원)
-							$sql = "INSERT al_summary_user_sales_h_t (mcode, pcode, adid, app_key, merchant_cnt, merchant_fee, publisher_cnt, publisher_fee, reg_day, hr)
-									VALUES ('{$db_mcode}', '{$db_pcode}', '{$db_adid}', '{$db_appkey}', '1', '{$merchant_fee}', '0', '0', '{$ar_time['day']}', HOUR('{$ar_time['now']}'))
+							$sql = "INSERT al_summary_sales_h_t (mcode, pcode, app_key, merchant_cnt, merchant_fee, publisher_cnt, publisher_fee, reg_day, hr)
+									VALUES ('{$db_mcode}', '{$db_pcode}', '{$db_appkey}', '1', '{$merchant_fee}', '0', '0', '{$ar_time['day']}', HOUR('{$ar_time['now']}'))
 									ON DUPLICATE KEY UPDATE merchant_cnt = merchant_cnt + 1, 
 															merchant_fee = merchant_fee + '{$merchant_fee}'";
 							// echo $sql . "\n";
 							mysql_execute($sql, $conn);
 						}				
+
 			}
 			
 			// al_app_exec_stat_t 에 수행 개수를 추가한다.
@@ -429,6 +428,7 @@ function force_reward($pcode, $mcode, $appkey, $adid,
 											done_day = '{$ar_time['day']}', 
 											status = 'D', 
 											forced_done = 'Y',
+											merchant_fee = NULL,
 											publisher_fee = '{$publisher_fee}'
 										WHERE id = '{$user_app_id}'";
 								// echo $sql . "\n";
@@ -436,15 +436,15 @@ function force_reward($pcode, $mcode, $appkey, $adid,
 								
 								//// al_user_app_saving_t 매출 레코드 추가 <== [강제적립]은 Merchant매출 = 0, Unique키는 존재하지 않음, 또한 아래의 중복키가 존재해서도 안됨 (날짜는 현재 시간 <-- 위에서 설정됨)
 								$sql = "INSERT INTO al_user_app_saving_t (user_app_id, mcode, pcode, app_key, adid, merchant_fee, publisher_fee, m_reg_day, m_reg_date, p_reg_day, p_reg_date)
-										SELECT id, mcode, pcode, app_key, adid, 0, publisher_fee, done_day, action_dtime, done_day, action_dtime FROM al_user_app_t WHERE id = '{$user_app_id}'";
+										SELECT id, mcode, pcode, app_key, adid, NULL, publisher_fee, done_day, action_dtime, done_day, action_dtime FROM al_user_app_t WHERE id = '{$user_app_id}'";
 								// echo $sql . "\n";
 								mysql_execute($sql, $conn);
-								
-								$sql = "SELECT id FROM al_summary_user_sales_h_t WHERE pcode = '{$db_pcode}' AND adid = '{$db_adid}' AND app_key = '{$db_appkey}' AND reg_day = '{$ar_time['day']}' AND hr = HOUR('{$ar_time['now']}') FOR UPDATE";
+
+								$sql = "SELECT id FROM al_summary_sales_h_t WHERE pcode = '{$db_pcode}' AND adid = '{$db_adid}' AND app_key = '{$db_appkey}' AND reg_day = '{$ar_time['day']}' AND hr = HOUR('{$ar_time['now']}') FOR UPDATE";
 								$row = @mysql_fetch_assoc(mysql_query($sql, $conn));
 								if ($row['id']) {
 									// <== [강제적립]은 Merchant 매출 정보를 건드리지 않음.
-									$sql = "UPDATE al_summary_user_sales_h_t 
+									$sql = "UPDATE al_summary_sales_h_t 
 											SET publisher_cnt = publisher_cnt + 1,
 												publisher_fee = publisher_fee + '{$publisher_fee}'
 											WHERE id = '{$row['id']}'";
@@ -452,7 +452,7 @@ function force_reward($pcode, $mcode, $appkey, $adid,
 									mysql_execute($sql, $conn);
 								} else {
 									// <== [강제적립]은 Merchant 매출및 건수를 0으로
-									$sql = "INSERT al_summary_user_sales_h_t (mcode, pcode, adid, app_key, merchant_cnt, merchant_fee, publisher_cnt, publisher_fee, reg_day, hr)
+									$sql = "INSERT al_summary_sales_h_t (mcode, pcode, adid, app_key, merchant_cnt, merchant_fee, publisher_cnt, publisher_fee, reg_day, hr)
 											VALUES ('{$db_mcode}', '{$db_pcode}', '{$db_adid}', '{$db_appkey}', '0', '0', '1', '{$publisher_fee}', '{$ar_time['day']}', HOUR('{$ar_time['now']}'))
 											ON DUPLICATE KEY UPDATE publisher_cnt = publisher_cnt + 1,
 																	publisher_fee = publisher_fee + '{$publisher_fee}';";
