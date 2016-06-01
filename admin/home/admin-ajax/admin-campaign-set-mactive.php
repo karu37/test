@@ -15,6 +15,12 @@
 	
 		$sql = "SELECT * FROM al_app_t WHERE mcode = '{$db_merchant_code}' AND app_key = '{$db_appkey}' FOR UPDATE";
 		$row = @mysql_fetch_assoc(mysql_query($sql, $conn));
+		
+		if ($is_mactive == 'T' && $row['lib'] != 'LOCAL') {
+			rollback($conn);
+			return_die(false, null, '외부 연동 광고는 개발용으로 설정할 수 없습니다.');
+		}
+		
 		if ($row['id']) {
 			$sql = "UPDATE al_app_t SET is_mactive = '{$db_is_mactive}' WHERE id = '{$row['id']}'";
 			mysql_execute($sql, $conn);

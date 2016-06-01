@@ -65,12 +65,12 @@ function get_query_app_list($pcode, $ar_time, $b_hide_exhauseted, $b_test_publis
 					AND IF (s.app_key IS NULL OR IFNULL(pa.exec_tot_max_cnt, app.exec_tot_max_cnt) > s.exec_tot_cnt, 'Y', 'N') = 'N'";
 	}
 	
-	$app_is_mactive = 'Y';
-	$p_is_mactive = 'Y';
+	$app_is_mactive = "Y";
+	$p_is_mactive = "'Y'";
 	// 테스트 모드는 app.is_mactive = 'T' 로 조회
 	if ($b_test_publisher) {
-		$app_is_mactive = 'T';
-		$p_is_mactive = " IN ('Y', 'T')";
+		$app_is_mactive = "T";
+		$p_is_mactive = "'Y', 'T'";
 	}
 	
 	$db_pcode = mysql_real_escape_string($pcode);
@@ -92,7 +92,7 @@ function get_query_app_list($pcode, $ar_time, $b_hide_exhauseted, $b_test_publis
 				AND app.is_mactive = '{$app_is_mactive}'
 
 				AND m.is_mactive = 'Y'
-				AND p.is_mactive {$p_is_mactive}
+				AND p.is_mactive IN ({$p_is_mactive})
 				
 				AND IFNULL(pa.is_mactive, 'Y') = 'Y'
 				AND IFNULL(pa.publisher_disabled, 'N') = 'N'

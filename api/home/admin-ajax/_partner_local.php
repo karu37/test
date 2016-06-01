@@ -76,7 +76,10 @@ function local_request_done($app_key, $arr_data, $conn)
 		$ar_time = mysql_get_time($conn);
 
 		$ar_reward['callback_done']	= 'N';
-		if ($row_app['is_mactive'] == 'Y') {
+		
+		// al_app_t.is_mactive 가 T인 경우에는 적립하지 않음
+		if ($row_app['is_mactive'] != 'T') 
+		{
 			// ----------------------------------------------------------------------
 			// 사용자 적립하기 (사용자 적립 및 al_user_app_t 상태 변경 모두 처리)
 			// ----------------------------------------------------------------------
@@ -124,11 +127,11 @@ function local_request_done($app_key, $arr_data, $conn)
 			// 	 callback_done 결과를 al_user_app_t 에 기록하기 실패시 F 로 설정함.
 			// ----------------------------------------------------------------------
 			if ($ar_resp['result'] == 'Y') {
-				$sql = "UPDATE al_user_app_t SET callback_done = 'Y', callback_code = NULL, callback_time = '{$ar_time['now']}' WHERE id = '{$arr_data['user_app_id']}'";
+				$sql = "UPDATE al_user_app_t SET callback_done = 'Y', callback_data = NULL, callback_time = '{$ar_time['now']}' WHERE id = '{$arr_data['user_app_id']}'";
 				mysql_query($sql, $conn);
 			} else {
-				$db_code = mysql_real_escape_string($ar_resp['code']);
-				$sql = "UPDATE al_user_app_t SET callback_done = 'F', callback_code = '{$db_code}', callback_time = '{$ar_time['now']}' WHERE id = '{$arr_data['user_app_id']}'";
+				$db_response_data = mysql_real_escape_string($response_data);
+				$sql = "UPDATE al_user_app_t SET callback_done = 'F', callback_data = '{$db_response_data}', callback_time = '{$ar_time['now']}' WHERE id = '{$arr_data['user_app_id']}'";
 				mysql_query($sql, $conn);
 			}
 		}

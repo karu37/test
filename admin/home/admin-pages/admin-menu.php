@@ -14,6 +14,6 @@
 		<li style='padding-left:15px' class='frequent'>└ <a data-ajax="false" href='?id=all-publisher-list'>전체 Publisher 목록</a></li>
 		<li style='padding-left:15px' class='frequent'>└ <a data-ajax="false" href='?id=all-appkey-list'>전체 광고 목록</a></li>
 		<li style='padding-left:25px' class='frequent'>└ <a data-ajax="false" href='?id=all-appkey-list-deleted'>삭제/불가 광고 목록</a></li>
-		<li style='padding-left:25px' class='frequent'>└ <a data-ajax="false" href='?id=all-appkey-list-test'>테스트 광고 목록</a></li>
+		<li style='padding-left:25px' class='frequent'>└ <a data-ajax="false" href='?id=all-appkey-list-test'>개발용 광고 목록</a></li>
 	
 </ul>

@@ -43,7 +43,7 @@
 		display_query("ADID기준 적립 상태 - al_user_app_saving_t", "", $sql, $ar_col_define, $conn);
 
 		echo "<br>";
-		$sql = "SELECT a.mcode, a.pcode, b.app_title, a.merchant_fee, a.publisher_fee, a.status, a.forced_done, a.action_atime, a.action_btime, a.action_dtime, a.callback_done, a.reg_date
+		$sql = "SELECT a.mcode, a.pcode, b.app_title, a.merchant_fee, a.publisher_fee, a.status, a.forced_done, a.action_atime, a.action_btime, a.action_dtime, a.callback_done, a.callback_data, a.reg_date
 				FROM al_user_app_t a
 					INNER JOIN al_app_t b ON a.app_key = b.app_key
 				WHERE adid = '{$db_adid}' ORDER BY a.id DESC LIMIT 10";
@@ -63,8 +63,9 @@
 		$ar_col_define[] = array('type' => 'date', 'col' => '<col width=2%></col>', 'title' => '확인');
 		$ar_col_define[] = array('type' => 'date', 'col' => '<col width=2%></col>', 'title' => '완료');
 		$ar_col_define[] = array('type' => '', 'col' => '<col width=2%></col>', 'title' => '적립<br>호출');
+		$ar_col_define[] = array('type' => '', 'col' => '<col width=2%></col>', 'title' => '적립<br>리턴');
 		
-		$ar_col_define[] = array('type' => 'date', 'col' => '<col width=10%></col>', 'title' => '일시');
+		$ar_col_define[] = array('type' => 'date', 'col' => '<col width=2%></col>', 'title' => '일시');
 		display_query("ADID기준 진행 상태 - al_user_app_t", "", $sql, $ar_col_define, $conn);
 
 		echo "<br>";
