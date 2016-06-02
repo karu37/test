@@ -10,18 +10,7 @@
 		DELETE FROM al_summary_user_sales_h_t WHERE pcode = 'aline' AND reg_day = CURRENT_DATE;
 
 	*/
-
-	// 완료 테스트 초기화
-/*
-	$test_adid = '0123456789012345-6789-0123-4567-8901';
-	$test_pcode = 'aline';
-	$test_appkey = 'LOC2';
-	mysql_query($sql = "UPDATE al_user_app_t SET status = 'A', permanent_fail = 'N', action_dtime = NULL, done_day = NULL, unique_key = NULL WHERE app_key = '{$test_appkey}' AND pcode = '{$test_pcode}' AND adid = '{$test_adid}';", $conn);
-	mysql_query($sql = "DELETE FROM al_user_app_saving_t WHERE app_key = '{$test_appkey}' AND pcode = '{$test_pcode}' AND adid = '{$test_adid}';", $conn);
-	mysql_query($sql = "DELETE FROM al_summary_user_sales_h_t WHERE pcode = '{$test_pcode}' AND reg_day = CURRENT_DATE;", $conn);
 	
-	// die("INITILIZED AND EXIT");
-*/
 	// 요청하기
 	// http://api.aline-soft.kr/ajax-request.php?id=get-done&pcode=aline&ad=LOC2&adid=0123456789012345-6789-0123-4567-8901
 
@@ -59,32 +48,12 @@
 	$arr_param['ad'] = $row_app;
 
 	// ----------------------------------------------------------------------------
-	// 광고가 없거나, 참여할 수 없는 상태입니다. ( edate, tot_exec 에 대한 N 처리는 list에서 수행 )
-	if (!$row_app || 
-		$row_app['is_active'] != 'Y' || 
-		($pub_mactive == 'Y' && $row_app['is_mactive'] != 'Y') || 
-		$row_app['m_mactive'] != 'Y' || 
-		($pub_mactive == 'Y' && $row_app['p_mactive'] != 'Y') || 
-		$row_app['pa_mactive'] != 'Y' || 
-		$row_app['pa_disabled'] != 'Y' || 
-		$row_app['p_level_block'] != 'Y' || 
-		$row_app['pa_merchant_disabled'] != 'Y' || 
-		$row_app['p_level_active_date'] != 'Y' || 
-		$row_app['check_open_time'] != 'Y' || 
-		$row_app['check_edate'] != 'Y' || 
-		$row_app['check_tot_executed'] != 'Y') 
+	// 광고가 없는 경우에만 강제적립이 불가함.
+	if (!$row_app) 
 	{
 		return_die('N', array('code'=>'-103', 'type'=>'E-CLOSED'), '광고가 없거나 참여할 수 없는 상태입니다.');
 	}
 
-	// 광고가 수량이 완료되어 임시 중단된 상태입니다.
-	if (
-		$row_app['check_time_period'] != 'Y' || 
-		$row_app['check_hour_executed'] != 'Y' || 
-		$row_app['check_day_executed'] != 'Y' ) 
-	{
-		return_die('N', array('code'=>'-104', 'type'=>'E-PAUSED'), '광고가 임시 중단된 상태입니다.');
-	}
 
 	// 실행형이 아니면 요청 불가함	
 	if ($row_app['app_exec_type'] != 'I') {
@@ -101,11 +70,11 @@
 	
 	// ---------------------------------------------	
 	// 해당 사용자의 참여 가능 여부를 확인한다.
-	$sql = "SELECT id, status, permanent_fail FROM al_user_app_t WHERE app_key = '{$db_appkey}' AND adid = '{$db_adid}' AND ( (status = 'D' AND forced_done = 'N') OR permanent_fail = 'Y' )";
+	$sql = "SELECT id, status, permanent_fail FROM al_user_app_t WHERE app_key = '{$db_appkey}' AND adid = '{$db_adid}' AND status = 'D'";
 	$row = @mysql_fetch_assoc(mysql_query($sql, $conn));
 	if ($row) {
 		if ($row['status'] == 'D') {
-			return_die('N', array('code'=>'-105', 'type'=>'E-DONE'), '이미 참여한 광고입니다.');
+			return_die('N', array('code'=>'-105', 'type'=>'E-DONE'), '이미 적립 완료한 광고입니다.');
 		} else if ($row['permanent_fail'] == 'Y') {
 			return_die('N', array('code'=>'-106', 'type'=>'E-DONE'), '더 이상 참여할 수 없는 광고입니다.');
 		}
@@ -153,7 +122,7 @@
 	if ($row_app['lib'] == 'LOCAL') {
 		
 		include dirname(__FILE__)."/_partner_local.php";
-		$ar_result = local_request_done($appkey, $arr_param, false, $conn);
+		$ar_result = local_request_done($appkey, $arr_param, true, $conn);
 		
 	} else {
 		

@@ -65,9 +65,21 @@
 				pa.publisher_disabled, 
 				pa.active_time, 
 				
-				IFNULL(pa.exec_hour_max_cnt, app.exec_hour_max_cnt) as 'exec_hour_max_cnt',
-				IFNULL(pa.exec_day_max_cnt, app.exec_day_max_cnt) as 'exec_day_max_cnt',
-				IFNULL(pa.exec_tot_max_cnt, app.exec_tot_max_cnt) as 'exec_tot_max_cnt',
+				IFNULL(IF(LEFT(s.exec_time, 13) = LEFT(NOW(), 13), s.exec_hour_cnt, 0), 0) as 'app_exec_hour_cnt',
+				IFNULL(IF(DATE(s.exec_time) = CURRENT_DATE, s.exec_day_cnt, 0), 0) as 'app_exec_day_cnt',
+				IFNULL(s.exec_tot_cnt, 0) as 'app_exec_tot_cnt',
+				
+				pa.exec_hour_max_cnt as 'pa_exec_hour_max_cnt',
+				pa.exec_day_max_cnt as 'pa_exec_day_max_cnt',
+				pa.exec_tot_max_cnt as 'pa_exec_tot_max_cnt',
+
+				IFNULL(IF(LEFT(ps.exec_time, 13) = LEFT(NOW(), 13), ps.exec_hour_cnt, 0), 0) as 'ps_exec_hour_cnt',
+				IFNULL(IF(DATE(ps.exec_time) = CURRENT_DATE, ps.exec_day_cnt, 0), 0) as 'ps_exec_day_cnt',
+				IFNULL(ps.exec_tot_cnt, 0) as 'ps_exec_tot_cnt',
+				
+				app.exec_hour_max_cnt as 'app_exec_hour_max_cnt',
+				app.exec_day_max_cnt as 'app_exec_day_max_cnt',
+				app.exec_tot_max_cnt as 'app_exec_tot_max_cnt',
 				
 				IFNULL(pa.is_mactive, 'Y') as 'pa_is_mactive',
 				IFNULL(pa.app_offer_fee, FLOOR(app.app_merchant_fee * IFNULL(pa.app_offer_fee_rate, p.offer_fee_rate) / 100) ) AS 'publisher_fee', 
@@ -107,13 +119,13 @@
 					
 				IF(pa.active_time > NOW(), 'N', 'Y') as 'pa_active_time_mode',
 
-				IFNULL(IF( s.exec_time = LEFT(NOW(), 12), s.exec_hour_cnt, 0), 0) as 'app_exec_hour_cnt',
-				IFNULL(IF(s.exec_time = CURRENT_DATE, s.exec_day_cnt, 0), 0) as 'app_exec_day_cnt',
-				IFNULL(s.exec_tot_cnt, 0) as 'app_exec_tot_cnt',
-
-				IF (IFNULL(pa.exec_hour_max_cnt, app.exec_hour_max_cnt) <= IFNULL(IF( s.exec_time = LEFT(NOW(), 12), s.exec_hour_cnt, 0), 0), 'N', 'Y') as 'exec_hour_check',
-				IF (IFNULL(pa.exec_day_max_cnt, app.exec_day_max_cnt) <= IFNULL(IF(s.exec_time = CURRENT_DATE, s.exec_day_cnt, 0), 0), 'N', 'Y') as 'exec_day_check',
-				IF (IFNULL(IFNULL(pa.exec_tot_max_cnt, app.exec_tot_max_cnt), 0) <= IFNULL(s.exec_tot_cnt, 0), 'N', 'Y')  as 'exec_tot_check',
+				IF (pa.exec_hour_max_cnt <= IF(LEFT(ps.exec_time, 13) = LEFT(NOW(), 13), ps.exec_hour_cnt, 0), 'N', 'Y') as 'ps_check_hour_executed',
+				IF (pa.exec_day_max_cnt <= IF(DATE(ps.exec_time) = CURRENT_DATE, ps.exec_day_cnt, 0), 'N', 'Y') as 'ps_check_day_executed',
+				IF (pa.exec_tot_max_cnt <= IFNULL(ps.exec_tot_cnt,0), 'N', 'Y') as 'ps_check_tot_executed',
+				
+				IF (app.exec_hour_max_cnt <= IF(LEFT(s.exec_time, 13) = LEFT(NOW(), 13), s.exec_hour_cnt, 0), 'N', 'Y') as 'check_hour_executed',
+				IF (app.exec_day_max_cnt <= IF(DATE(s.exec_time) = CURRENT_DATE, s.exec_day_cnt, 0), 'N', 'Y') as 'check_day_executed',
+				IF (app.exec_tot_max_cnt > IFNULL(s.exec_tot_cnt,0), 'Y', 'N') as 'check_tot_executed',
 
 				t.short_txt AS 'app_exec_type_name' 
 			FROM al_app_t app
@@ -121,8 +133,10 @@
 				INNER JOIN al_merchant_t m ON app.mcode = m.mcode 
 				INNER JOIN al_publisher_t p ON p.pcode = '{$db_pcode}' 
 				LEFT OUTER JOIN al_app_exec_stat_t s ON app.app_key = s.app_key
+				LEFT OUTER JOIN al_app_exec_pub_stat_t ps ON app.app_key = ps.app_key AND ps.pcode = '{$db_pcode}'
 				LEFT OUTER JOIN string_t t ON t.type = 'app_exec_type' AND app.app_exec_type = t.code 
 			WHERE app.is_mactive <> 'T' {$where} {$order_by} {$limit}";
+// echo $sql;			
 	$result = mysql_query($sql, $conn);
 ?>
 	<style>
@@ -230,23 +244,29 @@
 			<th width=40px>타입</th>
 			<th width=80px>제목</th>
 
-			<th>오픈<br>시간</th>
+			<th>AD<br>오픈<br>시간</th>
 			
-			<th width=30px>앱<br>적립</th>
-			<th width=30px>앱<br>관리<br>차단</th>
+			<th width=30px>AD<br>적립<br>상태</th>
+			<th width=30px>AD<br>관리<br>차단</th>
+			<th>AD<br>시간<br>수행</th>
+			<th>AD<br>일일<br>수행</th>
+			<th>AD<br>총<br>수행</th>
+			<th width=70px>AD<br>레벨<br>오픈</th>
+			<th width=70px>AD<br>기간<br>종료</th>
+			
 			<th width=30px>M<br>상태</th>
+			<th width=30px>M<br>공개<br>모드</th>
 			<th width=30px>P<br>상태</th>
-			<th width=30px>레벨<br>제한</th>
-			<th width=30px>공개<br>모드</th>
+			<th width=30px>P<br>레벨<br>제한</th>
 			
-			<th>지정가</th>
-			<th>지정율</th>
-			<th width=80px>지정오픈</th>
-			<th width=80px>레벨오픈</th>
-			<th width=80px>기간종료</th>
-			<th>시간수행</th>
-			<th>일일수행</th>
-			<th>총수행</th>
+			<th>PUB<br>지정가</th>
+			<th>PUB<br>지정율</th>
+			<th width=70px>PUB<br>지정<br>오픈</th>
+
+			<th>PUB<br>시간<br>수행</th>
+			<th>PUB<br>일일<br>수행</th>
+			<th>PUB<br>총<br>수행</th>
+			
 			<th width=1px></th>
 			<th>원가</th>
 			<th>공급금액</th>
@@ -259,7 +279,7 @@
 		$arr_block_mode = array('Y' => '허용', 'N' => '<span style="color:red; font-weight: bold">차단</span>', 'D' => '<span style="color:red; font-weight: bold">삭제</span>');
 		while ($row = mysql_fetch_assoc($result)) {
 			$id = $row['id'];
-			
+
 			// 현재의 Publisher의 active상태 : Y / T / N 만 가능함.					
 			$ar_btn_theme = array('a','a');
 			if ($row['pa_is_mactive'] == 'Y') $ar_btn_theme = array('b','a');
@@ -277,7 +297,8 @@
 				$row['check_time_period'] == 'N' || 
 				$row['p_lvmode'] == 'N' || $row['p_level_active_mode'] == 'N' || $row['pa_active_time_mode'] == 'N' ||
 				$row['pa_pmode'] == 'N' || 
-				$row['exec_hour_check'] == 'N' || $row['exec_day_check'] == 'N' || $row['exec_tot_check'] == 'N'
+				$row['check_hour_executed'] == 'N' || $row['check_day_executed'] == 'N' || $row['check_tot_executed'] == 'N' ||
+				$row['ps_check_hour_executed'] == 'N' || $row['ps_check_day_executed'] == 'N' || $row['ps_check_tot_executed'] == 'N'
 				) $app_status = 'N';
 			
 			
@@ -304,14 +325,24 @@
 			if ($row['exec_edate_check'] == 'N') $exec_edate = '<span style="color:red; font-weight: bold">'. $exec_edate .'</span>';
 			
 			// 수행완료에 따른 색상 처리
-			$exec_hour_cnt = admin_number($row['app_exec_hour_cnt']) . '<br>' . admin_number($row['exec_hour_max_cnt'], "-", "0");
-			if ($row['exec_hour_check'] == 'N') $exec_hour_cnt = '<span style="color:red; font-weight: bold">'. $exec_hour_cnt .'</span>';
+			$exec_hour_cnt = admin_number($row['app_exec_hour_cnt']) . '<br>' . admin_number($row['app_exec_hour_max_cnt'], "-", "0");
+			if ($row['check_hour_executed'] == 'N') $exec_hour_cnt = '<span style="color:red; font-weight: bold">'. $exec_hour_cnt .'</span>';
 			
-			$exec_day_cnt = admin_number($row['app_exec_day_cnt']) . '<br>' . admin_number($row['exec_day_max_cnt'], "-", "0");
-			if ($row['exec_day_check'] == 'N') $exec_day_cnt = '<span style="color:red; font-weight: bold">'. $exec_day_cnt .'</span>';
+			$exec_day_cnt = admin_number($row['app_exec_day_cnt']) . '<br>' . admin_number($row['app_exec_day_max_cnt'], "-", "0");
+			if ($row['check_day_executed'] == 'N') $exec_day_cnt = '<span style="color:red; font-weight: bold">'. $exec_day_cnt .'</span>';
 			
-			$exec_tot_cnt = admin_number($row['app_exec_tot_cnt']) . '<br>' . admin_number($row['exec_tot_max_cnt'], "-", "0");
-			if ($row['exec_tot_check'] == 'N') $exec_tot_cnt = '<span style="color:red; font-weight: bold">'. $exec_tot_cnt .'</span>';
+			$exec_tot_cnt = admin_number($row['app_exec_tot_cnt']) . '<br>' . admin_number($row['app_exec_tot_max_cnt'], "-", "0");
+			if ($row['check_tot_executed'] == 'N') $exec_tot_cnt = '<span style="color:red; font-weight: bold">'. $exec_tot_cnt .'</span>';
+			
+			// Pcode별 수행 개수 ==> 수행완료에 따른 색상 처리
+			$ps_exec_hour_cnt = admin_number($row['ps_exec_hour_cnt']) . '<br>' . admin_number($row['pa_exec_hour_max_cnt'], "-", "0");
+			if ($row['ps_check_hour_executed'] == 'N') $ps_exec_hour_cnt = '<span style="color:red; font-weight: bold">'. $ps_exec_hour_cnt .'</span>';
+			
+			$ps_exec_day_cnt = admin_number($row['ps_exec_day_cnt']) . '<br>' . admin_number($row['pa_exec_day_max_cnt'], "-", "0");
+			if ($row['ps_check_day_executed'] == 'N') $ps_exec_day_cnt = '<span style="color:red; font-weight: bold">'. $ps_exec_day_cnt .'</span>';
+			
+			$ps_exec_tot_cnt = admin_number($row['ps_exec_tot_cnt']) . '<br>' . admin_number($row['pa_exec_tot_max_cnt'], "-", "0");
+			if ($row['ps_check_tot_executed'] == 'N') $ps_exec_tot_cnt = '<span style="color:red; font-weight: bold">'. $ps_exec_tot_cnt .'</span>';
 			
 			?>
 			<tr id='list-<?=$row['id']?>' class='mactive-<?=$row['pa_is_mactive']?> appmactive-<?=$app_status?>' style='cursor:pointer'>
@@ -331,21 +362,25 @@
 				
 				<td <?=$td_onclick?>><?=$arr_active[$row['is_active']]?></td>
 				<td <?=$td_onclick?>><?=$arr_block_mode[$row['is_mactive']]?></td>
+				<td <?=$td_onclick?>><?=$exec_hour_cnt?></td>
+				<td <?=$td_onclick?>><?=$exec_day_cnt?></td>
+				<td <?=$td_onclick?>><?=$exec_tot_cnt?></td>
+				<td <?=$td_onclick?>><?=$p_level_active_date?></td>
+				<td <?=$td_onclick?>><?=$exec_edate?></td>
+				
 				<td <?=$td_onclick?>><?=$arr_mp_mactive[$row['m_is_mactive']]?></td>
+				<td <?=$td_onclick?>><?=$arr_block_mode[$row['pa_pmode']]?></td>
 				<td <?=$td_onclick?>><?=$arr_mp_mactive[$row['p_is_mactive']]?></td>
 				<td <?=$td_onclick?>><?=admin_number($row['publisher_level'])?><br><?=$arr_block_mode[$row['p_lvmode']]?></td>
-				<td <?=$td_onclick?>><?=$arr_block_mode[$row['pa_pmode']]?></td>
 								
 				<td <?=$td_onclick?>><?=admin_number($row['app_offer_fee'], "-", "0")?></td>
 				<td <?=$td_onclick?>><?=admin_number($row['app_offer_fee_rate'], "-", "0")?></td>
 				
 				<td <?=$td_onclick?>><?=$active_time?></td>
-				<td <?=$td_onclick?>><?=$p_level_active_date?></td>
-				<td <?=$td_onclick?>><?=$exec_edate?></td>
 				
-				<td <?=$td_onclick?>><?=$exec_hour_cnt?></td>
-				<td <?=$td_onclick?>><?=$exec_day_cnt?></td>
-				<td <?=$td_onclick?>><?=$exec_tot_cnt?></td>
+				<td <?=$td_onclick?>><?=$ps_exec_hour_cnt?></td>
+				<td <?=$td_onclick?>><?=$ps_exec_day_cnt?></td>
+				<td <?=$td_onclick?>><?=$ps_exec_tot_cnt?></td>
 				
 				<td><a href='#' onclick='goPage("dlg-publisherapp-config", null, {pcode: "<?=$pcode?>", appkey:"<?=$row['app_key']?>"})' data-theme='b' data-role='button' data-mini='true' data-inline='true'>공급<br>지정</a></td>
 				<td <?=$td_onclick?>><?=number_format($row['app_merchant_fee'])?></td>

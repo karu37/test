@@ -61,7 +61,8 @@
 		$row_app['p_level_active_date'] != 'Y' || 
 		$row_app['check_open_time'] != 'Y' || 
 		$row_app['check_edate'] != 'Y' || 
-		$row_app['check_tot_executed'] != 'Y') 
+		$row_app['check_tot_executed'] != 'Y' || 
+		$row_app['check_ps_tot_executed'] != 'Y') 
 	{
 		$log = $row_app['is_active'] . $row_app['is_mactive'] . $row_app['m_mactive'] . $row_app['p_mactive'] . $row_app['pa_mactive'] . $row_app['pa_disabled'] .
 				$row_app['p_level_block'] . $row_app['pa_merchant_disabled'] . $row_app['p_level_active_date'] . $row_app['check_open_time'] . $row_app['check_edate'] . $row_app['check_tot_executed'];
@@ -69,10 +70,11 @@
 	}
 
 	// 광고가 수량이 완료되어 임시 중단된 상태입니다.
-	if (
-		$row_app['check_time_period'] != 'Y' || 
+	if ($row_app['check_time_period'] != 'Y' || 
 		$row_app['check_hour_executed'] != 'Y' || 
-		$row_app['check_day_executed'] != 'Y' ) 
+		$row_app['check_day_executed'] != 'Y' ||
+		$row_app['check_ps_hour_executed'] != 'Y' || 
+		$row_app['check_ps_day_executed'] != 'Y')
 	{
 		$log = $row_app['check_time_period'] . $row_app['check_hour_executed'] . $row_app['check_day_executed'];
 		return_die('N', array('code'=>'-104', 'type'=>'E-PAUSED'), '광고가 임시 중단된 상태입니다.' . $log);

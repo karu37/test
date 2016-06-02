@@ -67,6 +67,7 @@
 					<th></th>
 					<th></th>
 					<th></th>
+					<th></th>
 				</tr>
 				<?	
 					$arr_inactive = array();
@@ -108,6 +109,11 @@ echo "\n-->";
 							<? } ?>
 						</td>
 						<td>
+							<? if ($row['app_exec_type'] == 'I') { ?>
+							<a class='mini-btn' href='#' onclick="page.on_btn_forcedone('<?=$pcode?>', $('#adid').val(), '<?=$row['app_key']?>')" data-role='button' data-mini='true'>강제 적립</a>
+							<? } ?>
+						</td>
+						<td>
 							<a class='mini-btn' href='#' onclick="page.on_btn_undone('<?=$pcode?>', $('#adid').val(), '<?=$row['app_key']?>')" data-role='button' data-mini='true'>적립완료 취소</a>
 						</td>
 						<?
@@ -123,7 +129,7 @@ echo "\n-->";
 				?>	
 				</table>					
 				<br>	
-				<a class='mini-btn' href='#' onclick="page.on_btn_deleteinfo('<?=$pcode?>')" data-role='button' data-theme='b' data-mini='true' data-inline='true'>적립 기록 모두 초기화 (수행 수는 전체 초기화됨)</a>
+				<a class='mini-btn' href='#' onclick="page.on_btn_deleteinfo('<?=$pcode?>', $('#adid').val())" data-role='button' data-theme='b' data-mini='true' data-inline='true'>적립 기록 모두 초기화 (수행 수는 전체 초기화됨)</a>
 				
 			</td>
 		</tr>
@@ -230,7 +236,29 @@ var page = function(){
 				$("#status").attr('src', "http://api.aline-soft.kr/ajax-request.php?id=aline-test-status&pcode=<?=$pcode?>&adid=" + uadid);
 					
 			});
-		},		
+		},
+		on_btn_forcedone: function(pcode, uadid, ad) {
+			// http://api.aline-soft.kr/ajax-request.php?id=get-join&pcode=aline&os=A&ad=LOC2&adid=0123456789012345-6789-0123-4567-8901&ip=127.0.0.1&uid=heartman@gmail.com&userdata=USERDATA
+			var ar_param = {id: 'get-forcedone',
+							'pcode': pcode,
+							'ad': ad,
+							'adid': uadid};
+							
+			alert(var_dump(ar_param));
+			basic_util.request('http://api.aline-soft.kr/ajax-request.php?' + basic_util.json_to_urlparam(ar_param), function(sz_data) {
+				try {
+					var js_data = JSON.parse(sz_data);
+					if (js_data['result'] == 'Y') {
+						alert("요청 성공");
+					} else {
+						alert("요청 실패\n\n code : " + js_data['code'] + "\n msg : " + js_data['msg']);
+					}
+				} catch(e) {alert(sz_data);}
+
+				$("#status").attr('src', "http://api.aline-soft.kr/ajax-request.php?id=aline-test-status&pcode=<?=$pcode?>&adid=" + uadid);
+					
+			});
+		},
 		on_btn_undone: function(pcode, uadid, ad) {
 			// http://api.aline-soft.kr/ajax-request.php?id=get-join&pcode=aline&os=A&ad=LOC2&adid=0123456789012345-6789-0123-4567-8901&ip=127.0.0.1&uid=heartman@gmail.com&userdata=USERDATA
 			var ar_param = {id: 'aline-test-status-undone',
@@ -253,7 +281,7 @@ var page = function(){
 					
 			});
 		},	
-		on_btn_deleteinfo: function(pcode, uadid, ad) {
+		on_btn_deleteinfo: function(pcode, uadid) {
 			// http://api.aline-soft.kr/ajax-request.php?id=get-join&pcode=aline&os=A&ad=LOC2&adid=0123456789012345-6789-0123-4567-8901&ip=127.0.0.1&uid=heartman@gmail.com&userdata=USERDATA
 			var ar_param = {id: 'aline-test-reset',
 							'pcode': pcode};

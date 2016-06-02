@@ -80,13 +80,15 @@ function get_query_app_list($pcode, $ar_time, $b_hide_exhauseted, $b_test_publis
 				IFNULL(pa.app_offer_fee, FLOOR(app.app_merchant_fee * IFNULL(pa.app_offer_fee_rate, p.offer_fee_rate) / 100) ) AS 'publisher_fee', 
 				
 				IF (app.exec_edate IS NULL OR DATE(app.exec_edate) >= CURRENT_DATE, 'Y', 'N') as 'edate_not_expired',
-				IF (s.app_key IS NULL OR IFNULL(pa.exec_tot_max_cnt, app.exec_tot_max_cnt) > s.exec_tot_cnt, 'Y', 'N') as 'tot_not_complished'
+				
+				IF (app.exec_tot_max_cnt > IFNULL(s.exec_tot_cnt, 0), 'Y', 'N') as 'tot_not_complished'
 				
 			FROM al_app_t app
 				INNER JOIN al_merchant_t m ON app.mcode = m.mcode 
 				INNER JOIN al_publisher_t p ON p.pcode = '{$db_pcode}' 
 				LEFT OUTER JOIN al_publisher_app_t pa ON app.app_key = pa.app_key AND pa.pcode = '{$db_pcode}' 
 				LEFT OUTER JOIN al_app_exec_stat_t s ON app.app_key = s.app_key
+				LEFT OUTER JOIN al_app_exec_pub_stat_t ps ON app.app_key = ps.app_key AND ps.pcode = '{$db_pcode}' 
 			WHERE 1=1
 				AND app.is_active = 'Y'
 				AND app.is_mactive = '{$app_is_mactive}'
@@ -118,11 +120,14 @@ function get_query_app_list($pcode, $ar_time, $b_hide_exhauseted, $b_test_publis
 				)
 
 				AND (pa.active_time IS NULL OR pa.active_time <= '{$ar_time['datehour']}')
-				
-				AND ( IFNULL(pa.exec_hour_max_cnt, app.exec_hour_max_cnt) IS NULL OR IFNULL(pa.exec_hour_max_cnt, app.exec_hour_max_cnt) > IF(s.exec_time = '{$ar_time['datehour']}', s.exec_hour_cnt, 0) )
-				
-				AND	( IFNULL(pa.exec_day_max_cnt, app.exec_day_max_cnt) IS NULL OR IFNULL(pa.exec_day_max_cnt, app.exec_day_max_cnt) > IF(DATE(s.exec_time) = '{$ar_time['day']}', s.exec_day_cnt, 0) )
-				
+
+				AND ( pa.exec_hour_max_cnt IS NULL OR pa.exec_hour_max_cnt > IF(ps.exec_time = '{$ar_time['datehour']}', ps.exec_hour_cnt, 0) )
+				AND	( pa.exec_day_max_cnt IS NULL OR pa.exec_day_max_cnt > IF(DATE(ps.exec_time) = '{$ar_time['day']}', ps.exec_day_cnt, 0) )
+				AND	( pa.exec_tot_max_cnt IS NULL OR pa.exec_tot_max_cnt > IFNULL(ps.exec_tot_cnt, 0) )
+
+				AND ( app.exec_hour_max_cnt IS NULL OR app.exec_hour_max_cnt > IF(s.exec_time = '{$ar_time['datehour']}', s.exec_hour_cnt, 0) )
+				AND	( app.exec_day_max_cnt IS NULL OR app.exec_day_max_cnt > IF(DATE(s.exec_time) = '{$ar_time['day']}', s.exec_day_cnt, 0) )
+
 				{$where_add}
 			";	
 	return $sql;
@@ -133,6 +138,9 @@ function get_query_app_list($pcode, $ar_time, $b_hide_exhauseted, $b_test_publis
 // IF (IFNULL(pa.exec_day_max_cnt, app.exec_day_max_cnt) IS NULL OR IFNULL(pa.exec_day_max_cnt, app.exec_day_max_cnt) > IF(s.exec_time = CURRENT_DATE, s.exec_day_cnt, 0), 'Y', 'N') as 'check_day_executed',
 	pa에 시간당 제한이 NULL이면 --> app의 제값을 사용하고, 모두 NULL이면 Y
 	아니면 값이 현재 실행 수보다 크면 Y (같아도 완료된것이므로 N 이됨)
+	
+	check_xxxxxxxxxxxx 는 기본 DEFAULT는 Y 임
+	check_tot_executed 값만 DEFAULT일 때 N 임
 */
 function get_query_publisher_app($pcode, $appkey, $ar_time, $conn)
 {
@@ -170,15 +178,21 @@ function get_query_publisher_app($pcode, $appkey, $ar_time, $conn)
 					, 'Y', 'N') as 'check_time_period',
 
 				IF (pa.active_time IS NULL OR pa.active_time <= '{$ar_time['datehour']}', 'Y', 'N') as 'check_open_time',
-				IF (IFNULL(pa.exec_hour_max_cnt, app.exec_hour_max_cnt) IS NULL OR IFNULL(pa.exec_hour_max_cnt, app.exec_hour_max_cnt) > IF(s.exec_time = '{$ar_time['datehour']}', s.exec_hour_cnt, 0), 'Y', 'N') as 'check_hour_executed',
-				IF (IFNULL(pa.exec_day_max_cnt, app.exec_day_max_cnt) IS NULL OR IFNULL(pa.exec_day_max_cnt, app.exec_day_max_cnt) > IF(DATE(s.exec_time) = '{$ar_time['day']}', s.exec_day_cnt, 0), 'Y', 'N') as 'check_day_executed',
-				IF (s.app_key IS NULL OR IFNULL(pa.exec_tot_max_cnt, app.exec_tot_max_cnt) > s.exec_tot_cnt, 'Y', 'N') as 'check_tot_executed'
+				
+				IF (pa.exec_hour_max_cnt <= IF(ps.exec_time = '{$ar_time['datehour']}', ps.exec_hour_cnt, 0), 'N', 'Y') as 'check_ps_hour_executed',
+				IF (pa.exec_day_max_cnt <= IF(DATE(ps.exec_time) = '{$ar_time['day']}', ps.exec_day_cnt, 0), 'N', 'Y') as 'check_ps_day_executed',
+				IF (pa.exec_tot_max_cnt <= IFNULL(ps.exec_tot_cnt,0), 'N', 'Y') as 'check_ps_tot_executed',
+				
+				IF (app.exec_hour_max_cnt <= IF(s.exec_time = '{$ar_time['datehour']}', s.exec_hour_cnt, 0), 'N', 'Y') as 'check_hour_executed',
+				IF (app.exec_day_max_cnt <= IF(DATE(s.exec_time) = '{$ar_time['day']}', s.exec_day_cnt, 0), 'N', 'Y') as 'check_day_executed',
+				IF (app.exec_tot_max_cnt > IFNULL(s.exec_tot_cnt,0), 'Y', 'N') as 'check_tot_executed'
 
 			FROM al_app_t app
 				INNER JOIN al_merchant_t m ON app.mcode = m.mcode 
 				INNER JOIN al_publisher_t p ON p.pcode = '{$db_pcode}' 
 				LEFT OUTER JOIN al_publisher_app_t pa ON app.app_key = pa.app_key AND pa.pcode = '{$db_pcode}' 
 				LEFT OUTER JOIN al_app_exec_stat_t s ON app.app_key = s.app_key
+				LEFT OUTER JOIN al_app_exec_pub_stat_t ps ON app.app_key = ps.app_key AND ps.pcode = '{$db_pcode}' 
 			WHERE
 				app.app_key = '{$db_appkey}'";	
 	// echo $sql;
@@ -206,7 +220,7 @@ function get_query_publisher_app($pcode, $appkey, $ar_time, $conn)
 // 만약 $ar_return['callback_done'] == 'Y' 이면 이미 콜백을 호출함 안됨
 function callback_reward($pcode, $mcode, $appkey, $adid, 
 						$merchant_fee, $publisher_fee, $unique_key, 
-						$ar_time, $conn) {
+						$ar_time, $b_local, $conn) {
 	
 	// echo "callback_reward($pcode, $appkey, $adid)<br>";
 	
@@ -215,6 +229,8 @@ function callback_reward($pcode, $mcode, $appkey, $adid,
 	$db_appkey = mysql_real_escape_string($appkey);
 	$db_adid = mysql_real_escape_string($adid);
 	$db_unique_key = mysql_real_escape_string($unique_key);
+
+	if ($b_local) $is_local = 'Y'; else $is_local = 'N';
 	
 	$is_forceddone = 'N';
 	try {
@@ -244,7 +260,6 @@ function callback_reward($pcode, $mcode, $appkey, $adid,
 			
 			// unique_key 중복에 대한 처리
 			$sql = "SELECT id FROM al_user_app_saving_t WHERE unique_key = '{$db_unique_key}'";
-			// echo $sql . "\n";
 			$row = @mysql_fetch_assoc(mysql_query($sql, $conn));
 			if ($row['id']) {
 				rollback($conn);
@@ -267,17 +282,17 @@ function callback_reward($pcode, $mcode, $appkey, $adid,
 							merchant_fee = '{$merchant_fee}', 
 							publisher_fee = '{$publisher_fee}'
 						WHERE id = '{$user_app_id}'";
-				// echo $sql . "\n";
 				mysql_execute($sql, $conn);
 				
 				// al_user_app_saving_t 매출 레코드 추가
 				$sql = "INSERT INTO al_user_app_saving_t (user_app_id, mcode, pcode, app_key, adid, merchant_fee, publisher_fee, unique_key, m_reg_day, m_reg_date, p_reg_day, p_reg_date)
-						SELECT id, mcode, pcode, app_key, adid, merchant_fee, publisher_fee, '{$db_unique_key}', done_day, action_dtime, done_day, action_dtime FROM al_user_app_t WHERE id = '{$user_app_id}'";
-				// echo $sql . "\n";
+						SELECT id, mcode, pcode, app_key, adid, '{$merchant_fee}', '{$publisher_fee}', '{$db_unique_key}', done_day, action_dtime, done_day, action_dtime FROM al_user_app_t WHERE id = '{$user_app_id}'";
 				mysql_execute($sql, $conn);
-				
+
+				////////////////////////////////////////////////////////////////////////////////////
+				// 실시간 통계에 정보 추가
+				////////////////////////////////////////////////////////////////////////////////////
 				$sql = "SELECT id FROM al_summary_sales_h_t WHERE pcode = '{$db_pcode}' AND app_key = '{$db_appkey}' AND reg_day = '{$ar_time['day']}' AND hr = HOUR('{$ar_time['now']}') FOR UPDATE";
-				//echo $sql . "\n";
 				$row = @mysql_fetch_assoc(mysql_query($sql, $conn));
 				if ($row['id']) {
 					$sql = "UPDATE al_summary_sales_h_t 
@@ -286,24 +301,38 @@ function callback_reward($pcode, $mcode, $appkey, $adid,
 								publisher_cnt = publisher_cnt + 1,
 								publisher_fee = publisher_fee + '{$publisher_fee}'
 							WHERE id = '{$row['id']}'";
-					// echo $sql . "\n";
 					mysql_execute($sql, $conn);
 				} else {
 					// Merchant Fee가 0보다 큰경우에 Merchant_cnt를 1 증가시킨다.
 					$sql = "INSERT al_summary_sales_h_t (mcode, pcode, app_key, merchant_cnt, merchant_fee, publisher_cnt, publisher_fee, reg_day, hr)
-							VALUES ('{$db_mcode}', '{$db_pcode}', '{$db_appkey}', '1', '{$merchant_fee}', '1', '{$publisher_fee}', '{$ar_time['day']}', HOUR('{$ar_time['now']}'))
-							ON DUPLICATE KEY UPDATE merchant_cnt = merchant_cnt + 1, 
-													merchant_fee = merchant_fee + '{$merchant_fee}',
-													publisher_cnt = publisher_cnt + 1,
-													publisher_fee = publisher_fee + '{$publisher_fee}';";
-					// echo $sql . "\n";
+							VALUES ('{$db_mcode}', '{$db_pcode}', '{$db_appkey}', '1', '{$merchant_fee}', '1', '{$publisher_fee}', '{$ar_time['day']}', HOUR('{$ar_time['now']}'));";
 					mysql_execute($sql, $conn);
 				}
+				////////////////////////////////////////////////////////////////////////////////////
+				// merchant별 수행 총 수인 al_app_exec_stat_t 에 수행 개수를 추가한다
+				$sql = "INSERT INTO al_app_exec_stat_t (app_key, exec_time, exec_hour_cnt, exec_day_cnt, exec_tot_cnt)
+						VALUES ('{$db_appkey}', '{$ar_time['datehour']}', '1', '1', '1')
+						ON DUPLICATE KEY UPDATE exec_hour_cnt = IF(exec_time = '{$ar_time['datehour']}', exec_hour_cnt + 1, 1),
+												exec_day_cnt = IF(DATE(exec_time) = '{$ar_time['day']}', exec_day_cnt + 1, 1),
+												exec_tot_cnt = exec_tot_cnt + 1,
+												exec_time = '{$ar_time['datehour']}'";
+				mysql_execute($sql, $conn);				
+				
+				// publisher별 수행수인 ==> al_app_exec_pub_stat_t 에 수행 개수를 추가한다
+				$sql = "INSERT INTO al_app_exec_pub_stat_t (app_key, pcode, exec_time, exec_hour_cnt, exec_day_cnt, exec_tot_cnt)
+						VALUES ('{$db_appkey}', '{$db_pcode}', '{$ar_time['datehour']}', '1', '1', '1')
+						ON DUPLICATE KEY UPDATE exec_hour_cnt = IF(exec_time = '{$ar_time['datehour']}', exec_hour_cnt + 1, 1),
+												exec_day_cnt = IF(DATE(exec_time) = '{$ar_time['day']}', exec_day_cnt + 1, 1),
+												exec_tot_cnt = exec_tot_cnt + 1,
+												exec_time = '{$ar_time['datehour']}'";
+				mysql_execute($sql, $conn);				
+				
 			}
 			else
 			{
 						//////////////////////////////////////////////////////
 						// 강제 적립된 상태 
+						// 	로컬은 이미 이전에 모두 적립이 된 상태이므로 변경사항은 FORCED_DONE만 N 로 변경하고 나무지는 수행하지 않음.
 						//////////////////////////////////////////////////////
 						
 						// al_user_app_t 상태 완료로 변경 <== [강제적립한경우]에는 publisher_fee를 설정하지 않음, 실제 적립완료시간은 지금시간으로 함.
@@ -315,50 +344,55 @@ function callback_reward($pcode, $mcode, $appkey, $adid,
 									unique_key = '{$db_unique_key}',
 									merchant_fee = '{$merchant_fee}'
 								WHERE id = '{$user_app_id}'";
-						// echo $sql . "\n";
 						mysql_execute($sql, $conn);
-						
-						// al_user_app_saving_t 매출 <== [강제적립한경우]에는 기존 매출테이블에 merchant_fee와 unique_key, 그리고 m_reg_day, m_reg_date만 갱신한다.
-						$sql = "UPDATE al_user_app_saving_t
-								SET merchant_fee = '{$merchant_fee}',
-									unique_key = '{$db_unique_key}',
-									m_reg_day = '{$ar_time['day']}',
-									m_reg_date = '{$ar_time['now']}'
-								WHERE user_app_id = '{$user_app_id}'";
-						// echo $sql . "\n";
-						mysql_execute($sql, $conn);
-						
-						// <== [강제적립한경우]에는 Merchant매출 만 갱신한다.
-						$sql = "SELECT id FROM al_summary_sales_h_t WHERE pcode = '{$db_pcode}' AND app_key = '{$db_appkey}' AND reg_day = '{$ar_time['day']}' AND hr = HOUR('{$ar_time['now']}') FOR UPDATE";
-						$row = @mysql_fetch_assoc(mysql_query($sql, $conn));
-						if ($row['id']) {
-							$sql = "UPDATE al_summary_sales_h_t 
-									SET merchant_cnt = merchant_cnt + 1, 
-										merchant_fee = merchant_fee + '{$merchant_fee}'
-									WHERE id = '{$row['id']}'";
-							// echo $sql . "\n";
+
+						if (!$b_local) 
+						{
+							// al_user_app_saving_t 매출 <== [강제적립한경우]에는 기존 매출테이블에 merchant_fee와 unique_key, 그리고 m_reg_day, m_reg_date만 갱신한다.
+							$sql = "UPDATE al_user_app_saving_t
+									SET merchant_fee = '{$merchant_fee}',
+										unique_key = '{$db_unique_key}',
+										m_reg_day = '{$ar_time['day']}',
+										m_reg_date = '{$ar_time['now']}'
+									WHERE user_app_id = '{$user_app_id}'";
 							mysql_execute($sql, $conn);
-						} else {
-							// <== [강제적립한경우]에는 Merchant 만 갱신한다. (Publisher는 0건, 0원)
-							$sql = "INSERT al_summary_sales_h_t (mcode, pcode, app_key, merchant_cnt, merchant_fee, publisher_cnt, publisher_fee, reg_day, hr)
-									VALUES ('{$db_mcode}', '{$db_pcode}', '{$db_appkey}', '1', '{$merchant_fee}', '0', '0', '{$ar_time['day']}', HOUR('{$ar_time['now']}'))
-									ON DUPLICATE KEY UPDATE merchant_cnt = merchant_cnt + 1, 
-															merchant_fee = merchant_fee + '{$merchant_fee}'";
-							// echo $sql . "\n";
+							
+							////////////////////////////////////////////////////////////////////////////////////
+							// 실시간 통계에 정보 추가
+							////////////////////////////////////////////////////////////////////////////////////
+							// <== [강제적립한경우]에는 Merchant매출 만 갱신한다.
+							$sql = "SELECT id FROM al_summary_sales_h_t WHERE pcode = '{$db_pcode}' AND app_key = '{$db_appkey}' AND reg_day = '{$ar_time['day']}' AND hr = HOUR('{$ar_time['now']}') FOR UPDATE";
+							$row = @mysql_fetch_assoc(mysql_query($sql, $conn));
+							if ($row['id']) {
+								$sql = "UPDATE al_summary_sales_h_t 
+										SET merchant_cnt = merchant_cnt + 1, 
+											merchant_fee = merchant_fee + '{$merchant_fee}'
+										WHERE id = '{$row['id']}'";
+								mysql_execute($sql, $conn);
+							} else {
+								// <== [강제적립한경우]에는 Merchant 만 갱신한다. (Publisher는 0건, 0원)
+								$sql = "INSERT al_summary_sales_h_t (mcode, pcode, app_key, merchant_cnt, merchant_fee, publisher_cnt, publisher_fee, reg_day, hr)
+										VALUES ('{$db_mcode}', '{$db_pcode}', '{$db_appkey}', '1', '{$merchant_fee}', '0', '0', '{$ar_time['day']}', HOUR('{$ar_time['now']}'))";
+								mysql_execute($sql, $conn);
+							}
+											
+							////////////////////////////////////////////////////////////////////////////////////
+							// al_app_exec_stat_t 에 수행 개수를 추가한다
+							//	로컬 강제적립 후 적립은 변경 없고													<== 이미 강제적립시 적용완료
+							//	외부 강제적립 후 적립은 al_app_exec_stat_t 증가, al_app_exec_pub_stat_t 유지		<== 이미 강제적립시 al_app_exec_pub_stat_t는 증가됨
+							////////////////////////////////////////////////////////////////////////////////////
+							$sql = "INSERT INTO al_app_exec_stat_t (app_key, exec_time, exec_hour_cnt, exec_day_cnt, exec_tot_cnt)
+									VALUES ('{$db_appkey}', '{$ar_time['datehour']}', '1', '1', '1')
+									ON DUPLICATE KEY UPDATE exec_hour_cnt = IF(exec_time = '{$ar_time['datehour']}', exec_hour_cnt + 1, 1),
+															exec_day_cnt = IF(DATE(exec_time) = '{$ar_time['day']}', exec_day_cnt + 1, 1),
+															exec_tot_cnt = exec_tot_cnt + 1,
+															exec_time = '{$ar_time['datehour']}'";
 							mysql_execute($sql, $conn);
-						}				
+							
+						}
 
 			}
 			
-			// al_app_exec_stat_t 에 수행 개수를 추가한다.
-			$sql = "INSERT INTO al_app_exec_stat_t (app_key, exec_time, exec_hour_cnt, exec_day_cnt, exec_tot_cnt)
-					VALUES ('{$db_appkey}', '{$ar_time['datehour']}', '1', '1', '1')
-					ON DUPLICATE KEY UPDATE exec_hour_cnt = IF(exec_time = '{$ar_time['datehour']}', exec_hour_cnt + 1, 1),
-											exec_day_cnt = IF(DATE(exec_time) = '{$ar_time['day']}', exec_day_cnt + 1, 1),
-											exec_tot_cnt = exec_tot_cnt + 1,
-											exec_time = '{$ar_time['datehour']}'";
-			// echo $sql;											
-			mysql_execute($sql, $conn);
 				
 	
 		commit($conn);
@@ -382,17 +416,22 @@ function callback_reward($pcode, $mcode, $appkey, $adid,
 	al_user_app_t
 		unique_key	: NULL
 		forced_done	: Y	
+		
+	단, LOCAL광고는 merchant_fee, merchant_cnt 를 추가하고 (자체 광고는 추후 적립이 필요 없으므로).
+		외부 연동 광고는 merchant_fee = NULL, merchant_cnt 는 유지 한다.
 */
 
 function force_reward($pcode, $mcode, $appkey, $adid, 
-						$publisher_fee, 
-						$ar_time, $conn) {
+						$merchant_fee, $publisher_fee, 
+						$ar_time, $b_local, $conn) {
 	
 	// echo "callback_reward($pcode, $appkey, $adid)<br>";
 	$db_mcode = mysql_real_escape_string($mcode);
 	$db_pcode = mysql_real_escape_string($pcode);
 	$db_appkey = mysql_real_escape_string($appkey);
 	$db_adid = mysql_real_escape_string($adid);
+
+	if ($b_local) $is_local = 'Y'; else $is_local = 'N';
 	
 	try {
 		begin_trans($conn);
@@ -422,44 +461,80 @@ function force_reward($pcode, $mcode, $appkey, $adid,
 								}
 								$user_app_id = $row['id'];
 								
+								////////////////////////////////////////////////////////////////////////////////////
 								// al_user_app_t 상태 <== [강제적립] 상태로 변경하고, merchant_fee는 설정하지 않는다.
+								////////////////////////////////////////////////////////////////////////////////////
 								$sql = "UPDATE al_user_app_t 
 										SET action_dtime = '{$ar_time['now']}', 
 											done_day = '{$ar_time['day']}', 
 											status = 'D', 
 											forced_done = 'Y',
-											merchant_fee = NULL,
+											merchant_fee = IF('{$is_local}'='Y','{$merchant_fee}',NULL),
 											publisher_fee = '{$publisher_fee}'
 										WHERE id = '{$user_app_id}'";
-								// echo $sql . "\n";
 								mysql_execute($sql, $conn);
 								
+								////////////////////////////////////////////////////////////////////////////////////
+								// al_user_app_saving_t 상태 <== [강제적립] 상태로 변경하고, merchant_fee는 설정하지 않는다.
+								// 강제적립시 p에대한 매출건수,매출은 현재 시점
+								//			  m에 대한 매출건수,매출은 ==> 로컬은 현재, 외부는 없음
+								////////////////////////////////////////////////////////////////////////////////////
 								//// al_user_app_saving_t 매출 레코드 추가 <== [강제적립]은 Merchant매출 = 0, Unique키는 존재하지 않음, 또한 아래의 중복키가 존재해서도 안됨 (날짜는 현재 시간 <-- 위에서 설정됨)
 								$sql = "INSERT INTO al_user_app_saving_t (user_app_id, mcode, pcode, app_key, adid, merchant_fee, publisher_fee, m_reg_day, m_reg_date, p_reg_day, p_reg_date)
-										SELECT id, mcode, pcode, app_key, adid, NULL, publisher_fee, done_day, action_dtime, done_day, action_dtime FROM al_user_app_t WHERE id = '{$user_app_id}'";
-								// echo $sql . "\n";
+										SELECT id, mcode, pcode, app_key, adid, IF('{$is_local}'='Y','{$merchant_fee}',NULL), '{$publisher_fee}', 
+											IF('{$is_local}'='Y',done_day,NULL),
+											IF('{$is_local}'='Y',action_dtime,NULL),
+											done_day, action_dtime FROM al_user_app_t WHERE id = '{$user_app_id}'";
 								mysql_execute($sql, $conn);
 
+								////////////////////////////////////////////////////////////////////////////////////
+								// 실시간 통계에 정보 추가
+								////////////////////////////////////////////////////////////////////////////////////
 								$sql = "SELECT id FROM al_summary_sales_h_t WHERE pcode = '{$db_pcode}' AND adid = '{$db_adid}' AND app_key = '{$db_appkey}' AND reg_day = '{$ar_time['day']}' AND hr = HOUR('{$ar_time['now']}') FOR UPDATE";
 								$row = @mysql_fetch_assoc(mysql_query($sql, $conn));
 								if ($row['id']) {
 									// <== [강제적립]은 Merchant 매출 정보를 건드리지 않음.
 									$sql = "UPDATE al_summary_sales_h_t 
-											SET publisher_cnt = publisher_cnt + 1,
+											SET merchant_cnt = merchant_cnt + IF('{$is_local}'='Y',1,0), 
+												merchant_fee = merchant_fee + IF('{$is_local}'='Y','{$merchant_fee}',NULL),
+												publisher_cnt = publisher_cnt + 1,
 												publisher_fee = publisher_fee + '{$publisher_fee}'
 											WHERE id = '{$row['id']}'";
-									// echo $sql . "\n";
 									mysql_execute($sql, $conn);
 								} else {
 									// <== [강제적립]은 Merchant 매출및 건수를 0으로
 									$sql = "INSERT al_summary_sales_h_t (mcode, pcode, adid, app_key, merchant_cnt, merchant_fee, publisher_cnt, publisher_fee, reg_day, hr)
-											VALUES ('{$db_mcode}', '{$db_pcode}', '{$db_adid}', '{$db_appkey}', '0', '0', '1', '{$publisher_fee}', '{$ar_time['day']}', HOUR('{$ar_time['now']}'))
-											ON DUPLICATE KEY UPDATE publisher_cnt = publisher_cnt + 1,
-																	publisher_fee = publisher_fee + '{$publisher_fee}';";
-									// echo $sql . "\n";
+											VALUES ('{$db_mcode}', '{$db_pcode}', '{$db_adid}', '{$db_appkey}', 
+													IF('{$is_local}'='Y',1,0),
+													IF('{$is_local}'='Y','{$merchant_fee}',NULL), 
+													'1', 
+													'{$publisher_fee}', 
+													'{$ar_time['day']}', HOUR('{$ar_time['now']}'));";
 									mysql_execute($sql, $conn);
 								}
-	
+
+								////////////////////////////////////////////////////////////////////////////////////
+								//	로컬 강제 적립 시점은 al_app_exec_stat_t 개수 증가, al_app_exec_pub_stat_t 개수 증가
+								//	외부 강제 적립 시점은 al_app_exec_stat_t 유지, 		al_app_exec_pub_stat_t 개수 증가
+								if ($b_local) 
+								{
+									$sql = "INSERT INTO al_app_exec_stat_t (app_key, exec_time, exec_hour_cnt, exec_day_cnt, exec_tot_cnt)
+											VALUES ('{$db_appkey}', '{$ar_time['datehour']}', '1', '1', '1')
+											ON DUPLICATE KEY UPDATE exec_hour_cnt = IF(exec_time = '{$ar_time['datehour']}', exec_hour_cnt + 1, 1),
+																	exec_day_cnt = IF(DATE(exec_time) = '{$ar_time['day']}', exec_day_cnt + 1, 1),
+																	exec_tot_cnt = exec_tot_cnt + 1,
+																	exec_time = '{$ar_time['datehour']}'";
+									mysql_execute($sql, $conn);
+								}
+								
+								// publisher별 수행수인 ==> al_app_exec_pub_stat_t 에 수행 개수를 추가한다
+								$sql = "INSERT INTO al_app_exec_pub_stat_t (app_key, pcode, exec_time, exec_hour_cnt, exec_day_cnt, exec_tot_cnt)
+										VALUES ('{$db_appkey}', '{$db_pcode}', '{$ar_time['datehour']}', '1', '1', '1')
+										ON DUPLICATE KEY UPDATE exec_hour_cnt = IF(exec_time = '{$ar_time['datehour']}', exec_hour_cnt + 1, 1),
+																exec_day_cnt = IF(DATE(exec_time) = '{$ar_time['day']}', exec_day_cnt + 1, 1),
+																exec_tot_cnt = exec_tot_cnt + 1,
+																exec_time = '{$ar_time['datehour']}'";
+								mysql_execute($sql, $conn);		
 		commit($conn);
 	} 
 	catch(Exception $e) 

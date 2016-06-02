@@ -55,7 +55,7 @@ function local_request_start($app_key, &$arr_data, $conn)
 	return array('result' => 'Y', 'code' => '', 'msg' => "");
 }
 
-function local_request_done($app_key, $arr_data, $conn) 
+function local_request_done($app_key, $arr_data, $b_forcedone, $conn) 
 {
 	global $g_local, $dev_mode;
 
@@ -83,12 +83,18 @@ function local_request_done($app_key, $arr_data, $conn)
 			// ----------------------------------------------------------------------
 			// 사용자 적립하기 (사용자 적립 및 al_user_app_t 상태 변경 모두 처리)
 			// ----------------------------------------------------------------------
-			$ar_reward = callback_reward($arr_data['pcode'], $arr_data['mcode'], $app_key, $arr_data['adid'], 
+			if (!$b_forcedone) 
+			{
+				$ar_reward = callback_reward($arr_data['pcode'], $arr_data['mcode'], $app_key, $arr_data['adid'], 
 										$ar_app['app_merchant_fee'], $ar_app['publisher_fee'], $unique_key, 
-										$ar_time, $conn);
-										
-//			강제적립 테스트 함수
-//			$ar_reward = force_reward($arr_data['pcode'], $arr_data['mcode'], $app_key, $arr_data['adid'], $ar_app['publisher_fee'], $ar_time, $conn);
+										$ar_time, ($ar_app['lib'] == 'LOCAL'), $conn);
+			} 
+			else 
+			{
+				$ar_reward = force_reward($arr_data['pcode'], $arr_data['mcode'], $app_key, $arr_data['adid'], 
+										$ar_app['app_merchant_fee'], $ar_app['publisher_fee'], 
+										$ar_time, ($ar_app['lib'] == 'LOCAL'), $conn);
+			}
 
 			if ($ar_reward['result'] == 'N') {
 				$code = $ar_reward['code'];

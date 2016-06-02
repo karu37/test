@@ -41,8 +41,9 @@
 		$ar_col_define[] = array('type' => 'date', 'col' => '<col width=2%></col>', 'title' => 'M일시');
 		$ar_col_define[] = array('type' => 'date', 'col' => '<col width=2%></col>', 'title' => 'P일시');
 		display_query("ADID기준 적립 상태 - al_user_app_saving_t", "", $sql, $ar_col_define, $conn);
-
 		echo "<br>";
+		
+		////////////////////////////////////////////////////////////////////////////////////////////////////////
 		$sql = "SELECT a.mcode, a.pcode, b.app_title, a.merchant_fee, a.publisher_fee, a.status, a.forced_done, a.action_atime, a.action_btime, a.action_dtime, a.callback_done, a.callback_data, a.reg_date
 				FROM al_user_app_t a
 					INNER JOIN al_app_t b ON a.app_key = b.app_key
@@ -67,8 +68,35 @@
 		
 		$ar_col_define[] = array('type' => 'date', 'col' => '<col width=2%></col>', 'title' => '일시');
 		display_query("ADID기준 진행 상태 - al_user_app_t", "", $sql, $ar_col_define, $conn);
-
 		echo "<br>";
+		
+		////////////////////////////////////////////////////////////////////////////////////////////////////////
+		$sql = "SELECT b.app_title, a.exec_time, IFNULL(c.start_cnt, 0), IF(exec_time = '{$ar_time['datehour']}', a.exec_hour_cnt, 0), IF(DATE(exec_time) = '{$ar_time['day']}', a.exec_day_cnt, 0), a.exec_tot_cnt,
+					IFNULL(pa.exec_hour_max_cnt, b.exec_hour_max_cnt) as 'P-시간제한', 
+					IFNULL(pa.exec_day_max_cnt, b.exec_day_max_cnt) as 'P-일일제한', 
+					IFNULL(pa.exec_tot_max_cnt, b.exec_tot_max_cnt) as 'P-총제한'
+				FROM al_app_exec_pub_stat_t a
+					INNER JOIN al_app_t b ON a.app_key = b.app_key
+					LEFT OUTER JOIN al_publisher_app_t pa ON a.app_key = pa.app_key AND pa.pcode = a.pcode
+					LEFT OUTER JOIN al_app_start_stat_t c ON a.app_key = c.app_key AND c.pcode = a.pcode AND c.reg_day = '{$ar_time['day']}'
+				WHERE a.pcode = '{$db_pcode}'
+				ORDER BY a.app_key DESC LIMIT 10";
+		$result = mysql_query($sql, $conn);
+		
+		unset($ar_col_define);
+		$ar_col_define[] = array('type' => '', 'col' => '<col width=2%></col>', 'title' => '제목');
+		$ar_col_define[] = array('type' => 'date', 'col' => '<col width=2%></col>', 'title' => '일/시');
+		$ar_col_define[] = array('type' => 'number', 'col' => '<col width=2%></col>', 'title' => '시작수(일일)');
+		$ar_col_define[] = array('type' => 'number', 'col' => '<col width=2%></col>', 'title' => '시간당수');
+		$ar_col_define[] = array('type' => 'number', 'col' => '<col width=4%></col>', 'title' => '일일수');
+		$ar_col_define[] = array('type' => 'number', 'col' => '<col width=2%></col>', 'title' => '총수');
+		$ar_col_define[] = array('type' => '', 'col' => '<col width=2%></col>', 'title' => 'P-시간제한');
+		$ar_col_define[] = array('type' => '', 'col' => '<col width=4%></col>', 'title' => 'P-일일제한');
+		$ar_col_define[] = array('type' => 'number', 'col' => '<col width=2%></col>', 'title' => 'P-총제한');
+		display_query("수행 수 (해당 Pub대상)- al_app_exec_pub_stat_t", "", $sql, $ar_col_define, $conn);
+		echo "<br>";
+		
+		////////////////////////////////////////////////////////////////////////////////////////////////////////
 		$sql = "SELECT b.app_title, a.exec_time, IFNULL(c.start_cnt, 0), IF(exec_time = '{$ar_time['datehour']}', a.exec_hour_cnt, 0), IF(DATE(exec_time) = '{$ar_time['day']}', a.exec_day_cnt, 0), a.exec_tot_cnt,
 					IFNULL(pa.exec_hour_max_cnt, b.exec_hour_max_cnt) as 'P-시간제한', 
 					IFNULL(pa.exec_day_max_cnt, b.exec_day_max_cnt) as 'P-일일제한', 
@@ -90,10 +118,11 @@
 		$ar_col_define[] = array('type' => '', 'col' => '<col width=2%></col>', 'title' => 'P-시간제한');
 		$ar_col_define[] = array('type' => '', 'col' => '<col width=4%></col>', 'title' => 'P-일일제한');
 		$ar_col_define[] = array('type' => 'number', 'col' => '<col width=2%></col>', 'title' => 'P-총제한');
-		display_query("수행 수 (모든 Pub들의 합)- al_app_exec_stat_t", "", $sql, $ar_col_define, $conn);
+		display_query("수행 수 (전체 합)- al_app_exec_stat_t", "", $sql, $ar_col_define, $conn);
+		echo "<br>";
 		
 
-		echo "<br>";
+		////////////////////////////////////////////////////////////////////////////////////////////////////////
 		$sql = "SELECT b.app_title, SUM(a.merchant_cnt), SUM(a.merchant_fee), SUM(a.publisher_cnt), SUM(a.publisher_fee) 
 				FROM al_summary_sales_h_t a
 					INNER JOIN al_app_t b ON a.app_key = b.app_key
