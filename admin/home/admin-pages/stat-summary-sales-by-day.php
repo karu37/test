@@ -14,14 +14,6 @@
 	$limit = "LIMIT " . $pages->limit_start . "," . $pages->limit_end;
 	// --------------------------------
 	
-	// DAY SUMMARY 구하기
-	if ($day) {
-		$sql = "SELECT COUNT(*) as 'cnt', SUM(add_cash) as 'add_cash'
-				FROM user_cash_saving_t a WHERE 1=1 {$where}";
-		$row_sum = mysql_fetch_assoc(mysql_query($sql, $conn));
-	}
-	// --------------------------------
-
 	$sql = "SELECT a.id, a.adid, c.app_iconurl, c.app_title, a.merchant_fee, a.publisher_fee, a.m_reg_date, a.mcode, m.name as 'm_name', a.pcode, p.name as 'p_name'
 			FROM al_user_app_saving_t a
 				LEFT OUTER JOIN al_app_t c ON a.app_key = c.app_key
@@ -76,15 +68,7 @@
 			<th width=1%>P금액</th>
 			<th width=5%>시간</th>
 		</tr>	
-		<? if ($row_sum) { ?>
-		<tr style='background: lightgray'>
-			<th>합</th>
-			<th>총 <?=number_format($row_sum['cnt'])?>건</th>
-			<th colspan=4></th>
-			<th><?=number_format($row_sum['add_cash'])?></th>
-			<th colspan=2></th>
-		</tr>	
-		<? } ?>		
+
 	</thead>
 	<tbody>
 		<?

@@ -158,28 +158,29 @@ function return_die($result, $object = null, $msg = null, $error_sql = null) {
 		$sql = "INSERT INTO _error_sql_log (`type`, `sql`, errno, error, reg_date) VALUES('M', '{$db_sql}', '{$db_errno}', '{$db_error}', NOW());";
 		@mysql_query($sql, $conn);
 	}
-	make_visit_log($result, $object);
+	
+	make_visit_log($result, $object, null, null, null, null, null, $conn);
 	die();
 }
 
-function make_visit_log($result, $ar_response, $elapsed_time = null, $pageid = null, $adid = null, $req_url = null, $ar_post_param = null, $connect = null) {
-	_make_log($result, $ar_response, $elapsed_time, $pageid, $adid, $req_url, $ar_post_param, $connect, 'V');
+function make_visit_log($result, $ar_response, $elapsed_time = null, $pageid = null, $adid = null, $req_url = null, $ar_post_param = null, $conn = null) {
+	
+	_make_log($result, $ar_response, $elapsed_time, $pageid, $adid, $req_url, $ar_post_param, $conn, 'V');
 }
-function make_action_log($result, $ar_response, $elapsed_time = null, $pageid = null, $adid = null, $req_url = null, $ar_post_param = null, $connect = null) {
-	_make_log($result, $ar_response, $elapsed_time, $pageid, $adid, $req_url, $ar_post_param, $connect, 'A');
+function make_action_log($result, $ar_response, $elapsed_time = null, $pageid = null, $adid = null, $req_url = null, $ar_post_param = null, $conn = null) {
+	_make_log($result, $ar_response, $elapsed_time, $pageid, $adid, $req_url, $ar_post_param, $conn, 'A');
 }
 
-function _make_log($result, $ar_response, $elapsed_time = null, $pageid = null, $adid = null, $req_url = null, $ar_post_param = null, $connect = null, $tb_target = 'V')
+function _make_log($result, $ar_response, $elapsed_time = null, $pageid = null, $adid = null, $req_url = null, $ar_post_param = null, $conn = null, $tb_target = 'V')
 {
-	global $dev_mode, $_start_api_tm, $conn;
+	global $dev_mode, $_start_api_tm;
 	
 	if ($elapsed_time === null) $elapsed_time = get_timestamp() - $_start_api_tm;
 	if ($pageid === null) $pageid = $_REQUEST['id'];
 	if ($adid === null) $adid = $_REQUEST['adid'];
 	if ($req_url === null) $req_url = 'http://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'];
 	if ($ar_post_param === null) $ar_post_param = $_POST;
-	if ($connect === null) $connect = $conn;
-	
+
 	$db_result = @mysql_real_escape_string($result);
 	$db_pageid = @mysql_real_escape_string($pageid);
 	$db_adid = @mysql_real_escape_string($adid);
@@ -222,7 +223,7 @@ function _make_log($result, $ar_response, $elapsed_time = null, $pageid = null, 
 					'$db_elapsed_time',
 					'$db_post',
 					'$db_response');";
-	mysql_query($sql, $connect);	
+	mysql_query($sql, $conn);	
 }
 
 function post($url, $ar_post_param, $timeout_sec = 60)

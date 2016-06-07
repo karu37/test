@@ -16,6 +16,23 @@ function dbConn() {
 	return $connect;	
 }
 
+function dbPConn() {
+	
+	global $site_define;
+	
+	$db = $site_define['db-name'];
+	$db_host = $site_define['db-host'];
+	$db_user = $site_define['db-user'];
+	$db_passwd = $site_define['db-passwd'];
+
+	$connect = @mysql_pconnect($db_host,$db_user,$db_passwd, MYSQL_CLIENT_COMPRESS);
+	if (!$connect) return null;
+	
+	@mysql_select_db($db, $connect);
+	@mysql_query("SET NAMES 'utf8';");
+	return $connect;	
+}
+
 function begin_trans($conn) {
 	mysql_query("START TRANSACTION", $conn);	
 }

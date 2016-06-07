@@ -15,7 +15,7 @@ $g_local['callback'] = "";
 	 // http://app.autoring.kr/home/ajax/request.php?id=_lib-partner-local
 */
 
-function local_request_start($app_key, &$arr_data, $conn) 
+function local_request_start($app_key, &$arr_data, &$conn) 
 {
 	global $g_local;
 	
@@ -55,7 +55,7 @@ function local_request_start($app_key, &$arr_data, $conn)
 	return array('result' => 'Y', 'code' => '', 'msg' => "");
 }
 
-function local_request_done($app_key, $arr_data, $b_forcedone, $conn) 
+function local_request_done($app_key, $arr_data, $b_forcedone, &$conn) 
 {
 	global $g_local, $dev_mode;
 
@@ -124,9 +124,14 @@ function local_request_done($app_key, $arr_data, $b_forcedone, $conn)
 			$start_tm = get_timestamp();
 			$response_data = post($req_base_url, $url_param, 3);
 			$ar_resp = json_decode($response_data, true);
+
+			// MYSQL을 닫은 후 요청이 완료되면 dbPConn()으로 재 연결한다.
+			mysql_close($conn);
 			
 			// echo "make_action_log({$ar_resp['result']}, {$response_data}, 0, 'local-cb-call', null, {$req_base_url}, {$url_param});";
 			make_action_log($ar_resp['result'], $response_data, get_timestamp() - $start_tm, 'local-cb-call', null, $req_base_url, $url_param);
+			
+			$conn = dbPConn();
 		
 			// ----------------------------------------------------------------------
 			// 리턴 데이터 구성 (리턴 불필요 -- 자체 해결해야 함)

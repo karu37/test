@@ -181,11 +181,11 @@ var page = function(){
 			if (!localStorage.getItem('adid')) localStorage.setItem('adid', '0000000000000000-0000-0000-0000-0001');
 			$("#adid").on('change', function(){
 				localStorage.setItem('adid', $("#adid").val());
-				$("#status").attr('src', "http://api.aline-soft.kr/ajax-request.php?id=aline-test-status&pcode=<?=$pcode?>&adid=" + $("#adid").val());
+				$("#status").attr('src', "http://api.aline-soft.kr/ajax-request.php?id=test-aline-status&pcode=<?=$pcode?>&adid=" + $("#adid").val());
 			});
 			$("#adid").val(localStorage.getItem('adid'));
 			
-			$("#status").attr('src', "http://api.aline-soft.kr/ajax-request.php?id=aline-test-status&pcode=<?=$pcode?>&adid=" + localStorage.getItem('adid'));
+			$("#status").attr('src', "http://api.aline-soft.kr/ajax-request.php?id=test-aline-status&pcode=<?=$pcode?>&adid=" + localStorage.getItem('adid'));
 		},
 		
 		on_btn_start: function(pcode, uadid, ad, uid, userdata) {
@@ -211,7 +211,7 @@ var page = function(){
 					}
 				} catch(e) {alert(sz_data);}
 					
-				$("#status").attr('src', "http://api.aline-soft.kr/ajax-request.php?id=aline-test-status&pcode=<?=$pcode?>&adid=" + uadid);
+				$("#status").attr('src', "http://api.aline-soft.kr/ajax-request.php?id=test-aline-status&pcode=<?=$pcode?>&adid=" + uadid);
 			});
 		},
 		
@@ -233,7 +233,7 @@ var page = function(){
 					}
 				} catch(e) {alert(sz_data);}
 
-				$("#status").attr('src', "http://api.aline-soft.kr/ajax-request.php?id=aline-test-status&pcode=<?=$pcode?>&adid=" + uadid);
+				$("#status").attr('src', "http://api.aline-soft.kr/ajax-request.php?id=test-aline-status&pcode=<?=$pcode?>&adid=" + uadid);
 					
 			});
 		},
@@ -255,13 +255,13 @@ var page = function(){
 					}
 				} catch(e) {alert(sz_data);}
 
-				$("#status").attr('src', "http://api.aline-soft.kr/ajax-request.php?id=aline-test-status&pcode=<?=$pcode?>&adid=" + uadid);
+				$("#status").attr('src', "http://api.aline-soft.kr/ajax-request.php?id=test-aline-status&pcode=<?=$pcode?>&adid=" + uadid);
 					
 			});
 		},
 		on_btn_undone: function(pcode, uadid, ad) {
 			// http://api.aline-soft.kr/ajax-request.php?id=get-join&pcode=aline&os=A&ad=LOC2&adid=0123456789012345-6789-0123-4567-8901&ip=127.0.0.1&uid=heartman@gmail.com&userdata=USERDATA
-			var ar_param = {id: 'aline-test-status-undone',
+			var ar_param = {id: 'test-aline-status-undone',
 							'pcode': pcode,
 							'appkey': ad,
 							'adid': uadid};
@@ -277,13 +277,13 @@ var page = function(){
 					}
 				} catch(e) {alert(sz_data);}
 
-				$("#status").attr('src', "http://api.aline-soft.kr/ajax-request.php?id=aline-test-status&pcode=<?=$pcode?>&adid=" + uadid);
+				$("#status").attr('src', "http://api.aline-soft.kr/ajax-request.php?id=test-aline-status&pcode=<?=$pcode?>&adid=" + uadid);
 					
 			});
 		},	
 		on_btn_deleteinfo: function(pcode, uadid) {
 			// http://api.aline-soft.kr/ajax-request.php?id=get-join&pcode=aline&os=A&ad=LOC2&adid=0123456789012345-6789-0123-4567-8901&ip=127.0.0.1&uid=heartman@gmail.com&userdata=USERDATA
-			var ar_param = {id: 'aline-test-reset',
+			var ar_param = {id: 'test-aline-reset',
 							'pcode': pcode};
 							
 			alert(var_dump(ar_param));
@@ -297,12 +297,12 @@ var page = function(){
 					}
 				} catch(e) {alert(sz_data);}
 
-				$("#status").attr('src', "http://api.aline-soft.kr/ajax-request.php?id=aline-test-status&pcode=<?=$pcode?>&adid=" + uadid);
+				$("#status").attr('src', "http://api.aline-soft.kr/ajax-request.php?id=test-aline-status&pcode=<?=$pcode?>&adid=" + uadid);
 					
 			});
 		},	
 		on_btn_set_publisher: function() {
-			window.location.href="?id=aline-test&pcode=" + $("#pcode").val();
+			window.location.href="?id=test-aline&pcode=" + $("#pcode").val();
 			return false;
 		},
 	};
