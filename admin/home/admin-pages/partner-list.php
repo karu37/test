@@ -7,9 +7,10 @@
 	$search = trim($_REQUEST['search']);
 	if (!$searchfor) $searchfor = 'name';
 	$db_search = mysql_real_escape_string($search);
-
+	
 	$where = "";
-	if ($is_mactive) $where = " AND a.is_mactive = '{$db_is_mactive}'";
+	$where .= "AND a.is_mactive " . (ifempty($_REQUEST['listtype'], 'A') == 'A' ? " <> 'D'" : " = 'D'");
+	if ($is_mactive) $where .= " AND a.is_mactive = '{$db_is_mactive}'";
 	
 	if ($searchfor == "name" && $search) $where .= " AND a.name LIKE '%{$db_search}%'";
 	else if ($searchfor == "id" && $search) $where .= " AND a.partner_id LIKE '%{$db_search}%'";
@@ -46,14 +47,20 @@
 		.list .mactive-Y .btn-restore	{display: none}	/* 활성화면     삭제버튼(디폴트), 복구(숨기기) */
 		.list .mactive-N .btn-delete	{display: none}	/* 비활성상태면 삭제버튼(디폴트), 복구(숨기기) */
 		.list .mactive-D .btn-delete	{display: none}	/* 삭제상태면   삭제버튼(숨기기), 복구(디폴트) */
-		
-		
 	</style>
 	<t4 style='line-height: 40px'>파트너 목록</t4>
 	<hr>
 	<form onsubmit='return <?=$js_page_id?>.action.on_btn_search()'>
 		<table border=0 cellpadding=0 cellspacing=0 width=100%>
 		<tr><td id='btns-group' valign=top>
+			
+			<fieldset id="list-type" data-theme='c' class='td-2-item' data-role="controlgroup" data-type="horizontal" data-mini=true init-value="<?=ifempty($_REQUEST['listtype'],'A')?>" >
+		        <input name="list-type" id="list-type-normal" value="A" type="radio" onclick="window.location.href=window.location.href.set_url_param('listtype', 'A').del_url_param('page')" />
+		        <label for="list-type-normal">정상 목록</label>
+		        <input name="list-type" id="list-type-deleted" value="B" type="radio" onclick="window.location.href=window.location.href.set_url_param('listtype', 'B').del_url_param('page')" />
+		        <label for="list-type-deleted">삭제 목록</label>
+		    </fieldset>			
+		    	
 		</td><td valign=top align=right style='border-left: 1px solid #ddd'>
 			
 			<div style='width:300px; padding-top:10px; text-align: left'>
@@ -151,12 +158,7 @@ var <?=$js_page_id?> = function()
 			},
 			
 			on_btn_search: function() {
-				var ar_param = {
-						id: '<?=$page_id?>', 
-						searchfor: util.get_item_value($("#search-for")), 
-						search: $("#search").val()
-				};
-				window.location.href = '?' + util.json_to_urlparam(ar_param);
+				window.location.href = window.location.href.del_url_param('page').set_url_param('search', $("#search").val()).set_url_param('searchfor', util.get_item_value($("#search-for")));
 				return false;
 			},
 			on_btn_delete: function(partnerid, listid) {

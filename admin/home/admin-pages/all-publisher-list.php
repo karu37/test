@@ -6,6 +6,7 @@
 	$db_search = mysql_real_escape_string($search);
 
 	$where = "";
+	$where .= "AND a.is_mactive " . (ifempty($_REQUEST['listtype'], 'A') == 'A' ? " <> 'N'" : " = 'N'");
 	if ($searchfor == "name" && $search) $where .= " AND a.name LIKE '%{$db_search}%'";
 	if ($searchfor == "code" && $search) $where .= " AND a.pcode LIKE '%{$db_search}%'";
 	
@@ -47,6 +48,14 @@
 	<form onsubmit='return <?=$js_page_id?>.action.on_btn_search()'>
 		<table border=0 cellpadding=0 cellspacing=0 width=100%>
 		<tr><td id='btns-group' valign=top>
+			
+			<fieldset id="list-type" data-theme='c' class='td-2-item' data-role="controlgroup" data-type="horizontal" data-mini=true init-value="<?=ifempty($_REQUEST['listtype'],'A')?>" >
+		        <input name="list-type" id="list-type-normal" value="A" type="radio" onclick="window.location.href=window.location.href.set_url_param('listtype', 'A').del_url_param('page')" />
+		        <label for="list-type-normal">정상 목록</label>
+		        <input name="list-type" id="list-type-deleted" value="B" type="radio" onclick="window.location.href=window.location.href.set_url_param('listtype', 'B').del_url_param('page')" />
+		        <label for="list-type-deleted">중지 목록</label>
+		    </fieldset>			
+			
 		</td><td valign=top align=right style='border-left: 1px solid #ddd'>
 			
 			<div style='width:300px; padding-top:10px; text-align: left'>

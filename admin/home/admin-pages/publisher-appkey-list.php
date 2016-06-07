@@ -167,6 +167,13 @@
 		<table border=0 cellpadding=0 cellspacing=0 width=100%>
 		<tr><td id='btns-group' valign=top>
 			
+			<fieldset id="list-type" data-theme='c' class='td-2-item' data-role="controlgroup" data-type="horizontal" data-mini=true init-value="<?=ifempty($_REQUEST['listtype'],'A')?>" >
+		        <input name="list-type" id="list-type-normal" value="A" type="radio" onclick="window.location.href=window.location.href.set_url_param('listtype', 'A').del_url_param('page')" />
+		        <label for="list-type-normal">정상 목록</label>
+		        <input name="list-type" id="list-type-deleted" value="B" type="radio" onclick="window.location.href=window.location.href.set_url_param('listtype', 'B').del_url_param('page')" />
+		        <label for="list-type-deleted">차단 목록</label>
+		    </fieldset>			
+			
 			<table class='line-height-15px' border=0 cellpadding=0 cellspacing=3px>
 			<tr>
 				<td valign=top align=right><t4 style='padding-top:6px; line-height:22px'>매체 코드 :<t4></td>
@@ -311,6 +318,13 @@
 				if ($row['check_time_period'] == 'N') $time_period = '<span style="color:red; font-weight: bold">'. $time_period .'</span>';
 			}
 			
+			// ------------------------------------------------------------------
+			// 정상표시이고 app_status가 N 이면 표시 안함
+			if ($app_status == 'N' && ifempty($_REQUEST['listtype'],'A') == 'A') continue;
+			
+			// 중지표시이고 app_status가 Y 이면 표시 안함
+			if ($app_status == 'Y' && ifempty($_REQUEST['listtype'],'A') == 'B') continue;
+			// ------------------------------------------------------------------
 			
 			
 			// 기간 오픈전에 따른 색상 처리

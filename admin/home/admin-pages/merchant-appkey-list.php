@@ -35,6 +35,7 @@
 
 	// $where = "AND app.is_active = 'Y' AND app.is_mactive = 'Y'";
 	$where = "";
+	$where .= "AND app.is_mactive " . (ifempty($_REQUEST['listtype'], 'A') == 'A' ? " IN ('Y', 'N')" : " IN ('D', 'T')");
 	if ($searchfor == "title" && $search) $where .= " AND app.app_title LIKE '%{$db_search}%'";
 	
 	$order_by = "ORDER BY app.id DESC";
@@ -76,6 +77,13 @@
 	<form onsubmit='return <?=$js_page_id?>.action.on_btn_search()'>
 		<table border=0 cellpadding=0 cellspacing=0 width=100%>
 		<tr><td id='btns-group' valign=top>
+			
+			<fieldset id="list-type" data-theme='c' class='td-2-item' data-role="controlgroup" data-type="horizontal" data-mini=true init-value="<?=ifempty($_REQUEST['listtype'],'A')?>" >
+		        <input name="list-type" id="list-type-normal" value="A" type="radio" onclick="window.location.href=window.location.href.set_url_param('listtype', 'A').del_url_param('page')" />
+		        <label for="list-type-normal">정상/중지 목록</label>
+		        <input name="list-type" id="list-type-deleted" value="B" type="radio" onclick="window.location.href=window.location.href.set_url_param('listtype', 'B').del_url_param('page')" />
+		        <label for="list-type-deleted">삭제/개발 목록</label>
+		    </fieldset>			
 			
 			<table class='line-height-15px' border=0 cellpadding=0 cellspacing=3px>
 			<tr>

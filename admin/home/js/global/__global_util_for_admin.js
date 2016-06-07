@@ -3,11 +3,19 @@ var g_admin_util =
 	// set_url_param("<?=$_SERVER['REQUEST_URI']?>", "day", $(this).val())
 	set_url_param: function (url, param_key, param_value) 
 	{
+		if (!param_value) return del_url_param(url, param_key);
 		var param_string = encodeURIComponent(param_value);
 		var re = new RegExp("([?&]"+param_key+"=)([^&]*)");
 		if (url.match(re)) url = url.replace(re, '$1' + param_string);
 			else if (url.match(/\?/)) url += "&"+param_key+"="+param_string;
 				else url += "?"+param_key+"="+param_string;
+		return url;
+	},
+	// del_url_param("<?=$_SERVER['REQUEST_URI']?>", "day")
+	del_url_param: function (url, param_key) 
+	{
+		var re = new RegExp("([&]?"+param_key+"=)([^&]*)(&|$)");
+		if (url.match(re)) url = url.replace(re, '');
 		return url;
 	},
 	// set_url_params(document.location.href, ['a','a-val','b','b-val'])
@@ -31,4 +39,11 @@ var g_admin_util =
 	    })
 	},
 
+};
+
+String.prototype.set_url_param = function(param_key, param_value) {
+	return g_admin_util.set_url_param(this, param_key, param_value);
+};
+String.prototype.del_url_param = function(param_key) {
+	return g_admin_util.del_url_param(this, param_key);
 };
