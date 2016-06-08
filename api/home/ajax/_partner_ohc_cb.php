@@ -35,7 +35,7 @@ $g_ohc['timeout_sec'] = 60;				// 시작 / 적립 요청시의 Timeout 초
 					INNER JOIN al_publisher_t p ON a.pcode = p.pcode 
 			WHERE a.id = '{$db_aid}'";
 	$arr_userapp = @mysql_fetch_assoc(mysql_query($sql, $conn));
-	if (!$arr_userapp || $arr_userapp['m_key'] != $m_key) {
+	if (!$arr_userapp || $arr_userapp['mkey'] != $m_key) {
 		echo_response('error-info', '앱정보가 일치하지 않습니다.');
 		die();
 	}
