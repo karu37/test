@@ -2,16 +2,18 @@
 	// --------------------------------
 	$searchfor = $_REQUEST['searchfor'];
 	$search = trim($_REQUEST['search']);
-	
 	if (!$searchfor) $searchfor = 'title';
 	$db_search = mysql_real_escape_string($search);
 
+	// order	
+	$order_by = "ORDER BY " . ifempty($_REQUEST['orderby'], 'app.id') . " " . ifempty($_REQUEST['order'], 'DESC');
+
 	// is_mactive : Y/N/D/T
-	$where = "AND app.is_mactive IN ('Y','N') AND app.is_active <> 'N'";
+	$where = "AND app.is_mactive = " . (ifempty($_REQUEST['listtype'], 'A') == 'A' ? "'Y'" : "'N'") . " AND app.is_active <> 'N'";
+	// $where = "AND app.is_mactive IN ('Y','N') AND app.is_active <> 'N'";
 	if ($searchfor == "title" && $search) $where .= " AND app.app_title LIKE '%{$db_search}%'";
 	if ($searchfor == "packageid" && $search) $where .= " AND app.app_packageid LIKE '{$db_search}%'";
 	if ($searchfor == "mcode" && $search) $where .= " AND app.mcode = '{$db_search}'";
-	$order_by = "ORDER BY app.id DESC";
 	
 	// --------------------------------
 	// Paginavigator initialize	
@@ -65,6 +67,14 @@
 	<form onsubmit='return <?=$js_page_id?>.action.on_btn_search()'>
 		<table border=0 cellpadding=0 cellspacing=0 width=100%>
 		<tr><td id='btns-group' valign=top>
+			
+			<fieldset id="list-type" data-theme='c' class='td-2-item' data-role="controlgroup" data-type="horizontal" data-mini=true init-value="<?=ifempty($_REQUEST['listtype'],'A')?>" >
+		        <input name="list-type" id="list-type-normal" value="A" type="radio" onclick="window.location.href=window.location.href.set_url_param('listtype', 'A').del_url_param('page')" />
+		        <label for="list-type-normal">정상 목록</label>
+		        <input name="list-type" id="list-type-deleted" value="B" type="radio" onclick="window.location.href=window.location.href.set_url_param('listtype', 'B').del_url_param('page')" />
+		        <label for="list-type-deleted">중지 목록</label>
+		    </fieldset>			
+			
 		</td><td valign=top align=right style='border-left: 1px solid #ddd'>
 			
 			<div style='width:300px; padding-top:10px; text-align: left'>
@@ -100,11 +110,11 @@
 	<table class='single-line list'  cellpadding=0 cellspacing=0 width=100%>
 	<thead>
 		<tr>
-			<th>Idx</th>
+			<th><a href='#' onclick="window.location.href=window.location.href.set_url_param('orderby', 'app.id').set_url_param('order', '<?=($_REQUEST['orderby']=="app.id"&&$_REQUEST['order']=="DESC")?"ASC":"DESC"?>').del_url_param('page')">Idx</a></th>
 			<th width=30px>앱<br>적립</th>
 			<th width=1px><div class='th_status'>관리<br>차단</div></th>
 			<th>아이콘</th>
-			<th width=80px>M코드</th>
+			<th width=80px><a href='#' onclick="window.location.href=window.location.href.set_url_param('orderby', 'app.mcode').set_url_param('order', '<?=($_REQUEST['orderby']=="app.mcode"&&$_REQUEST['order']=="DESC")?"ASC":"DESC"?>').del_url_param('page')">M코드</a></th>
 			<th width=30px>M<br>상태</th>
 			<th width=30px>레벨<br>제한</th>
 			<th width=50px>공개<br>모드</th>
@@ -116,8 +126,8 @@
 			<th width=40px>일일당<br>수행수</th>
 			<th width=40px>총<br>수행수</th>
 			<th>필터</th>
-			<th>활성일</th>
-			<th>등록일</th>
+			<th><a href='#' onclick="window.location.href=window.location.href.set_url_param('orderby', 'app.last_active_time').set_url_param('order', '<?=($_REQUEST['orderby']=="app.last_active_time"&&$_REQUEST['order']=="DESC")?"ASC":"DESC"?>').del_url_param('page')">활성일</a></th>
+			<th><a href='#' onclick="window.location.href=window.location.href.set_url_param('orderby', 'app.reg_date').set_url_param('order', '<?=($_REQUEST['orderby']=="app.reg_date"&&$_REQUEST['order']=="DESC")?"ASC":"DESC"?>').del_url_param('page')">등록일</a></th>
 		</tr>
 	</thead>
 	<tbody>

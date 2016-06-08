@@ -1,5 +1,10 @@
 <?/*
 
+// Column Sorting 
+$orderby = "ORDER BY " . ifempty($_REQUEST['orderby'], 'app.id') . " " . ifempty($_REQUEST['order'], 'DESC');
+<a href='#' onclick="window.location.href=window.location.href.set_url_param('orderby', 'app.id').set_url_param('order', '<?=($_REQUEST['orderby']=="app.id"&&$_REQUEST['order']=="DESC")?"ASC":"DESC"?>').del_url_param('page')">Idx</a>
+
+
 //-----------------------------------
 ALine - 개발환경 설정
 //-----------------------------------
