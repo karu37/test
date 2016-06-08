@@ -7,7 +7,7 @@ $g_ohc['timeout_sec'] = 60;				// 시작 / 적립 요청시의 Timeout 초
 **********************************************/
 
 	// 전달된 파라미터 받아서 표준화 하기
-	
+
 	//## 현재 시간 $ar_time
 	$ar_time = mysql_get_time($conn);
 	
@@ -35,13 +35,12 @@ $g_ohc['timeout_sec'] = 60;				// 시작 / 적립 요청시의 Timeout 초
 					INNER JOIN al_publisher_t p ON a.pcode = p.pcode 
 			WHERE a.id = '{$db_aid}'";
 	$arr_userapp = @mysql_fetch_assoc(mysql_query($sql, $conn));
-	
-	if ($arr_userapp['m_key'] != $m_key) {
+	if (!$arr_userapp || $arr_userapp['m_key'] != $m_key) {
 		echo_response('error-info', '앱정보가 일치하지 않습니다.');
 		die();
 	}
 	
-	//## 적립	
+	//## 적립하기
 	$ar_reward = callback_reward($arr_userapp['pcode'], $arr_userapp['mcode'], $arr_userapp['app_key'], $arr_userapp['adid'], 
 							$arr_userapp['merchant_fee'], $arr_userapp['publisher_fee'], $unique_key, 
 							$ar_time, false, $conn);	

@@ -12,6 +12,7 @@ $file = $path_queries . "/{$id}.php";
 
 $_start_api_tm = get_timestamp();
 
+/*
 ///////////////////////////////////////////////////////
 // Persistent Connection을 사용할 페이지 목록
 $ar_pconnect_pages = array("get-list", "get-join", "get-done");
@@ -21,6 +22,9 @@ if ( in_array($id, $ar_pconnect_pages) )
 	$conn = dbPConn();
 else
 	$conn = dbConn();
+*/
+
+$conn = dbPConn();
 	
 if (!$conn) return_die(false, null, '서비스 연결이 원활하지 않습니다.(20)');
 
@@ -35,6 +39,10 @@ if (file_exists($file)) {
 	error_reporting(E_ALL & ~E_NOTICE & ~E_WARNING);	
 	
 	include $file;
+	exit;
+} else {
+	
+	echo "Invalid Request";
 	exit;
 }
 

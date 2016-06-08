@@ -606,7 +606,7 @@ function get_error_msg($code, $msg) {
 		case '-1001': return '광고 오류입니다. (no-packageid)';
 		case '-1002': return '광고 오류입니다. (unknown-market)';
 		case '-1003': return '광고 오류입니다. (no-url)';
-		case '-1004': return '매체사 요청 파라미터 오류입니다.'
+		case '-1004': return '매체사 요청 파라미터 오류입니다.';
 		
 		case '-2001': return '적립오류 입니다.';
 		
