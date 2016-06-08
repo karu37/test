@@ -60,6 +60,12 @@ var crawl = function(){
 		var n_found_count = _$('.card-list .card-content').length;
 		console.log('Card Found Count : ' + n_found_count);
 		
+		if (n_found_count == 0 && _$('#error-section:visible').length > 0) {
+			clearTimeout(timer_check);
+			gather_market_url();
+			return;
+		}
+		
 		var $more_btn = _$('#show-more-button:visible');
 		// More Button이 존재하면 이를 클릭하고 클릭 시간 갱신
 		if ($more_btn.length > 0) {

@@ -26,7 +26,7 @@
 	// http://api.aline-soft.kr/ajax-request.php?id=get-done&pcode=aline&ad=LOC2&adid=0123456789012345-6789-0123-4567-8901
 
 	$pub_mactive = get_publisher_info("reward_percent, callback_url", $ar_publisher);
-	if (!$pub_mactive || $pub_mactive == 'N' || $pub_mactive == 'D') return_die('N', array('code'=>'-100', 'type'=>'E-REQUEST'), '유효하지 않은 매체코드입니다.');
+	if (!$pub_mactive || $pub_mactive == 'N' || $pub_mactive == 'D') return_die('N', array('code'=>'-100'), '유효하지 않은 매체코드입니다.');
 
 	$pcode = $_REQUEST['pcode'];
 	$appkey = $_REQUEST['ad'];
@@ -35,7 +35,7 @@
 	// $arr_param 기본 정보는 $_REQUEST 파라미터로 초기화
 	$arr_param = $_REQUEST;
 	
-	if (!$pcode || !$appkey || !$adid) return_die('N', array('code'=>'-101', 'type'=>'E-REQUEST'), '파라미터 오류입니다.');
+	if (!$pcode || !$appkey || !$adid) return_die('N', array('code'=>'-101'), '파라미터 오류입니다.');
 
 	$db_pcode = mysql_real_escape_string($pcode);
 	$db_appkey = mysql_real_escape_string($appkey);
@@ -74,7 +74,7 @@
 		$row_app['check_edate'] != 'Y' || 
 		$row_app['check_tot_executed'] != 'Y') 
 	{
-		return_die('N', array('code'=>'-103', 'type'=>'E-CLOSED'), '광고가 없거나 참여할 수 없는 상태입니다.');
+		return_die('N', array('code'=>'-103'), '광고가 없거나 참여할 수 없는 상태입니다.');
 	}
 
 	// 광고가 수량이 완료되어 임시 중단된 상태입니다.
@@ -83,12 +83,12 @@
 		$row_app['check_hour_executed'] != 'Y' || 
 		$row_app['check_day_executed'] != 'Y' ) 
 	{
-		return_die('N', array('code'=>'-104', 'type'=>'E-PAUSED'), '광고가 임시 중단된 상태입니다.');
+		return_die('N', array('code'=>'-104'), '광고가 임시 중단된 상태입니다.');
 	}
 
 	// 실행형이 아니면 요청 불가함	
 	if ($row_app['app_exec_type'] != 'I') {
-		return_die('N', array('code'=>'-109', 'type'=>'E-FLOW'), '유효하지 않은 요청입니다.');
+		return_die('N', array('code'=>'-109'), '유효하지 않은 요청입니다.');
 	}
 
 	// ---------------------------------------------	
@@ -96,7 +96,7 @@
 	$sql = "SELECT adid FROM al_app_adid_uploaded_t WHERE app_key = '{$db_appkey}' AND adid = '{$db_adid}'";
 	$row = @mysql_fetch_assoc(mysql_query($sql, $conn));
 	if ($row) {
-		return_die('N', array('code'=>'-106', 'type'=>'E-DONE'), '더 이상 참여할 수 없는 광고입니다.');
+		return_die('N', array('code'=>'-106'), '더 이상 참여할 수 없는 광고입니다.');
 	}	
 	
 	// ---------------------------------------------	
@@ -105,9 +105,9 @@
 	$row = @mysql_fetch_assoc(mysql_query($sql, $conn));
 	if ($row) {
 		if ($row['status'] == 'D') {
-			return_die('N', array('code'=>'-105', 'type'=>'E-DONE'), '이미 참여한 광고입니다.');
+			return_die('N', array('code'=>'-105'), '이미 참여한 광고입니다.');
 		} else if ($row['permanent_fail'] == 'Y') {
-			return_die('N', array('code'=>'-106', 'type'=>'E-DONE'), '더 이상 참여할 수 없는 광고입니다.');
+			return_die('N', array('code'=>'-106'), '더 이상 참여할 수 없는 광고입니다.');
 		}
 	} 
 
@@ -123,7 +123,7 @@
 		mysql_query($sql, $conn);
 		$user_app_id = $row_userapp['id'];	
 	} else {
-		return_die('N', array('code'=>'-107', 'type'=>'E-FLOW'), '광고 참여한 기록이 없습니다.');
+		return_die('N', array('code'=>'-107'), '광고 참여한 기록이 없습니다.');
 	}
 
 	
@@ -155,9 +155,14 @@
 		include dirname(__FILE__)."/_partner_local.php";
 		$ar_result = local_request_done($appkey, $arr_param, false, $conn);
 		
+	} else if ($row_app['lib'] == 'OHC') {
+		
+		include dirname(__FILE__)."/_partner_ohc.php";
+		$ar_data = ohc_request_done($appkey, $arr_param, $conn);
+		
 	} else {
 		
-		return_die('N', array('code'=>'-110', 'type'=>'E-CONFIG'), '광고 오류입니다.');
+		return_die('N', array('code'=>'-110'), '광고 오류입니다.');
 		
 	}
 	

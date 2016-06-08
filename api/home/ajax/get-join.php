@@ -9,7 +9,7 @@
 	// http://api.aline-soft.kr/ajax-request.php?id=get-join&pcode=aline&os=A&ad=LOC2&adid=0123456789012345-6789-0123-4567-8901&ip=127.0.0.1&uid=heartman@gmail.com&userdata=USERDATA
 
 	$pub_mactive = get_publisher_info();
-	if (!$pub_mactive || $pub_mactive == 'N' || $pub_mactive == 'D') return_die('N', array('code'=>'-100', 'type'=>'E-REQUEST'), '유효하지 않은 매체코드입니다.');
+	if (!$pub_mactive || $pub_mactive == 'N' || $pub_mactive == 'D') return_die('N', array('code'=>'-100'), '유효하지 않은 매체코드입니다.');
 	
 	$pcode = $_REQUEST['pcode'];
 	$appkey = $_REQUEST['ad'];
@@ -23,7 +23,7 @@
 	// $arr_param 기본 정보는 $_REQUEST 파라미터로 초기화
 	$arr_param = $_REQUEST;
 	
-	if (!$pcode || !$appkey || !$uid || !$adid || !$ip || !$account || !$imei) return_die('N', array('code'=>'-101', 'type'=>'E-REQUEST'), '파라미터 오류입니다..');
+	if (!$pcode || !$appkey || !$uid || !$adid || !$ip || !$account || !$imei) return_die('N', array('code'=>'-101'), '파라미터 오류입니다..');
 	
 	$db_pcode = mysql_real_escape_string($pcode);
 	$db_appkey = mysql_real_escape_string($appkey);
@@ -66,7 +66,7 @@
 	{
 		$log = $row_app['is_active'] . $row_app['is_mactive'] . $row_app['m_mactive'] . $row_app['p_mactive'] . $row_app['pa_mactive'] . $row_app['pa_disabled'] .
 				$row_app['p_level_block'] . $row_app['pa_merchant_disabled'] . $row_app['p_level_active_date'] . $row_app['check_open_time'] . $row_app['check_edate'] . $row_app['check_tot_executed'];
-		return_die('N', array('code'=>'-103', 'type'=>'E-CLOSED'), '광고가 없거나 참여할 수 없는 상태입니다.' . $log);
+		return_die('N', array('code'=>'-103'), '광고가 없거나 참여할 수 없는 상태입니다.' . $log);
 	}
 
 	// 광고가 수량이 완료되어 임시 중단된 상태입니다.
@@ -77,7 +77,7 @@
 		$row_app['check_ps_day_executed'] != 'Y')
 	{
 		$log = $row_app['check_time_period'] . $row_app['check_hour_executed'] . $row_app['check_day_executed'];
-		return_die('N', array('code'=>'-104', 'type'=>'E-PAUSED'), '광고가 임시 중단된 상태입니다.' . $log);
+		return_die('N', array('code'=>'-104'), '광고가 임시 중단된 상태입니다.' . $log);
 	}
 
 	// ---------------------------------------------	
@@ -85,7 +85,7 @@
 	$sql = "SELECT adid FROM al_app_adid_uploaded_t WHERE app_key = '{$db_appkey}' AND adid = '{$db_adid}'";
 	$row = @mysql_fetch_assoc(mysql_query($sql, $conn));
 	if ($row) {
-		return_die('N', array('code'=>'-106', 'type'=>'E-DONE'), '더 이상 참여할 수 없는 광고입니다.');
+		return_die('N', array('code'=>'-106'), '더 이상 참여할 수 없는 광고입니다.');
 	}
 	
 	// ---------------------------------------------	
@@ -94,9 +94,9 @@
 	$row = @mysql_fetch_assoc(mysql_query($sql, $conn));
 	if ($row) {
 		if ($row['status'] == 'D') {
-			return_die('N', array('code'=>'-105', 'type'=>'E-DONE'), '이미 참여한 광고입니다.');
+			return_die('N', array('code'=>'-105'), '이미 참여한 광고입니다.');
 		} else if ($row['permanent_fail'] == 'Y') {
-			return_die('N', array('code'=>'-106', 'type'=>'E-DONE'), '더 이상 참여할 수 없는 광고입니다.');
+			return_die('N', array('code'=>'-106'), '더 이상 참여할 수 없는 광고입니다.');
 		}
 	} 
 	
@@ -140,20 +140,26 @@
 	
 	// --------------------------------------------------------
 	if ($row_app['lib'] == 'LOCAL') {
+		
 		include dirname(__FILE__)."/_partner_local.php";
 		$ar_data = local_request_start($appkey, $arr_param, $conn);
+		
+	} else if ($row_app['lib'] == 'OHC') {
+		
+		include dirname(__FILE__)."/_partner_ohc.php";
+		$ar_data = ohc_request_start($appkey, $arr_param, $conn);
+		
 	} else {
-		return_die('N', array('code'=>'-110', 'type'=>'E-CONFIG'), '광고 오류입니다.');
+		
+		return_die('N', array('code'=>'-110'), '광고 오류입니다.');
+		
 	}
 	
 	// --------------------------------------------------------
 	if ($ar_data['result'] == 'N') {
 
-		// 광고 오류		
-		$ar_data['type'] = 'E-AD';
-		
 		// E-DONE인 경우 더이상 재 시도 하지 않도록 함.
-		if ( in_array($ar_data['type'], array('E-DONE')) ) $err_nomorejoin = 'Y'; else $err_nomorejoin = 'N';
+		if ( get_error_type($ar_data['code']) == 'E-DONE' ) $err_nomorejoin = 'Y'; else $err_nomorejoin = 'N';
 		
 		// 광고 오류상태를 저장
 		$sql = "UPDATE al_user_app_t 
@@ -171,9 +177,6 @@
 	$sql = "UPDATE al_user_app_t SET status = 'A' WHERE id = '{$user_app_id}'";	
 	$ar_data['url'] = $arr_param['url'];
 	
-// var_dump(@mysql_fetch_assoc(mysql_query("SELECT * FROM al_app_start_stat_t WHERE app_key = '{$db_appkey}'", $conn)));
-// var_dump(@mysql_fetch_assoc(mysql_query("SELECT * FROM al_user_app_t WHERE id = '{$user_app_id}'", $conn)));
-
 	return_die('Y', $ar_data);
 	
 ?>

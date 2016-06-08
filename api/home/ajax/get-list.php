@@ -3,7 +3,7 @@
 	//	http://api.aline-soft.kr/ajax-request.php?id=get-list&pcode=aline&is_web=Y
 	
 	$pub_mactive = get_publisher_info("reward_percent", $ar_publisher);
-	if (!$pub_mactive || $pub_mactive == 'N' || $pub_mactive == 'D') return_die('N', array('code'=>'-100', 'type'=>'E-REQUEST'), '유효하지 않은 매체코드입니다.');
+	if (!$pub_mactive || $pub_mactive == 'N' || $pub_mactive == 'D') return_die('N', array('code'=>'-100'), '유효하지 않은 매체코드입니다.');
 
 	$reward_percent = $ar_publisher['reward_percent'];
 	$pcode = $_REQUEST['pcode'];

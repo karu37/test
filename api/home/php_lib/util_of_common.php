@@ -548,31 +548,75 @@ function force_reward($pcode, $mcode, $appkey, $adid,
 }
 
 function set_error_msg(&$arr_data) {
-	
-	if ($arr_data['result'] != 'N' || $arr_data['msg']) return;
-	
-	if ($arr_data['code'] == '-100') $arr_data['msg'] = '유효하지 않은 매체코드입니다.';
-	else if ($arr_data['code'] == '-101') $arr_data['msg'] = '파라미터 오류입니다.  일부 파라미터가 빠져있습니다.';
-	else if ($arr_data['code'] == '-102') $arr_data['msg'] = '파라미터 코드 값 오류입니다.';
-	else if ($arr_data['code'] == '-103') $arr_data['msg'] = '광고가 없거나 참여할 수 없는 상태입니다.';
-	else if ($arr_data['code'] == '-104') $arr_data['msg'] = '광고가 임시 중단된 상태입니다.';
-	else if ($arr_data['code'] == '-105') $arr_data['msg'] = '이미 참여한 광고입니다.';
-	else if ($arr_data['code'] == '-106') $arr_data['msg'] = '더 이상 참여할 수 없는 광고입니다.';	// permanent_fail = 'Y'
-	
-	else if ($arr_data['code'] == '-107') $arr_data['msg'] = '광고 참여한 기록이 없습니다.';
-	else if ($arr_data['code'] == '-109') $arr_data['msg'] = '유효하지 않은 요청입니다';			// DONE을 실행형이 아닌데 요청함.
-	else if ($arr_data['code'] == '-110') $arr_data['msg'] = '광고 오류입니다.';					// 광고 LIB에 대한 처리가 존재하지 않음
-	
-	else if ($arr_data['code'] == '-1001') $arr_data['msg'] = '광고 오류입니다. (no-packageid)';
-	else if ($arr_data['code'] == '-1002') $arr_data['msg'] = '광고 오류입니다. (unknown-market)';
-	else if ($arr_data['code'] == '-1003') $arr_data['msg'] = '광고 오류입니다. (no-url)';
+	if ($arr_data['result'] != 'N') return;
+	$arr_data['msg'] = get_error_msg($arr_data['code'], $arr_data['msg']);
+}
 
-	// DB에 적립 중 발생 오류
-	else if ($arr_data['code'] == '-3001') $arr_data['msg'] = '중복 적립 오류';
-	else if ($arr_data['code'] == '-3002') $arr_data['msg'] = '적립 시도 기록이 없음';
-	else if ($arr_data['code'] == '-3003') $arr_data['msg'] = 'UNIQUE 키 중복 오류';
-	else if ($arr_data['code'] == '-3004') $arr_data['msg'] = 'DB 처리 중 오류 발생';
+function get_error_type($code) {
+	
+	switch ($code) {
+		case '-100':
+		case '-101':
+		case '-102': return 'E-REQUEST';
+		case '-110': return 'E-CONFIG';
+		
+		case '-103': return 'E-CLOSED';
+		case '-104': return 'E-PAUSED';
+		case '-105':
+		case '-106': return 'E-DONE';
+		
+		case '-107':
+		case '-108':
+		case '-109': return 'E-FLOW';
+		
+		case '-1001':
+		case '-1002':
+		case '-1003':
+		case '-1004': return 'E-AD';
+		
+		case '-2001':
+		
+		case '-3001':
+		case '-3002':
+		case '-3003':
+		case '-3004':
+		case '-3101': return 'E-REWARD';
+	}
+	return 'E-UNKNOWN';
+}
 
+function get_error_msg($code, $msg) {
+	
+	if ($msg) return $msg;
+	switch ($code) {
+		case '-100': return '유효하지 않은 매체코드입니다.';
+		case '-101': return '파라미터 오류입니다.  일부 파라미터가 빠져있습니다.';
+		case '-102': return '파라미터 코드 값 오류입니다.';
+		case '-110': return '광고 오류입니다.';
+		
+		case '-103': return '광고가 없거나 참여할 수 없는 상태입니다.';
+		case '-104': return '광고가 임시 중단된 상태입니다.';
+		case '-105': return '이미 참여한 광고입니다.';
+		case '-106': return '더 이상 참여할 수 없는 광고입니다.';
+		
+		case '-107': return '광고 참여한 기록이 없습니다.';
+		case '-108': return '광고 참여한 기록이 없습니다.';
+		case '-109': return '유효하지 않은 요청입니다';
+		
+		case '-1001': return '광고 오류입니다. (no-packageid)';
+		case '-1002': return '광고 오류입니다. (unknown-market)';
+		case '-1003': return '광고 오류입니다. (no-url)';
+		case '-1004': return '매체사 요청 파라미터 오류입니다.'
+		
+		case '-2001': return '적립오류 입니다.';
+		
+		case '-3001': return '중복 적립 오류';
+		case '-3002': return '적립 시도 기록이 없음';
+		case '-3003': return 'UNIQUE 키 중복 오류';
+		case '-3004': return 'DB 처리 중 오류 발생';
+		case '-3101': return '강제 중복 적립 오류';
+	}
+	return 'E-UNKNOWN';
 }
 
 ?>

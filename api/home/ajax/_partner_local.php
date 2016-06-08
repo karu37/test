@@ -1,5 +1,6 @@
 <?	
 $g_local['unique_prefix'] = "uvl";
+$g_local['timeout_sec'] = 60;				// 시작 / 적립 요청시의 Timeout 초
 // 로컬은 광고주쪽 요청이 없이 바로 처리하기 때문에 callback없음
 $g_local['callback'] = "";
 
@@ -21,12 +22,13 @@ function local_request_start($app_key, &$arr_data, &$conn)
 	
 	// al_app_t 정보
 	$ar_app = $arr_data['ad'];
+	$userapp_id = $arr_data['user_app_id'];
 	
 	$db_appkey = mysql_real_escape_string($app_key);
 	$user_unique_key = $arr_data['user_unique_key'];
 
 	// 실행 URL : WEB형은 기본적으로 가지고 있어야 함. (자체적인 URL에는 referrer=[al_user_app_t.id] 를 전달하도록 한다.
-	$referrer = "uaid=".$arr_data['user_app_id']."&cc=".md5(sha1($arr_data['user_app_id']));
+	$referrer = "uaid=".$userapp_id."&cc=".md5(sha1($userapp_id));
 	
 	if ( $ar_app['app_exec_type'] == 'I' ) {
 		// 실행형
@@ -52,7 +54,7 @@ function local_request_start($app_key, &$arr_data, &$conn)
 	$arr_data['url'] = $exec_url;
 	
 	// $arr_data는 파라미터로 그대로 전달됨.
-	return array('result' => 'Y', 'code' => '', 'msg' => "");
+	return array('result' => 'Y');
 }
 
 function local_request_done($app_key, $arr_data, $b_forcedone, &$conn) 
@@ -60,14 +62,7 @@ function local_request_done($app_key, $arr_data, $b_forcedone, &$conn)
 	global $g_local, $dev_mode;
 
 	$ar_app = $arr_data['ad'];
-	$ar_userapp = $arr_data['userapp'];
-	$unique_key = $g_local['unique_prefix'].$arr_data['user_app_id'];
-	$ar_result = array();
-	
-	// ----------------------------------------------------------------------
-	// 문제 없는지 한번 더 확인함. (호출 전에 체크한것 외에..)
-	// ----------------------------------------------------------------------
-	// 	return array('result' => 'N', 'code' => '-1003', 'msg' => "no-exec-url");
+	$userapp_id = $arr_data['user_app_id'];
 
 	/////////////////////////////////////////////////////////////////////////
 	// MERCHANT CALLBACK 발생 영역과 동일
@@ -109,8 +104,6 @@ function local_request_done($app_key, $arr_data, $b_forcedone, &$conn)
 			// ----------------------------------------------------------------------
 			// CALLBACK 파라미터 생성 후 Publisher 콜백 호출
 			// ----------------------------------------------------------------------
-			$ar_result['result'] = 'Y';
-		
 			$url_param['ad'] = $app_key;
 			$url_param['price'] = $ar_app['publisher_fee'];
 			$url_param['reward'] = intval($ar_app['publisher_fee'] * $arr_data['reward_percent'] / 100);
@@ -122,14 +115,13 @@ function local_request_done($app_key, $arr_data, $b_forcedone, &$conn)
 		
 			// ----------------------------------------------------------------------
 			$start_tm = get_timestamp();
-			$response_data = post($req_base_url, $url_param, 3);
+			$response_data = post($req_base_url, $url_param, $g_local['timeout_sec']);
 			$ar_resp = json_decode($response_data, true);
 
 			// MYSQL을 닫은 후 요청이 완료되면 dbPConn()으로 재 연결한다.
 			mysql_close($conn);
 			
-			// echo "make_action_log({$ar_resp['result']}, {$response_data}, 0, 'local-cb-call', null, {$req_base_url}, {$url_param});";
-			make_action_log($ar_resp['result'], $response_data, get_timestamp() - $start_tm, 'local-cb-call', null, $req_base_url, $url_param);
+			make_action_log("callback-pub-local", ifempty($ar_resp['result'], 'N'), $arr_data['adid'], null, get_timestamp() - $start_tm, $req_base_url, $url_param, $response_data, $conn);
 			
 			$conn = dbPConn();
 		
@@ -138,11 +130,11 @@ function local_request_done($app_key, $arr_data, $b_forcedone, &$conn)
 			// 	 callback_done 결과를 al_user_app_t 에 기록하기 실패시 F 로 설정함.
 			// ----------------------------------------------------------------------
 			if ($ar_resp['result'] == 'Y') {
-				$sql = "UPDATE al_user_app_t SET callback_done = 'Y', callback_data = NULL, callback_time = '{$ar_time['now']}' WHERE id = '{$arr_data['user_app_id']}'";
+				$sql = "UPDATE al_user_app_t SET callback_done = 'Y', callback_data = NULL, callback_time = '{$ar_time['now']}' WHERE id = '{$userapp_id}'";
 				mysql_query($sql, $conn);
 			} else {
 				$db_response_data = mysql_real_escape_string($response_data);
-				$sql = "UPDATE al_user_app_t SET callback_done = 'F', callback_data = '{$db_response_data}', callback_time = '{$ar_time['now']}' WHERE id = '{$arr_data['user_app_id']}'";
+				$sql = "UPDATE al_user_app_t SET callback_done = 'F', callback_data = '{$db_response_data}', callback_time = '{$ar_time['now']}' WHERE id = '{$userapp_id}'";
 				mysql_query($sql, $conn);
 			}
 		}

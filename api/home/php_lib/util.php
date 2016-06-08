@@ -158,54 +158,55 @@ function return_die($result, $object = null, $msg = null, $error_sql = null) {
 		$sql = "INSERT INTO _error_sql_log (`type`, `sql`, errno, error, reg_date) VALUES('M', '{$db_sql}', '{$db_errno}', '{$db_error}', NOW());";
 		@mysql_query($sql, $conn);
 	}
-	
-	make_visit_log($result, $object, null, null, null, null, null, $conn);
+	make_visit_log(null, $result, null, null, null, null, null, $object, $conn);
 	die();
 }
 
-function make_visit_log($result, $ar_response, $elapsed_time = null, $pageid = null, $adid = null, $req_url = null, $ar_post_param = null, $conn = null) {
+// make_action_log("ohc-start", 'Y', $arr_data['adid'], null, get_timestamp() - $start_tm, $campain_url, null, $result_data, $conn);
+function make_visit_log($pageid, $is_result, $adid, $ip, $elapsed_time, $req_url, $arsz_post_param, $arsz_response, $conn) {
 	
-	_make_log($result, $ar_response, $elapsed_time, $pageid, $adid, $req_url, $ar_post_param, $conn, 'V');
+	_make_log($pageid, $is_result, $adid, $ip, $elapsed_time, $req_url, $arsz_post_param, $arsz_response, $conn, 'V');
 }
-function make_action_log($result, $ar_response, $elapsed_time = null, $pageid = null, $adid = null, $req_url = null, $ar_post_param = null, $conn = null) {
-	_make_log($result, $ar_response, $elapsed_time, $pageid, $adid, $req_url, $ar_post_param, $conn, 'A');
+function make_action_log($pageid, $is_result, $adid, $ip, $elapsed_time, $req_url, $arsz_post_param, $arsz_response, $conn) {
+	_make_log($pageid, $is_result, $adid, $ip, $elapsed_time, $req_url, $arsz_post_param, $arsz_response, $conn, 'A');
 }
 
-function _make_log($result, $ar_response, $elapsed_time = null, $pageid = null, $adid = null, $req_url = null, $ar_post_param = null, $conn = null, $tb_target = 'V')
+function _make_log($pageid, $is_result, $adid, $ip, $elapsed_time, $req_url, $arsz_post_param, $arsz_response, $conn, $tb_target = 'V')
 {
 	global $dev_mode, $_start_api_tm;
 	
 	if ($elapsed_time === null) $elapsed_time = get_timestamp() - $_start_api_tm;
 	if ($pageid === null) $pageid = $_REQUEST['id'];
 	if ($adid === null) $adid = $_REQUEST['adid'];
+	if ($ip === null) $ip = $_SERVER['REMOTE_ADDR'];
 	if ($req_url === null) $req_url = 'http://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'];
-	if ($ar_post_param === null) $ar_post_param = $_POST;
+	if ($arsz_post_param === null) $arsz_post_param = $_POST;
 
-	$db_result = @mysql_real_escape_string($result);
+	$db_result = @mysql_real_escape_string($is_result);
 	$db_pageid = @mysql_real_escape_string($pageid);
 	$db_adid = @mysql_real_escape_string($adid);
 	$db_req_url = @mysql_real_escape_string($req_url);
-	$db_remote_addr = @mysql_real_escape_string($_SERVER['REMOTE_ADDR']);
+	$db_remote_addr = @mysql_real_escape_string($ip);
 	$db_elapsed_time = @mysql_real_escape_string($elapsed_time);
 	
 	$db_post = '';
-	if ($ar_post_param) {
-		if (gettype($ar_post_param) == 'string')
-			$db_post = @mysql_real_escape_string($ar_post_param);
-		else if (gettype($ar_post_param) == 'array') {
-			foreach($ar_post_param as $key => $val) {
+	if ($arsz_post_param) {
+		if (gettype($arsz_post_param) == 'string')
+			$db_post = @mysql_real_escape_string($arsz_post_param);
+		else if (gettype($arsz_post_param) == 'array') {
+			foreach($arsz_post_param as $key => $val) {
 				$db_post .= @mysql_real_escape_string("{$key}={$val}\n");
 			}
 		}
 	}
 	
 	$db_response = '';
-	if ($ar_response) {
-		if (gettype($ar_response) == 'string') {
-			$db_response = @mysql_real_escape_string($ar_response);
+	if ($arsz_response) {
+		if (gettype($arsz_response) == 'string') {
+			$db_response = @mysql_real_escape_string($arsz_response);
 		}
-		else if (gettype($ar_response) == 'array') {
-			foreach($ar_response as $key => $val) {
+		else if (gettype($arsz_response) == 'array') {
+			foreach($arsz_response as $key => $val) {
 				$db_response .= @mysql_real_escape_string("{$key}={$val}\n");
 			}
 		}

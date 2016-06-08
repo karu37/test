@@ -21,8 +21,13 @@ if ( in_array($id, $ar_pconnect_pages) )
 	$conn = dbPConn();
 else
 	$conn = dbConn();
-
+	
 if (!$conn) return_die(false, null, '서비스 연결이 원활하지 않습니다.(20)');
+
+// ---------------------------------------
+function shutdown_connection() { global $conn; if ($conn) mysql_close($conn); }
+register_shutdown_function('shutdown_connection');
+// ---------------------------------------
 
 if (file_exists($file)) {
 	
