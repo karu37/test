@@ -175,7 +175,8 @@ function _make_log($pageid, $is_result, $adid, $ip, $elapsed_time, $req_url, $ar
 {
 	global $dev_mode, $_start_api_tm;
 	
-	if ($pcode === null) $pageid = $_REQUEST['pcode'];
+	$pcode = $_REQUEST['pcode'];
+	
 	if ($elapsed_time === null) $elapsed_time = get_timestamp() - $_start_api_tm;
 	if ($pageid === null) $pageid = $_REQUEST['id'];
 	if ($adid === null) $adid = $_REQUEST['adid'];
