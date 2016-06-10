@@ -72,7 +72,6 @@ function update_ohc_app($force_reload, $conn)
 	// 광고 목록 요청
 	$start_tm = get_timestamp();
 	$sz_camp_data = @file_get_contents($campain_url);
-	// make_visit_log_url(get_timestamp() - $start_tm, basename(__FILE__), "ohc-adlist", $campain_url, $sz_camp_data, $conn);
 	if (intval($sz_camp_data)) return false;
 	
 	$js_camp_data = json_decode($sz_camp_data, true);
@@ -340,7 +339,7 @@ function ohc_request_start($app_key, &$arr_data, &$conn)
 	$result_data = @file_get_contents($campain_url, 0, $ctx);
 	$conn = dbPConn();
 	
-	make_action_log("user-start-ohc", ($result_data?'Y':'N'), $arr_data['adid'], null, get_timestamp() - $start_tm, $campain_url, null, $result_data, $conn);
+	make_action_log("user-start-ohc", ($result_data?'Y':'N'), $arr_data['pcode'], $arr_data['adid'], null, get_timestamp() - $start_tm, $campain_url, null, $result_data, $conn);
 	if (!$result_data) return array('result' => 'N', 'code' => '-1003');
 	
 	//전달할 결과 조합
@@ -382,7 +381,7 @@ function local_request_done($app_key, $arr_data, &$conn)
 	$result_data = post($g_ohc['done'], $url_param, $g_ohc['timeout_sec']);
 	$conn = dbPConn();	
 	
-	make_action_log("user-done-ohc", ($result_data?'Y':'N'), $arr_data['adid'], null, get_timestamp() - $start_tm, $g_ohc['done'], $url_param, $result_data, $conn);
+	make_action_log("user-done-ohc", ($result_data?'Y':'N'), $arr_data['pcode'], $arr_data['adid'], null, get_timestamp() - $start_tm, $g_ohc['done'], $url_param, $result_data, $conn);
 	if (!$result_data) return array('result' => 'N', 'code' => '-1003');
 
 	// 전달할 결과 조합

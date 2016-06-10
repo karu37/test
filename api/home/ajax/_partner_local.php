@@ -121,7 +121,7 @@ function local_request_done($app_key, $arr_data, $b_forcedone, &$conn)
 			// MYSQL을 닫은 후 요청이 완료되면 dbPConn()으로 재 연결한다.
 			mysql_close($conn);
 			
-			make_action_log("callback-pub-local", ifempty($ar_resp['result'], 'N'), $arr_data['adid'], null, get_timestamp() - $start_tm, $req_base_url, $url_param, $response_data, $conn);
+			make_action_log("callback-pub-local", ifempty($ar_resp['result'], 'N'), $arr_data['pcode'], $arr_data['adid'], null, get_timestamp() - $start_tm, $req_base_url, $url_param, $response_data, $conn);
 			
 			$conn = dbPConn();
 		

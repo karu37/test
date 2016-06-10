@@ -158,25 +158,24 @@ function return_die($result, $object = null, $msg = null, $error_sql = null) {
 		$sql = "INSERT INTO _error_sql_log (`type`, `sql`, errno, error, reg_date) VALUES('M', '{$db_sql}', '{$db_errno}', '{$db_error}', NOW());";
 		@mysql_query($sql, $conn);
 	}
-	make_visit_log(null, $result, null, null, null, null, null, $object, $conn);
+	make_visit_log(null, $result, null, null, null, null, null, null, $object, $conn);
 	die();
 }
 
 // make_action_log("ohc-start", 'Y', $arr_data['adid'], null, get_timestamp() - $start_tm, $campain_url, null, $result_data, $conn);
-function make_visit_log($pageid, $is_result, $adid, $ip, $elapsed_time, $req_url, $arsz_post_param, $arsz_response, $conn) {
+function make_visit_log($pageid, $is_result, $pcode, $adid, $ip, $elapsed_time, $req_url, $arsz_post_param, $arsz_response, $conn) {
 	
-	_make_log($pageid, $is_result, $adid, $ip, $elapsed_time, $req_url, $arsz_post_param, $arsz_response, $conn, 'V');
+	_make_log($pageid, $is_result, $pcode, $adid, $ip, $elapsed_time, $req_url, $arsz_post_param, $arsz_response, $conn, 'V');
 }
-function make_action_log($pageid, $is_result, $adid, $ip, $elapsed_time, $req_url, $arsz_post_param, $arsz_response, $conn) {
-	_make_log($pageid, $is_result, $adid, $ip, $elapsed_time, $req_url, $arsz_post_param, $arsz_response, $conn, 'A');
+function make_action_log($pageid, $is_result, $pcode, $adid, $ip, $elapsed_time, $req_url, $arsz_post_param, $arsz_response, $conn) {
+	_make_log($pageid, $is_result, $pcode, $adid, $ip, $elapsed_time, $req_url, $arsz_post_param, $arsz_response, $conn, 'A');
 }
 
-function _make_log($pageid, $is_result, $adid, $ip, $elapsed_time, $req_url, $arsz_post_param, $arsz_response, $conn, $tb_target = 'V')
+function _make_log($pageid, $is_result, $pcode, $adid, $ip, $elapsed_time, $req_url, $arsz_post_param, $arsz_response, $conn, $tb_target = 'V')
 {
 	global $dev_mode, $_start_api_tm;
 	
-	$pcode = $_REQUEST['pcode'];
-	
+	if ($pcode === null) $pcode = $_REQUEST['pcode'];
 	if ($elapsed_time === null) $elapsed_time = get_timestamp() - $_start_api_tm;
 	if ($pageid === null) $pageid = $_REQUEST['id'];
 	if ($adid === null) $adid = $_REQUEST['adid'];

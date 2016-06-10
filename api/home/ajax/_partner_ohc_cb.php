@@ -40,6 +40,9 @@ $g_ohc['timeout_sec'] = 60;				// 시작 / 적립 요청시의 Timeout 초
 		echo_response('error-info', '앱정보가 일치하지 않습니다.');
 		die();
 	}
+	//## pcode from db
+	$g_log['pcode'] = $arr_userapp['pcode'];
+	$g_log['adid'] = $arr_userapp['adid'];
 	
 	//## 적립하기
 	$ar_reward = callback_reward($arr_userapp['pcode'], $arr_userapp['mcode'], $arr_userapp['app_key'], $arr_userapp['adid'], 
@@ -75,7 +78,7 @@ $g_ohc['timeout_sec'] = 60;				// 시작 / 적립 요청시의 Timeout 초
 		// MYSQL을 닫은 후 요청이 완료되면 dbPConn()으로 재 연결한다.
 		mysql_close($conn);
 		
-		make_action_log("callback-pub-ohc", ifempty($ar_resp['result'], 'N'), $arr_userapp['adid'], null, get_timestamp() - $start_tm, $req_base_url, $url_param, $response_data, $conn);
+		make_action_log("callback-pub-ohc", ifempty($ar_resp['result'], 'N'), $arr_userapp['pcode'], $arr_userapp['adid'], null, get_timestamp() - $start_tm, $req_base_url, $url_param, $response_data, $conn);
 		
 		$conn = dbPConn();
 	
@@ -97,7 +100,7 @@ $g_ohc['timeout_sec'] = 60;				// 시작 / 적립 요청시의 Timeout 초
 
 function echo_response($type, $msg = null) 
 {
-	global $conn;
+	global $conn, $g_log;
 	
 	$add_msg = ($msg ? " (".$msg.")" : "");
 /*	
@@ -120,7 +123,7 @@ function echo_response($type, $msg = null)
 
 	$result = json_encode($arResult);
 	
-	make_action_log("callback-ohc", ($type == 'success' ? 'Y' : 'N'), null, null, null, null, null, $result, $conn);
+	make_action_log("callback-ohc", ($type == 'success' ? 'Y' : 'N'), $g_log['pcode'], $g_log['adid'], null, null, null, null, $result, $conn);
 	
 	echo $result;
 }
