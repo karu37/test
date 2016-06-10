@@ -97,6 +97,8 @@ $g_ohc['timeout_sec'] = 60;				// 시작 / 적립 요청시의 Timeout 초
 
 function echo_response($type, $msg = null) 
 {
+	global $conn;
+	
 	$add_msg = ($msg ? " (".$msg.")" : "");
 /*	
 	if ($type == 'success') $arResult = array('result' => 'Y', 'code' => 1, 'msg' => "success");
@@ -116,7 +118,11 @@ function echo_response($type, $msg = null)
 	else if ($type == 'error-etc') $arResult = array('resCode' => 'E84', 'msg' => "exception has occurred in processing callback{$add_msg}");
 	if (!$arResult) $arResult = array('resCode' => 'E85', 'msg' => "Invalid response {$add_msg}");
 
-	echo json_encode($arResult);
+	$result = json_encode($arResult);
+	
+	make_action_log("callback-ohc", ($type == 'success' ? 'Y' : 'N'), null, null, null, null, null, $result, $conn);
+	
+	echo $result;
 }
 
 ?>
