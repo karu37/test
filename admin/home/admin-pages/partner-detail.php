@@ -45,9 +45,7 @@
 		.list tr.mactive-T td 			{background:#f80; color:#000}
 		.list tr.mactive-T:hover td 	{background:#f80}
 				
-		.list tr			{line-height:25px}
-		.list th			{padding: 2px 4px}
-		.list td			{padding: 2px 4px}
+		.list tr > * 	{height:25px; line-height:1em; padding: 4px 4px}
 		
 		.list .btn-td								{padding-left: 0px padding-right: 0px}
 		.list .th_status, .list .btn-td .btn-wrapper	{width: 66px}

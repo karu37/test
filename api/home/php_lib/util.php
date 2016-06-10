@@ -175,6 +175,7 @@ function _make_log($pageid, $is_result, $adid, $ip, $elapsed_time, $req_url, $ar
 {
 	global $dev_mode, $_start_api_tm;
 	
+	if ($pcode === null) $pageid = $_REQUEST['pcode'];
 	if ($elapsed_time === null) $elapsed_time = get_timestamp() - $_start_api_tm;
 	if ($pageid === null) $pageid = $_REQUEST['id'];
 	if ($adid === null) $adid = $_REQUEST['adid'];
@@ -182,6 +183,7 @@ function _make_log($pageid, $is_result, $adid, $ip, $elapsed_time, $req_url, $ar
 	if ($req_url === null) $req_url = 'http://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'];
 	if ($arsz_post_param === null) $arsz_post_param = $_POST;
 
+	$db_pcode = @mysql_real_escape_string($pcode);
 	$db_result = @mysql_real_escape_string($is_result);
 	$db_pageid = @mysql_real_escape_string($pageid);
 	$db_adid = @mysql_real_escape_string($adid);
@@ -215,8 +217,9 @@ function _make_log($pageid, $is_result, $adid, $ip, $elapsed_time, $req_url, $ar
 	if ($tb_target == 'A') $tbname = 'site_action_log';
 	else $tbname = 'site_visit_log';
 	
-	$sql = "INSERT INTO {$tbname} (result, pageid, adid, requrl, ip, elapsed, post, response)
-			VALUES ('$db_result', 
+	$sql = "INSERT INTO {$tbname} (pcode, result, pageid, adid, requrl, ip, elapsed, post, response)
+			VALUES ('$db_pcode,
+					'$db_result', 
 					'$db_pageid',
 					'$db_adid',
 					'$db_req_url',

@@ -34,10 +34,8 @@
 		.list tr.mactive-T td 			{background:#f90; color:#000}
 		.list tr.mactive-T:hover td 	{background:#f80}
 		
-		.list tr			{line-height:25px}
-		.list th			{padding: 2px 4px}
-		.list td			{padding: 2px 4px}
-		
+		.list tr > * 		{height:25px; line-height:1em; padding: 4px 4px}
+
 		.list .btn-td									{padding-left: 0px padding-right: 0px}
 		.list .th_status, .list .btn-td .btn-wrapper	{width: 66px}
 		.list .btn-td a									{padding:7px 4px; font-size: 10px; letter-spacing:0px; margin: 2px -2px 2px -1px; box-shadow:none;}
@@ -90,6 +88,7 @@
 			<th>이름</th>
 			<th>코드</th>
 			<th width=40px>광고수</th>
+			<th width=40px>공급가<br>환율%</th>
 			<th width=1px></th>
 		</tr>
 	</thead>
@@ -121,6 +120,7 @@
 				<td <?=$td_onclick?>><?=$merchant['name']?></td>
 				<td <?=$td_onclick?>><?=$merchant['mcode']?></td>
 				<td <?=$td_onclick?>><?=admin_number($merchant['appkey_cnt'])?></td>
+				<td <?=$td_onclick?>><?=admin_number($merchant['exchange_fee_rate'])?></td>
 				<td><a href='#' onclick='goPage("dlg-merchant-modify", null, {merchant_code:"<?=$merchant['mcode']?>"})' data-theme='a' data-role='button' data-mini='true' data-inline='true'>정보<br>변경</a></td>
 			</tr>
 			<?

@@ -8,11 +8,13 @@
 
 	$db_merchant_code = mysql_real_escape_string($merchant_code);
 	
-	$sql = "SELECT mcode, name FROM al_merchant_t WHERE mcode = '{$db_merchant_code}';";
+	$sql = "SELECT mcode, name, exchange_fee_rate FROM al_merchant_t WHERE mcode = '{$db_merchant_code}';";
 	$row = @mysql_fetch_assoc(mysql_query($sql, $conn));
 	
-	$ar_data['merchant_code'] = $row['pcode'];
+	$ar_data['merchant_code'] = $row['mcode'];
 	$ar_data['merchant_name'] = $row['name'];
+	$ar_data['exchange_fee_rate'] = $row['exchange_fee_rate'];
+	
 	return_die(true, $ar_data);
 
 ?>

@@ -3,7 +3,8 @@ $g_ohc['unique_prefix'] = "ohc";		// 적립 결과에 Unique 키
 $g_ohc['timeout_sec'] = 60;				// 시작 / 적립 요청시의 Timeout 초
 
 /* ******************************************
-	// "http://api.aline-soft.kr/ajax-request.php?id=_partner_ohc_cb&appkey=ohcca56209ce2b04fc6e7288375b9f689bb&uniquekey=ohcuniquekey&userdata=" . base64_encode(json_encode(array('aid' => $userapp_id)))
+	// callback base url : http://cb.aline-soft.kr/ajax-request.php?id=_partner_ohc_cb
+	// "http://cb.aline-soft.kr/ajax-request.php?id=_partner_ohc_cb&appkey=ohcca56209ce2b04fc6e7288375b9f689bb&uniquekey=ohcuniquekey&userdata=" . base64_encode(json_encode(array('aid' => $userapp_id)))
 **********************************************/
 
 	// 전달된 파라미터 받아서 표준화 하기
@@ -26,7 +27,7 @@ $g_ohc['timeout_sec'] = 60;				// 시작 / 적립 요청시의 Timeout 초
 
 	// ------------------------------------------------
 	
-	//## al_user_app_t 정보 로딩
+	//## al_user_app_t 정보 로딩 및 m_key 값과 일치하는지 확인
 	$db_aid = mysql_real_escape_string($aid);
 	$sql = "SELECT a.*, 
 					p.reward_percent,
@@ -97,14 +98,24 @@ $g_ohc['timeout_sec'] = 60;				// 시작 / 적립 요청시의 Timeout 초
 function echo_response($type, $msg = null) 
 {
 	$add_msg = ($msg ? " (".$msg.")" : "");
+/*	
 	if ($type == 'success') $arResult = array('result' => 'Y', 'code' => 1, 'msg' => "success");
 	else if ($type == 'error-sec') $arResult = array('result' => 'N', 'code' => 1100, 'msg' => "Invalid signed value{$add_msg}");
 	else if ($type == 'error-dup') $arResult = array('result' => 'N', 'code' => 3100, 'msg' => "duplicate transaction{$add_msg}");
 	else if ($type == 'error-user') $arResult = array('result' => 'N', 'code' => 3200, 'msg' => "invalid user transaction{$add_msg}");
 	else if ($type == 'error-info') $arResult = array('result' => 'N', 'code' => 3300, 'msg' => "no matching transaction{$add_msg}");
 	else if ($type == 'error-etc') $arResult = array('result' => 'N', 'code' => 4000, 'msg' => "exception has occurred in processing callback{$add_msg}");
-	
 	if (!$arResult) $arResult = array('result' => 'Y', 'code' => 4001, 'msg' => "Invalid response {$add_msg}");
+*/	
+
+	if ($type == 'success') $arResult = array('resCode' => 'E00', 'msg' => "정상처리");
+	else if ($type == 'error-sec') $arResult = array('resCode' => 'E80', 'msg' => "Invalid signed value{$add_msg}");
+	else if ($type == 'error-dup') $arResult = array('resCode' => 'E81', 'msg' => "duplicate transaction{$add_msg}");
+	else if ($type == 'error-user') $arResult = array('resCode' => 'E82', 'msg' => "invalid user transaction{$add_msg}");
+	else if ($type == 'error-info') $arResult = array('resCode' => 'E83', 'msg' => "no matching transaction{$add_msg}");
+	else if ($type == 'error-etc') $arResult = array('resCode' => 'E84', 'msg' => "exception has occurred in processing callback{$add_msg}");
+	if (!$arResult) $arResult = array('resCode' => 'E85', 'msg' => "Invalid response {$add_msg}");
+
 	echo json_encode($arResult);
 }
 

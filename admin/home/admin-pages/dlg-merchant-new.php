@@ -15,6 +15,13 @@
 	        	<t5>Merchant 명</t5>
 	        	<input type=text id="txt_merchant_name" init-value="" />
 	        	
+	        	<br>
+	        	<t5>제공가 전환 비율(%)</t5>
+	        	<div style='width:100px; display: block'>
+		        	<input type=text id="txt_exchange_fee_rate" init-value="100" />
+		        </div>
+	        	부가세 포함금액으로 전달되는 경우 : 91 설정
+	        	
         	</div>
         	<div style='padding: 10px 20px'>
 	        	<a href="#" onclick='<?=$js_page_id?>.action.on_btn_addmerchant()' data-inline='true' data-mini="true" data-role="button" data-theme="b">생성하기</a>
@@ -51,12 +58,17 @@ var <?=$js_page_id?> = function()
 				var ar_param = { 
 					partnerid: g_partner_id,
 					mcode: _$("#txt_merchant_code").val(),
-					merchantname: _$("#txt_merchant_name").val()
+					merchantname: _$("#txt_merchant_name").val(),
+					exchangefeerate: _$("#txt_exchange_fee_rate").val()
 				};
 				
 				if (!ar_param.mcode || !ar_param.merchantname) {
 					util.Alert('Publisher 명을 입력하세요');
-					return	
+					return;
+				}
+				if (!ar_param.exchangefeerate) {
+					util.Alert('제공가 전환 비율을 입력하세요');
+					return;
 				}
 				
 				if (!ar_param.mcode.match(/^[a-z_]{4,16}/g)) {

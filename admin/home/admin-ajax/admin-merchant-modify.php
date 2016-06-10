@@ -4,11 +4,13 @@
 	
 	$merchant_code = trim($_REQUEST['mcode']);
 	$merchant_name = trim($_REQUEST['merchantname']);
-	if (!$merchant_code || !$merchant_name) return_die(false, null, '필요한 정보가 없습니다.');
+	$exchange_fee_rate = trim($_REQUEST['exchangefeerate']);
+	if (!$merchant_code || !$merchant_name || $exchange_fee_rate <= 0) return_die(false, null, '필요한 정보가 없습니다.');
 	
 
 	$db_merchant_name = mysql_real_escape_string($merchant_name);
 	$db_merchant_code = mysql_real_escape_string($merchant_code);
+	$db_exchange_fee_rate = mysql_real_escape_string($exchange_fee_rate);
 
 	try {
 		begin_trans($conn);
@@ -25,7 +27,8 @@
 		
 		$sql = "UPDATE al_merchant_t 
 				SET
-					name = '{$db_merchant_name}'
+					name = '{$db_merchant_name}',
+					exchange_fee_rate = '{$db_exchange_fee_rate}'
 				WHERE mcode = '{$db_merchant_code}'";
 		mysql_execute($sql, $conn);
 		

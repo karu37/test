@@ -38,9 +38,7 @@
 ?>
 	<style>
 		.list tr:hover td 	{background:#dff}
-		.list tr			{line-height:25px}
-		.list th			{padding: 2px 4px}
-		.list td			{padding: 2px 4px}
+		.list tr > * 	{height:25px; line-height:1em; padding: 4px 4px}
 				
 		.list .btn-td								{padding-left: 0px padding-right: 0px}
 		.list .btn-td .btn-wrapper					{width: 46px}

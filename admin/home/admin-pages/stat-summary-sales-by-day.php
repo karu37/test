@@ -23,7 +23,7 @@
 	$result = mysql_query($sql, $conn);
 ?>
 	<style>
-		.main-list tr	{line-height:25px}
+		.main-list tr > * 	{height:25px; line-height:1em; padding: 4px 4px}
 		.main-list span 	{ padding: 5px 10px }
 		
 		.main-list .type-A	{ background: #fff }

@@ -14,6 +14,14 @@
 	        	<t5>Publisher 명</t5>
 	        	<input type=text id="txt_merchant_name" init-value="" />
 	        	
+	        	<br>
+	        	<t5>제공가 전환 비율(%)</t5>
+	        	<div style='width:100px; display: block'>
+		        	<input type=text id="txt_exchange_fee_rate" init-value="" />
+		        </div>	        
+	        	부가세 포함금액으로 전달되는 경우 : 91 설정
+		        	
+	        	
         	</div>
         	<div style='padding: 10px 20px'>
 	        	<a href="#" onclick='<?=$js_page_id?>.action.on_btn_modifymerchant()' data-inline='true' data-mini="true" data-role="button" data-theme="b">변경하기</a>
@@ -51,6 +59,7 @@ var <?=$js_page_id?> = function()
 					{
 						$("#txt_merchant_code").val(g_merchant_code);
 						$("#txt_merchant_name").val(js_data['merchant_name']);
+						$("#txt_exchange_fee_rate").val(js_data['exchange_fee_rate']);
 						util.set_item_value($("#txt_group_level"), js_data['merchant_level']);
 					} 
 					else 
@@ -66,12 +75,17 @@ var <?=$js_page_id?> = function()
 			on_btn_modifymerchant: function() {
 				var ar_param = { 
 					mcode: g_merchant_code,
-					merchantname: _$("#txt_merchant_name").val()
+					merchantname: _$("#txt_merchant_name").val(),
+					exchangefeerate: _$("#txt_exchange_fee_rate").val()
 				};
 				
 				if (!ar_param.merchantname) {
 					util.Alert('Publisher 명을 입력하세요');
 					return	
+				}
+				if (!ar_param.exchangefeerate) {
+					util.Alert('제공가 전환 비율을 입력하세요');
+					return;
 				}
 				
 				util.MessageBox('알림', '저장하시겠습니까 ?', function(sel) {

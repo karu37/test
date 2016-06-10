@@ -33,9 +33,7 @@
 ?>
 <style>
 	.list tr:hover td 	{background:#dff}
-	.list tr			{line-height:25px}
-	.list th			{padding: 2px 4px}
-	.list td			{padding: 2px 4px}
+	.list tr > * 		{height:25px; line-height:1em; padding: 4px 4px}
 </style>		
 
 <div style='width:700px'>	

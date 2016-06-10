@@ -1,7 +1,7 @@
 <?	
 $g_ohc['lib'] = 'OHC';					// 해당 광고에 대한 처리 routine 명 (이 파일)
 $g_ohc['mcode'] = 'mohc';				// 가져온 광고를 해당 mcode 밑으로 연결
-$g_ohc['aline-code'] = "marshsoft";		// ohc 연동 매체 코드
+$g_ohc['aline-code'] = "aline";		// ohc 연동 매체 코드
 $g_ohc['appkey_prefix'] = "ohc";		// 앱키 시작 문자열 ( + md5한 mkey 결과 뒤에 붙임 )
 
 $g_ohc['unique_prefix'] = "ohc";		// 적립 결과에 Unique 키
@@ -60,9 +60,9 @@ function update_ohc_app($force_reload, $conn)
 	}
 
 	// 제공되는 숫자 금액에 대한 merchant_fee (우리쪽의 실제 지급되는 원)의 변환 율
-	$sql = "SELECT merchant_fee_ratio FROM merchant_update_t WHERE mcode = '{$db_mcode}'";
+	$sql = "SELECT exchange_fee_rate FROM al_merchant_t WHERE mcode = '{$db_mcode}'";
 	$row = @mysql_fetch_assoc(mysql_query($sql, $conn));
-	$merchant_fee_ratio = intval(ifempty($row['merchant_fee_ratio'], 100));
+	$exchange_fee_rate = intval(ifempty($row['exchange_fee_rate'], 100));
 	
 	// 요청 URL생성하기
 	$url_param = array();
@@ -155,7 +155,7 @@ function update_ohc_app($force_reload, $conn)
 		else $app_market = "P";	// ELSE인 경우는 일단 P 로 처리
 
 		//## app_merchant_fee
-		$app_merchant_fee = intval($item['price'] * $merchant_fee_ratio / 100);
+		$app_merchant_fee = intval($item['price'] * $exchange_fee_rate / 100);
 
 		//-------------------------------------
 
@@ -302,6 +302,10 @@ function update_ohc_app($force_reload, $conn)
 					);";
 		}
 		mysql_execute($sql, $conn);
+		
+		if ($_REQUEST['dev'] == 1) {
+			echo "{$app_title}, {$m_key}, {$app_exec_type}, {$app_merchant_fee}<br>\n";
+		}
 	}
 
 	// 갱신되지 못한 나머지 항목은 모두 in_active 로 설정

@@ -6,15 +6,16 @@
 	
 	$merchant_code = trim($_REQUEST['mcode']);
 	$merchant_name = trim($_REQUEST['merchantname']);
-	if (!$merchant_code || !$merchant_name || ($offer_fee_rate < 0 || $offer_fee_rate > 100) || ($group_level < 0 || $group_level > 10) ) return_die(false, null, '필요한 정보가 없습니다.');
+	$exchange_fee_rate = trim($_REQUEST['exchangefeerate']);
+	
+	if (!$merchant_code || !$merchant_name || $exchange_fee_rate <= 0 ) return_die(false, null, '필요한 정보가 없습니다.');
 	
 
 	$db_partner_id = mysql_real_escape_string($partner_id);
 	
 	$db_merchant_name = mysql_real_escape_string($merchant_name);
 	$db_merchant_code = mysql_real_escape_string($merchant_code);
-	$db_offer_fee_rate = mysql_real_escape_string($offer_fee_rate);
-	$db_group_level = mysql_real_escape_string($group_level);
+	$db_exchange_fee_rate = mysql_real_escape_string($exchange_fee_rate);
 
 	try {
 		begin_trans($conn);
@@ -33,7 +34,7 @@
 			}
 		}
 		
-		$sql = "INSERT al_merchant_t (mcode, name, is_mactive ) VALUES ('{$db_merchant_code}', '{$db_merchant_name}', 'T');";
+		$sql = "INSERT al_merchant_t (mcode, name, exchange_fee_rate, is_mactive ) VALUES ('{$db_merchant_code}', '{$db_merchant_name}', '{$db_exchange_fee_rate}', 'T');";
 		mysql_execute($sql, $conn);
 		
 		$sql = "INSERT al_partner_mpcode_t (partner_id, type, mcode, pcode) VALUES('{$db_partner_id}', 'M', '{$db_merchant_code}', NULL);";
