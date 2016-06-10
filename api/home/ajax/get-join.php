@@ -148,7 +148,6 @@
 
 		include dirname(__FILE__)."/_partner_ohc.php";
 		$ar_data = ohc_request_start($appkey, $arr_param, $conn);
-var_dump($ar_data);
 		
 	} else {
 		
