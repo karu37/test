@@ -28,7 +28,7 @@ $g_ohc['timeout_sec'] = 60;				// 시작 / 적립 요청시의 Timeout 초
 	// ------------------------------------------------
 	
 	//## al_user_app_t 정보 로딩 및 m_key 값과 일치하는지 확인
-	$db_aid = mysql_real_escape_string($aid);
+	$db_userapp_id = mysql_real_escape_string($userapp_id);
 	$sql = "SELECT a.*, 
 					app.mkey,
 					p.reward_percent,
@@ -36,7 +36,7 @@ $g_ohc['timeout_sec'] = 60;				// 시작 / 적립 요청시의 Timeout 초
 			FROM al_user_app_t a 
 					INNER JOIN al_publisher_t p ON a.pcode = p.pcode 
 					INNER JOIN al_app_t app ON a.app_key = app.app_key
-			WHERE a.id = '{$db_aid}'";
+			WHERE a.id = '{$db_userapp_id}'";
 	$arr_userapp = @mysql_fetch_assoc(mysql_query($sql, $conn));
 	if (!$arr_userapp || $arr_userapp['mkey'] != $m_key) {
 		echo_response('error-info', '앱정보가 일치하지 않습니다.');
