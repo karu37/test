@@ -99,7 +99,7 @@
 			return_die('N', array('code'=>'-106'), '더 이상 참여할 수 없는 광고입니다.');
 		}
 	} 
-	
+
 	// ---------------------------------------------	
 	// # 시도 회수를 추가한다.
 	// ---------------------------------------------	
@@ -137,7 +137,7 @@
 	$arr_param['user_app_id'] = $user_app_id;
 	
 	// var_dump($arr_param);
-	
+
 	// --------------------------------------------------------
 	if ($row_app['lib'] == 'LOCAL') {
 		
@@ -145,9 +145,10 @@
 		$ar_data = local_request_start($appkey, $arr_param, $conn);
 		
 	} else if ($row_app['lib'] == 'OHC') {
-		
+
 		include dirname(__FILE__)."/_partner_ohc.php";
 		$ar_data = ohc_request_start($appkey, $arr_param, $conn);
+var_dump($ar_data);
 		
 	} else {
 		

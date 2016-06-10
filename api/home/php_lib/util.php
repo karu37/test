@@ -219,7 +219,7 @@ function _make_log($pageid, $is_result, $adid, $ip, $elapsed_time, $req_url, $ar
 	else $tbname = 'site_visit_log';
 	
 	$sql = "INSERT INTO {$tbname} (pcode, result, pageid, adid, requrl, ip, elapsed, post, response)
-			VALUES ('$db_pcode,
+			VALUES ('$db_pcode',
 					'$db_result', 
 					'$db_pageid',
 					'$db_adid',
@@ -228,6 +228,7 @@ function _make_log($pageid, $is_result, $adid, $ip, $elapsed_time, $req_url, $ar
 					'$db_elapsed_time',
 					'$db_post',
 					'$db_response');";
+echo $sql;					
 	mysql_query($sql, $conn);	
 }
 
