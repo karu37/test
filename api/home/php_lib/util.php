@@ -228,7 +228,6 @@ function _make_log($pageid, $is_result, $adid, $ip, $elapsed_time, $req_url, $ar
 					'$db_elapsed_time',
 					'$db_post',
 					'$db_response');";
-echo $sql;					
 	mysql_query($sql, $conn);	
 }
 
