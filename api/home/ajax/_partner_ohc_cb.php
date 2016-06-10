@@ -13,13 +13,13 @@ $g_ohc['timeout_sec'] = 60;				// 시작 / 적립 요청시의 Timeout 초
 	$ar_time = mysql_get_time($conn);
 	
 	//## m_key
-	$m_key 			= $_REQUEST['appkey'];
+	$m_key 			= $_REQUEST['eId'];
 	
 	//## unique_key
-	$unique_key 	= $g_ohc['unique_prefix'] . $_REQUEST['uniquekey'];
+	$unique_key 	= $g_ohc['unique_prefix'] . $_REQUEST['ohvalue'];
 	
 	//## userdata ==> aid
-	$cb_user_data 	= $_REQUEST['userdata'];
+	$cb_user_data 	= $_REQUEST['etc1'];
 	$js_data = json_decode(base64_decode(str_replace('*','=',$cb_user_data)), true);
 		
 	//## userapp_id
@@ -105,14 +105,13 @@ function echo_response($type, $msg = null)
 	$add_msg = ($msg ? " (".$msg.")" : "");
 /*	
 	if ($type == 'success') $arResult = array('result' => 'Y', 'code' => 1, 'msg' => "success");
-	else if ($type == 'error-sec') $arResult = array('result' => 'N', 'code' => 1100, 'msg' => "Invalid signed value{$add_msg}");
-	else if ($type == 'error-dup') $arResult = array('result' => 'N', 'code' => 3100, 'msg' => "duplicate transaction{$add_msg}");
-	else if ($type == 'error-user') $arResult = array('result' => 'N', 'code' => 3200, 'msg' => "invalid user transaction{$add_msg}");
-	else if ($type == 'error-info') $arResult = array('result' => 'N', 'code' => 3300, 'msg' => "no matching transaction{$add_msg}");
-	else if ($type == 'error-etc') $arResult = array('result' => 'N', 'code' => 4000, 'msg' => "exception has occurred in processing callback{$add_msg}");
-	if (!$arResult) $arResult = array('result' => 'Y', 'code' => 4001, 'msg' => "Invalid response {$add_msg}");
+	else if ($type == 'error-sec') $arResult = array('result' => 'N', 'code' => 'E80', 'msg' => "Invalid signed value{$add_msg}");
+	else if ($type == 'error-dup') $arResult = array('result' => 'N', 'code' => 'E81, 'msg' => "duplicate transaction{$add_msg}");
+	else if ($type == 'error-user') $arResult = array('result' => 'N', 'code' => 'E82', 'msg' => "invalid user transaction{$add_msg}");
+	else if ($type == 'error-info') $arResult = array('result' => 'N', 'code' => 'E83', 'msg' => "no matching transaction{$add_msg}");
+	else if ($type == 'error-etc') $arResult = array('result' => 'N', 'code' => 'E84', 'msg' => "exception has occurred in processing callback{$add_msg}");
+	if (!$arResult) $arResult = array('result' => 'Y', 'code' => 'E85', 'msg' => "Invalid response {$add_msg}");
 */	
-
 	if ($type == 'success') $arResult = array('resCode' => 'E00', 'msg' => "정상처리");
 	else if ($type == 'error-sec') $arResult = array('resCode' => 'E80', 'msg' => "Invalid signed value{$add_msg}");
 	else if ($type == 'error-dup') $arResult = array('resCode' => 'E81', 'msg' => "duplicate transaction{$add_msg}");
@@ -122,9 +121,7 @@ function echo_response($type, $msg = null)
 	if (!$arResult) $arResult = array('resCode' => 'E85', 'msg' => "Invalid response {$add_msg}");
 
 	$result = json_encode($arResult);
-	
 	make_action_log("callback-ohc", ($type == 'success' ? 'Y' : 'N'), $g_log['pcode'], $g_log['adid'], null, null, null, null, $result, $conn);
-	
 	echo $result;
 }
 
