@@ -334,7 +334,7 @@ function sucomm_request_start($app_key, &$arr_data, &$conn)
 	$url_param['media'] = $g_sucom['aline-code'];
 	$url_param['flexcode'] = $ar_app['mkey'];
 	$url_param['rewardkey'] = base64_encode(json_encode(array('aid' => $userapp_id)));		// appkey와 adid 의 HashCode
-	$url_param['adId'] = $arr_data['adid'];
+	$url_param['adid'] = $arr_data['adid'];
 	$url_param['go_type'] = "json";
 	$url_param['real_ip'] = $arr_data['ip'];
 	
@@ -380,7 +380,7 @@ function local_request_done($app_key, $arr_data, &$conn)
 	$url_param = array();
 	$url_param['media'] = $g_sucom['aline-code'];
 	$url_param['flexcode'] = $ar_app['mkey'];
-	$url_param['adId'] = $arr_data['adid'];
+	$url_param['adid'] = $arr_data['adid'];
 
 	// 광고 적립 요청 보내기
 	$start_tm = get_timestamp();
