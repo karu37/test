@@ -27,9 +27,9 @@ function update_sucomm_app($force_reload, $conn)
 	$db_mcode = mysql_real_escape_string($g_sucom['mcode']);
 	
 	//////////////////////////////////////////////////////////////////////////
-	// 기본 추가에 대한 is_delete 설정 : 
+	// 기본 추가에 대한 is_mactive 설정 : 
 	//////////////////////////////////////////////////////////////////////////
-	$flag_is_deleted = 'N';	// Aline 개발 완료후에 N 으로 변경
+	$flag_is_mactive = 'N';	// Aline 개발 완료후에 N 으로 변경
 	//////////////////////////////////////////////////////////////////////////
 	
 	// 자동 Reload 여부 체크
@@ -75,6 +75,9 @@ function update_sucomm_app($force_reload, $conn)
 	// ----------------------------------------------------------------------
 	
 	$campain_url = $g_sucom['list'] . "?" . http_build_query($url_param);
+	if ($_REQUEST['dev'] == 1) {
+		echo "URL : " . $campain_url . "<br>\n";
+	}
 	
 	// 광고 목록 요청
 	$start_tm = get_timestamp();
@@ -95,7 +98,12 @@ function update_sucomm_app($force_reload, $conn)
 		$item = $js_camp_data['list'][$i];
 		
 		/////////////////////////////////////////
-
+		// 광고 상태가 start가 아니면 스킵		
+		if ($item['ads_open'] != 'start') {
+			echo "{$item['ads_open']} ======> {$item['title']}, {$item['ads']}<br>\n";
+			continue;
+		}
+		
 		//## app_key & m_key 
 		$app_key = $g_sucom['appkey_prefix'] . md5($item['ads']);
 		$m_key = $item['ads'];
@@ -305,7 +313,7 @@ function update_sucomm_app($force_reload, $conn)
 						NULL, 
 						'100000000', 
 						
-						'Y', '{$flag_is_deleted}', NOW(), 'N', NOW(), NOW()
+						'Y', '{$flag_is_mactive}', NOW(), 'N', NOW(), NOW()
 					);";
 		}
 		mysql_execute($sql, $conn);
@@ -316,7 +324,7 @@ function update_sucomm_app($force_reload, $conn)
 	}
 
 	// 갱신되지 못한 나머지 항목은 모두 in_active 로 설정
-	$sql = "UPDATE al_app_t SET last_deactive_time = IF(is_active='Y' AND is_deleted='N',NOW(),last_deactive_time), is_active = 'N', up_date = NOW(), flag_updating = 'N' WHERE mcode = '{$db_mcode}' AND is_active = 'Y' AND flag_updating = 'Y'";
+	$sql = "UPDATE al_app_t SET last_deactive_time = IF(is_active='Y' AND is_mactive='Y',NOW(),last_deactive_time), is_active = 'N', up_date = NOW(), flag_updating = 'N' WHERE mcode = '{$db_mcode}' AND is_active = 'Y' AND flag_updating = 'Y'";
 	mysql_execute($sql, $conn);
 
 	return true;

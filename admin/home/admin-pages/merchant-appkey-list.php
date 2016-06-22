@@ -35,10 +35,17 @@
 
 	// $where = "AND app.is_active = 'Y' AND app.is_mactive = 'Y'";
 	$where = "";
-	$where .= "AND app.is_mactive " . (ifempty($_REQUEST['listtype'], 'A') == 'A' ? " IN ('Y', 'N')" : " IN ('D', 'T')");
+	
+	// ------------------------------------------------------
+	// A 면 is_active = Y AND is_mactive <> T 인 대상들 전체
+	$listtype = ifempty($_REQUEST['listtype'], 'A');
+	if ($listtype == 'A') $where .= " AND app.is_active = 'Y'";
+	else $where .= " AND app.is_active <> 'Y'";
+	// ------------------------------------------------------
+	
 	if ($searchfor == "title" && $search) $where .= " AND app.app_title LIKE '%{$db_search}%'";
 	
-	$order_by = "ORDER BY app.id DESC";
+	$order_by = "ORDER BY IF(CONCAT(app.is_mactive, app.is_active) = 'YY', 1, 2) ASC, app.id DESC";
 	// --------------------------------
 	// Paginavigator initialize	
 	$sql = "SELECT COUNT(*) as cnt FROM al_app_t app WHERE app.mcode = '{$db_mcode}' {$where}";
@@ -80,9 +87,9 @@
 			
 			<fieldset id="list-type" data-theme='c' class='td-2-item' data-role="controlgroup" data-type="horizontal" data-mini=true init-value="<?=ifempty($_REQUEST['listtype'],'A')?>" >
 		        <input name="list-type" id="list-type-normal" value="A" type="radio" onclick="window.location.href=window.location.href.set_url_param('listtype', 'A').del_url_param('page')" />
-		        <label for="list-type-normal">정상/중지 목록</label>
+		        <label for="list-type-normal">적립가능 목록</label>
 		        <input name="list-type" id="list-type-deleted" value="B" type="radio" onclick="window.location.href=window.location.href.set_url_param('listtype', 'B').del_url_param('page')" />
-		        <label for="list-type-deleted">삭제/개발 목록</label>
+		        <label for="list-type-deleted">적립중지 목록</label>
 		    </fieldset>			
 			
 			<table class='line-height-15px' border=0 cellpadding=0 cellspacing=3px>
@@ -140,17 +147,20 @@
 	<thead>
 		<tr>
 			<th width=30px>IDX</th>
+			<th>적립</th>
 			<th width=1px>관리자<br>차단</th>
 			<th>타입</th>
 			<th>제목</th>
 			<th>원가</th>
 			<th>공개모드</th>
+			<th>활성시간</th>
 			<th width=60px></th>
 		</tr>	
 	</thead>
 	<tbody>
 		<?
 		$arr_public_mode = array('Y' => '공개', 'N' => '<span style="color:blue;font-weight:bold">제한</span>');
+		$arr_isactive = array('Y' => '가능', 'N' => '<span style="color:blue;font-weight:bold">불가</span>');
 		
 		while ($row = mysql_fetch_assoc($result)) {
 			$id = $row['id'];
@@ -168,6 +178,7 @@
 			?>
 			<tr id='list-<?=$row['id']?>' class='mactive-<?=$row['is_mactive']?>' style='cursor:pointer'>
 				<td <?=$td_onclick?>><?=$row['id']?></td>
+				<td <?=$td_onclick?>><?=$arr_isactive[$row['is_active']]?></td>
 				<td>
 					<div class='btn-small-wrapper btn-wrapper'>
 						<a class='btn-<?=$row['app_key']?> btn-Y' href='#' onclick='<?=$js_page_id?>.action.on_btn_set_merchantapp_active("<?=$row_merchant['mcode']?>", "<?=$row['app_key']?>", "<?=$row['id']?>", "Y")' data-theme='<?=$ar_btn_theme[0]?>' data-role='button' data-mini='true' data-inline='true'>정<br>상</a>
@@ -180,6 +191,7 @@
 				<td <?=$td_onclick?>><?=$row['app_title']?></td>
 				<td <?=$td_onclick?>><?=number_format($row['app_merchant_fee'])?></td>
 				<td <?=$td_onclick?>><?=$arr_public_mode[$row['is_public_mode']]?></td>
+				<td <?=$td_onclick?>><?=admin_to_datetime($row['last_active_time'])?></td>
 				<td>
 					<a href='#' onclick='mvPage("dlgpage-merchantapp-config", null, {partnerid: "<?=$partner_id?>", mcode: "<?=$row_merchant['mcode']?>", appkey:"<?=$row['app_key']?>"})' data-theme='b' data-role='button' data-mini='true' data-inline='true'>Publisher별 설정</a>
 				</td>
