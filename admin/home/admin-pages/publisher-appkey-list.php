@@ -39,6 +39,11 @@
 	$where = ""; // "AND app.is_active = 'Y'";
 	if ($searchfor == "title" && $search) $where .= " AND app.app_title LIKE '%{$db_search}%'";
 	
+	// list type filter
+	$listtype = ifempty($_REQUEST['listtype'], 'A');
+	if ($listtype == 'A') $where .= " AND app.is_active = 'Y' AND app.is_mactive = 'Y'";
+	else $where .= " AND (app.is_active <> 'Y' OR app.is_mactive <> 'Y')";
+	
 	$order_by = "ORDER BY app.id DESC";
 	// --------------------------------
 	// Paginavigator initialize	
@@ -127,7 +132,7 @@
 				IF (app.exec_day_max_cnt <= IF(DATE(s.exec_time) = CURRENT_DATE, s.exec_day_cnt, 0), 'N', 'Y') as 'check_day_executed',
 				IF (app.exec_tot_max_cnt > IFNULL(s.exec_tot_cnt,0), 'Y', 'N') as 'check_tot_executed',
 
-				t.short_txt AS 'app_exec_type_name' 
+				t.short_txt AS 'app_exec_type_name'
 			FROM al_app_t app
 				LEFT OUTER JOIN al_publisher_app_t pa ON app.app_key = pa.app_key AND pcode = '{$db_pcode}' 
 				INNER JOIN al_merchant_t m ON app.mcode = m.mcode 
@@ -136,7 +141,6 @@
 				LEFT OUTER JOIN al_app_exec_pub_stat_t ps ON app.app_key = ps.app_key AND ps.pcode = '{$db_pcode}'
 				LEFT OUTER JOIN string_t t ON t.type = 'app_exec_type' AND app.app_exec_type = t.code 
 			WHERE app.is_mactive <> 'T' {$where} {$order_by} {$limit}";
-// echo $sql;			
 	$result = mysql_query($sql, $conn);
 ?>
 	<style>
@@ -166,14 +170,12 @@
 	<form onsubmit='return <?=$js_page_id?>.action.on_btn_search()'>
 		<table border=0 cellpadding=0 cellspacing=0 width=100%>
 		<tr><td id='btns-group' valign=top>
-			
 			<fieldset id="list-type" data-theme='c' class='td-2-item' data-role="controlgroup" data-type="horizontal" data-mini=true init-value="<?=ifempty($_REQUEST['listtype'],'A')?>" >
 		        <input name="list-type" id="list-type-normal" value="A" type="radio" onclick="window.location.href=window.location.href.set_url_param('listtype', 'A').del_url_param('page')" />
 		        <label for="list-type-normal">정상 목록</label>
 		        <input name="list-type" id="list-type-deleted" value="B" type="radio" onclick="window.location.href=window.location.href.set_url_param('listtype', 'B').del_url_param('page')" />
-		        <label for="list-type-deleted">차단 목록</label>
+		        <label for="list-type-deleted">중지 목록</label>
 		    </fieldset>			
-			
 			<table class='line-height-15px' border=0 cellpadding=0 cellspacing=3px>
 			<tr>
 				<td valign=top align=right><t4 style='padding-top:6px; line-height:22px'>매체 코드 :<t4></td>
@@ -317,7 +319,7 @@
 				$time_period = "{$shour}~{$ehour}";
 				if ($row['check_time_period'] == 'N') $time_period = '<span style="color:red; font-weight: bold">'. $time_period .'</span>';
 			}
-			
+/*
 			// ------------------------------------------------------------------
 			// 정상표시이고 app_status가 N 이면 표시 안함
 			if ($app_status == 'N' && ifempty($_REQUEST['listtype'],'A') == 'A') continue;
@@ -325,7 +327,7 @@
 			// 중지표시이고 app_status가 Y 이면 표시 안함
 			if ($app_status == 'Y' && ifempty($_REQUEST['listtype'],'A') == 'B') continue;
 			// ------------------------------------------------------------------
-			
+*/
 			
 			// 기간 오픈전에 따른 색상 처리
 			$active_time = $row['active_time'];

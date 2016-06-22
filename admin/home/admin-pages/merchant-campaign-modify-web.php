@@ -18,24 +18,47 @@
 	</div>	
 	<hr>
 	<div id='app-info' class='ui-grid-a'>
-		<div class='ui-block-a'>광고 키</div>
+		<div class='ui-block-a'>ALINE 광고키</div>
 		<div class='ui-block-b'>
 			<t3 style='line-height: 48px'><?=$row['app_key']?></t3>
 		</div>
-		<div class='ui-block-a'>광고 상태</div>
+		<div class='ui-block-a'>광고주 광고키</div>
 		<div class='ui-block-b'>
-			<div style='float:left; display:inline-block'>
-				<fieldset id="app-active" class='field-set' data-role="controlgroup" data-type="horizontal" data-mini=true init-value="<?=$row['is_active']?>" data-theme='a'>
-			        <input name="app-active" id="app-active-Y" value="Y" type="radio" />
-			        <label for="app-active-Y">적립 가능</label>
-			        <input name="app-active" id="app-active-N" value="N" type="radio" />
-			        <label for="app-active-N">적립 불가</label>
-			    </fieldset>		
+			<t3 style='line-height: 48px'><?=$row['lib'] == 'LOCAL' ? '<span style="font-size:14px; color:gray">(ALINE 등록 광고 - 해당사항 없음)</span>' : $row['mkey']?></t3>
+		</div>
+		<div>
+			<div class='ui-block-a'>광고주 명</div>
+			<div class='ui-block-b'>
+			<t3 style='line-height: 48px'><?=$row['m_name']?></t3>
 			</div>
-		    <div style='float:left; display:inline-block; padding-top:5px; padding-left:10px'>
-			    <a href='#' onclick='<?=$js_page_id?>.action.on_btn_save_activestatus()' data-theme='b' data-role='button' data-mini='true' data-inline='true'>상태 적용</a>			
-			</div>
-			<div style='clear:both'></div>
+		</div>
+		<div class='ui-block-a'>적립 상태</div>
+		<div class='ui-block-b'>
+			<style>
+				.icon-active-Y	{border: 1px solid blue; padding: 4px 10px; position: inline-block; border-radius: 0.4em; background: blue; color: yellow; font-size: 16px; font-weight: normal;}
+				.icon-active-N	{border: 1px solid orange; padding: 4px 10px; position: inline-block; border-radius: 0.4em; background: red; color: white; font-size: 16px; font-weight: normal;}
+				.active-Y .icon-active-N 	{display: none}
+				.active-N .icon-active-Y 	{display: none}
+			</style>
+			<table><tr><td>
+					<div class='active-<?=$row['is_active']?>'>
+						<div class='icon-active-Y'>적립 가능</div>
+						<div class='icon-active-N'>적립 종료</div>
+					</div>
+				</td><td>
+				<? if ($row['lib'] == 'LOCAL') { ?>
+				<style>
+					.active-Y .set-active-Y	{display: none}
+					.active-N .set-active-N	{display: none}
+				</style>
+				<div class='active-<?=$row['is_active']?>'>
+					<a href='#' onclick='<?=$js_page_id?>.action.on_btn_set_local_active("Y")' class='set-active-Y' data-role='button' data-mini='true' data-inline='true'>적립 가능 상태로 변경</a>
+					<a href='#' onclick='<?=$js_page_id?>.action.on_btn_set_local_active("N")' class='set-active-N' data-role='button' data-mini='true' data-inline='true'>적립 종료 상태로 변경</a>
+				</div>
+				<? } ?>
+			</td><td>
+
+			</td></tr></table>
 		</div>
 		<div class='ui-block-a'>플랫폼</div>
 		<div class='ui-block-b'>
@@ -393,13 +416,12 @@ var <?=$js_page_id?> = function()
 				});
 
 			},
-			on_btn_save_activestatus: function() {
+			on_btn_set_local_active: function(new_status) {
 				var ar_param = {
 					'mcode' : '<?=$mcode?>',
 					'appkey' : '<?=$appkey?>',
-					'isactive': util.get_item_value(_$("#app-active"))
+					'isactive': new_status
 				};
-				
 				util.post(get_ajax_url('admin-campaign-set-active'), ar_param, function(sz_data) {
 					var js_data = util.to_json(sz_data);
 					if (js_data['result']) {

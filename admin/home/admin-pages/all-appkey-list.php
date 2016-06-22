@@ -28,6 +28,7 @@
 	// ---------------------------------------
 	$sql = "SELECT app.*, 
 				m.is_mactive as 'm_is_mactive',
+				m.name as 'm_name',
 				IF(app.exec_edate < CURRENT_DATE, 'N', 'Y') as 'exec_edate_check',
 				
 				IFNULL(IF(s.exec_time = LEFT(NOW(), 12), s.exec_hour_cnt, 0), 0) as 'app_exec_hour_cnt',
@@ -114,7 +115,7 @@
 			<th width=30px>앱<br>적립</th>
 			<th width=1px><div class='th_status'>관리<br>차단</div></th>
 			<th>아이콘</th>
-			<th width=80px><a href='#' onclick="window.location.href=window.location.href.set_url_param('orderby', 'app.mcode').set_url_param('order', '<?=($_REQUEST['orderby']=="app.mcode"&&$_REQUEST['order']=="DESC")?"ASC":"DESC"?>').del_url_param('page')">M코드</a></th>
+			<th width=80px><a href='#' onclick="window.location.href=window.location.href.set_url_param('orderby', 'app.mcode').set_url_param('order', '<?=($_REQUEST['orderby']=="app.mcode"&&$_REQUEST['order']=="DESC")?"ASC":"DESC"?>').del_url_param('page')">M명</a></th>
 			<th width=30px>M<br>상태</th>
 			<th width=30px>레벨<br>제한</th>
 			<th width=50px>공개<br>모드</th>
@@ -197,7 +198,7 @@
 					</div>
 				</td>
 				<td <?=$td_onclick?>><img src='<?=$appkey['app_iconurl']?>' width=40px style='width:40px;height:40px;overflow:hidden;border-radius:0.5em;border:1px solid #888' /></td>
-				<td <?=$td_onclick?>><?=$appkey['mcode']?></td>
+				<td <?=$td_onclick?>><?=$appkey['m_name']?></td>
 				<td <?=$td_onclick?>><?=$arr_mp_mactive[$appkey['m_is_mactive']]?></td>
 				<td <?=$td_onclick?>><?=admin_number($appkey['publisher_level'])?></td>
 				<td <?=$td_onclick?>><?=$arr_public_mode[$appkey['is_public_mode']]?></td>
