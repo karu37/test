@@ -9,7 +9,10 @@
 	// http://api.aline-soft.kr/ajax-request.php?id=get-join&pcode=aline&os=A&ad=LOC2&adid=0123456789012345-6789-0123-4567-8901&ip=127.0.0.1&uid=heartman@gmail.com&userdata=USERDATA
 
 	$pub_mactive = get_publisher_info();
-	if (!$pub_mactive || $pub_mactive == 'N' || $pub_mactive == 'D') return_die('N', array('code'=>'-100'), '유효하지 않은 매체코드입니다.');
+	if (!$pub_mactive || $pub_mactive == 'N' || $pub_mactive == 'D') {
+		if ($pub_mactive == 'N' || $pub_mactive == 'D') return_die('N', array('code'=>'-100'), '유효하지 않은 매체코드입니다 (매체코드 사용불가).');
+		return_die('N', array('code'=>'-100'), '유효하지 않은 매체코드입니다.');
+	}
 	
 	$pcode = $_REQUEST['pcode'];
 	$appkey = $_REQUEST['ad'];
@@ -23,7 +26,18 @@
 	// $arr_param 기본 정보는 $_REQUEST 파라미터로 초기화
 	$arr_param = $_REQUEST;
 	
-	if (!$pcode || !$appkey || !$uid || !$adid || !$ip || !$account || !$imei) return_die('N', array('code'=>'-101'), '파라미터 오류입니다..');
+	if (!$pcode || !$appkey || !$uid || !$adid || !$ip || !$account || !$imei) {
+		$omit = "";
+		if (!$pcode) $omit .= "pcode,";
+		if (!$appkey) $omit .= "ad,";
+		if (!$uid) $omit .= "uid,";
+		if (!$adid) $omit .= "adid,";
+		if (!$ip) $omit .= "ip,";
+		if (!$account) $omit .= "account,";
+		if (!$imei) $omit .= "imei,";
+		$omit = trim($omit, ",");
+		return_die('N', array('code'=>'-101'), "파라미터 오류입니다. (파라미터 없음:{$omit})");
+	}
 	
 	$db_pcode = mysql_real_escape_string($pcode);
 	$db_appkey = mysql_real_escape_string($appkey);
@@ -136,7 +150,7 @@
 	// ## al_user_app_t.id 값을 저장
 	$arr_param['user_app_id'] = $user_app_id;
 	
-	var_dump($arr_param);
+	// var_dump($arr_param);
 
 	// --------------------------------------------------------
 	if ($row_app['lib'] == 'LOCAL') {
