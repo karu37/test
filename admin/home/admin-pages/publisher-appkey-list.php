@@ -41,10 +41,10 @@
 	
 	// list type filter
 	$listtype = ifempty($_REQUEST['listtype'], 'A');
-	if ($listtype == 'A') $where .= " AND app.is_active = 'Y' AND app.is_mactive = 'Y'";
-	else $where .= " AND (app.is_active <> 'Y' OR app.is_mactive <> 'Y')";
+	if ($listtype == 'A') $where .= " AND app.is_active = 'Y'";
+	else $where .= " AND (app.is_active <> 'Y')";
 	
-	$order_by = "ORDER BY app.id DESC";
+	$order_by = "ORDER BY IF(CONCAT(app.is_mactive) = 'Y', 1, 2) ASC, app.id DESC";
 	// --------------------------------
 	// Paginavigator initialize	
 	$sql = "SELECT COUNT(*) as cnt FROM al_app_t app WHERE app.is_mactive <> 'T' {$where}";
@@ -157,7 +157,8 @@
 		.list .appmactive-D:hover td 	{background:#aaa}
 		
 		.list tr:hover td 			{background:#dff}
-		.list tr.mactive-N:hover td {background:#888}
+		.list tr.active-N td 			{background:#eee}
+		.list tr.mactive-N:hover td {background:#ddd}
 		
 		.list tr > * 	{height:25px; line-height:1em; padding: 4px 4px}
 				
@@ -172,9 +173,9 @@
 		<tr><td id='btns-group' valign=top>
 			<fieldset id="list-type" data-theme='c' class='td-2-item' data-role="controlgroup" data-type="horizontal" data-mini=true init-value="<?=ifempty($_REQUEST['listtype'],'A')?>" >
 		        <input name="list-type" id="list-type-normal" value="A" type="radio" onclick="window.location.href=window.location.href.set_url_param('listtype', 'A').del_url_param('page')" />
-		        <label for="list-type-normal">정상 목록</label>
+		        <label for="list-type-normal">적립가능 목록</label>
 		        <input name="list-type" id="list-type-deleted" value="B" type="radio" onclick="window.location.href=window.location.href.set_url_param('listtype', 'B').del_url_param('page')" />
-		        <label for="list-type-deleted">중지 목록</label>
+		        <label for="list-type-deleted">적립불가 목록</label>
 		    </fieldset>			
 			<table class='line-height-15px' border=0 cellpadding=0 cellspacing=3px>
 			<tr>
@@ -248,6 +249,7 @@
 	<thead>
 		<tr>
 			<th width=20px>IDX</th>
+			<th width=30px>적립</th>
 			<th width=1px>P<br>수신<br>거부</th>
 			<th width=80px>M 이름</th>
 			<th width=40px>타입</th>
@@ -255,7 +257,6 @@
 
 			<th>AD<br>오픈<br>시간</th>
 			
-			<th width=30px>AD<br>적립<br>상태</th>
 			<th width=30px>AD<br>관리<br>차단</th>
 			<th>AD<br>시간<br>수행</th>
 			<th>AD<br>일일<br>수행</th>
@@ -283,7 +284,7 @@
 	</thead>
 	<tbody>
 		<?
-		$arr_active = array('Y' => '적립 가능', 'N' => '<span style="color:red; font-weight: bold">적립 불가</span>');
+		$arr_active = array('Y' => '가능', 'N' => '<span style="color:blue;font-weight:bold">불가</span>');
 		$arr_mp_mactive = array('Y' => '연동', 'N' => '<span style="color:red; font-weight: bold">중지</span>', 'T' => '<span style="color:red; font-weight: bold">개발</span>', 'D' => '<span style="color:red; font-weight: bold">삭제</span>');
 		$arr_block_mode = array('Y' => '허용', 'N' => '<span style="color:red; font-weight: bold">차단</span>', 'D' => '<span style="color:red; font-weight: bold">삭제</span>');
 		while ($row = mysql_fetch_assoc($result)) {
@@ -361,8 +362,9 @@
 			if ($row['ps_check_tot_executed'] == 'N') $ps_exec_tot_cnt = '<span style="color:red; font-weight: bold">'. $ps_exec_tot_cnt .'</span>';
 			
 			?>
-			<tr id='list-<?=$row['id']?>' class='mactive-<?=$row['pa_is_mactive']?> appmactive-<?=$app_status?>' style='cursor:pointer'>
+			<tr id='list-<?=$row['id']?>' class='mactive-<?=$row['pa_is_mactive']?> appmactive-<?=$app_status?> active-<?=$appkey['is_active']?>' style='cursor:pointer'>
 				<td <?=$td_onclick?>><?=$row['id']?></td>
+				<td <?=$td_onclick?>><?=$arr_active[$row['is_active']]?></td>
 				<td>
 					<div class='btn-small-wrapper btn-wrapper'>
 						<a class='btn-<?=$row['app_key']?> btn-Y' href='#' onclick='<?=$js_page_id?>.action.on_btn_set_publisherapp_active("<?=$row_publisher['pcode']?>", "<?=$row['app_key']?>", "<?=$row['id']?>", "Y")' data-theme='<?=$ar_btn_theme[0]?>' data-role='button' data-mini='true' data-inline='true'>정<br>상</a>
@@ -376,7 +378,6 @@
 				
 				<td <?=$td_onclick?>><?=$time_period?></td>
 				
-				<td <?=$td_onclick?>><?=$arr_active[$row['is_active']]?></td>
 				<td <?=$td_onclick?>><?=$arr_block_mode[$row['is_mactive']]?></td>
 				<td <?=$td_onclick?>><?=$exec_hour_cnt?></td>
 				<td <?=$td_onclick?>><?=$exec_day_cnt?></td>

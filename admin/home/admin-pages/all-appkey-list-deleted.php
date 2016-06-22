@@ -10,7 +10,7 @@
 	if ($searchfor == "title" && $search) $where .= " AND app.app_title LIKE '%{$db_search}%'";
 	if ($searchfor == "packageid" && $search) $where .= " AND app.app_packageid LIKE '{$db_search}%'";
 	if ($searchfor == "mcode" && $search) $where .= " AND app.mcode = '{$db_search}'";
-	$order_by = "ORDER BY app.id DESC";
+	$order_by = "ORDER BY app.is_active DESC, app.is_mactive DESC, app.id DESC";
 	
 	// --------------------------------
 	// Paginavigator initialize	
@@ -35,15 +35,13 @@
 	<style>
 		/* line hover setup using mactive flag */
 		.list tr:hover td 				{background:#eff}
+		.list tr.active-N td 			{background:#eee}
 		.list tr.mactive-N td 			{background:#ccc; color:#444}
 		.list tr.mactive-N:hover td 	{background:#ddd}
 		.list tr.mactive-D td 			{background:#aaa; color:#000}
 		.list tr.mactive-D:hover td 	{background:#bbb}
 		.list tr.mactive-T td 			{background:#aaa; color:#000}
 		.list tr.mactive-T:hover td 	{background:#bbb}
-		
-		.list tr.active-N td 			{background:#ccc; color:#444}
-		.list tr.active-N:hover td 		{background:#ddd}
 		
 		.list tr > * 	{height:25px; line-height:1em; padding: 4px 4px}
 		

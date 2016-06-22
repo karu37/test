@@ -11,7 +11,6 @@
 		<li style='padding-left:15px' class='frequent'>└ <a data-ajax="false" href='?id=all-merchant-list'>전체 Merchant 목록</a></li>
 		<li style='padding-left:15px' class='frequent'>└ <a data-ajax="false" href='?id=all-publisher-list'>전체 Publisher 목록</a></li>
 		<li style='padding-left:15px' class='frequent'>└ <a data-ajax="false" href='?id=all-appkey-list'>전체 광고 목록</a></li>
-		<li style='padding-left:25px' class='frequent'>└ <a data-ajax="false" href='?id=all-appkey-list-deleted'>삭제/불가 광고 목록</a></li>
 		<li style='padding-left:25px' class='frequent'>└ <a data-ajax="false" href='?id=all-appkey-list-test'>개발용 광고 목록</a></li>
 		
 	<li class='cate'><b><?=$idx++?>. <span>매출 및 현황</span> 통계</b><li>

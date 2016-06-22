@@ -6,10 +6,15 @@
 	$db_search = mysql_real_escape_string($search);
 
 	// order	
-	$order_by = "ORDER BY " . ifempty($_REQUEST['orderby'], 'app.id') . " " . ifempty($_REQUEST['order'], 'DESC');
+	if (!$_REQUEST['orderby']) $order_by = "ORDER BY IF(CONCAT(app.is_mactive) = 'Y', 1, 2) ASC";
+	else $order_by = "ORDER BY " . $_REQUEST['orderby'] . " " . ifempty($_REQUEST['order'], 'DESC');
 
 	// is_mactive : Y/N/D/T
-	$where = "AND app.is_mactive = " . (ifempty($_REQUEST['listtype'], 'A') == 'A' ? "'Y'" : "'N'") . " AND app.is_active <> 'N'";
+	$listtype = ifempty($_REQUEST['listtype'], 'A');
+	if ($listtype == 'A') $where = " AND app.is_active = 'Y' AND app.is_mactive <> 'D'";
+	else if ($listtype == 'B') $where = " AND app.is_active <> 'Y' AND app.is_mactive <> 'D'";
+	else  $where = " AND app.is_mactive = 'D'";
+	
 	// $where = "AND app.is_mactive IN ('Y','N') AND app.is_active <> 'N'";
 	if ($searchfor == "title" && $search) $where .= " AND app.app_title LIKE '%{$db_search}%'";
 	if ($searchfor == "packageid" && $search) $where .= " AND app.app_packageid LIKE '{$db_search}%'";
@@ -49,6 +54,7 @@
 	<style>
 		/* line hover setup using mactive flag */
 		.list tr:hover td 				{background:#eff}
+		.list tr.active-N td 			{background:#eee}
 		.list tr.mactive-N td 			{background:#ccc; color:#444}
 		.list tr.mactive-N:hover td 	{background:#ddd}
 		.list tr.mactive-D td 			{background:#aaa; color:#000}
@@ -71,9 +77,11 @@
 			
 			<fieldset id="list-type" data-theme='c' class='td-2-item' data-role="controlgroup" data-type="horizontal" data-mini=true init-value="<?=ifempty($_REQUEST['listtype'],'A')?>" >
 		        <input name="list-type" id="list-type-normal" value="A" type="radio" onclick="window.location.href=window.location.href.set_url_param('listtype', 'A').del_url_param('page')" />
-		        <label for="list-type-normal">정상 목록</label>
-		        <input name="list-type" id="list-type-deleted" value="B" type="radio" onclick="window.location.href=window.location.href.set_url_param('listtype', 'B').del_url_param('page')" />
-		        <label for="list-type-deleted">중지 목록</label>
+		        <label for="list-type-normal">적립가능 목록</label>
+		        <input name="list-type" id="list-type-disabled" value="B" type="radio" onclick="window.location.href=window.location.href.set_url_param('listtype', 'B').del_url_param('page')" />
+		        <label for="list-type-disabled">적립불가 목록</label>
+		        <input name="list-type" id="list-type-deleted" value="D" type="radio" onclick="window.location.href=window.location.href.set_url_param('listtype', 'D').del_url_param('page')" />
+		        <label for="list-type-deleted">삭제된 목록</label>
 		    </fieldset>			
 			
 		</td><td valign=top align=right style='border-left: 1px solid #ddd'>
@@ -127,7 +135,8 @@
 			<th width=40px>일일당<br>수행수</th>
 			<th width=40px>총<br>수행수</th>
 			<th>필터</th>
-			<th><a href='#' onclick="window.location.href=window.location.href.set_url_param('orderby', 'app.last_active_time').set_url_param('order', '<?=($_REQUEST['orderby']=="app.last_active_time"&&$_REQUEST['order']=="DESC")?"ASC":"DESC"?>').del_url_param('page')">활성일</a></th>
+			<th width=60px><a href='#' onclick="window.location.href=window.location.href.set_url_param('orderby', 'app.last_active_time').set_url_param('order', '<?=($_REQUEST['orderby']=="app.last_active_time"&&$_REQUEST['order']=="DESC")?"ASC":"DESC"?>').del_url_param('page')">적립<br>활성일</a></th>
+			<th width=60px><a href='#' onclick="window.location.href=window.location.href.set_url_param('orderby', 'app.last_active_time').set_url_param('order', '<?=($_REQUEST['orderby']=="app.last_deactive_time"&&$_REQUEST['order']=="DESC")?"ASC":"DESC"?>').del_url_param('page')">적립<br>불가일</a></th>
 			<th><a href='#' onclick="window.location.href=window.location.href.set_url_param('orderby', 'app.reg_date').set_url_param('order', '<?=($_REQUEST['orderby']=="app.reg_date"&&$_REQUEST['order']=="DESC")?"ASC":"DESC"?>').del_url_param('page')">등록일</a></th>
 		</tr>
 	</thead>
@@ -138,7 +147,7 @@
 		$arr_exectype = array('I' => '<span style="color:blue;font-weight:bold">CPI</span>', 'E' => '<span style="color:green;font-weight:bold">CPE</span>', 'F' => '<span style="color:orange;font-weight:bold;font-size:11px">페북좋아요</span>');
 		$arr_gender = array('M' => '남성', 'F' => '여성');
 		
-		$arr_active = array('Y' => '적립 가능', 'N' => '<span style="color:red; font-weight: bold">적립 불가</span>');
+		$arr_active = array('Y' => '가능', 'N' => '<span style="color:blue;font-weight:bold">불가</span>');
 		$arr_mp_mactive = array('Y' => '연동', 'N' => '<span style="color:red; font-weight: bold">중지</span>', 'T' => '<span style="color:red; font-weight: bold">개발</span>', 'D' => '<span style="color:red; font-weight: bold">삭제</span>');
 		$arr_public_mode = array('Y' => '공개', 'N' => '<span style="color:blue;font-weight:bold">제한</span>');
 		while ($appkey = mysql_fetch_assoc($result)) {
@@ -186,7 +195,7 @@
 			if ($appkey['exec_tot_check'] == 'N') $exec_tot_cnt = '<span style="color:red; font-weight: bold">'. $exec_tot_cnt .'</span>';
 
 			?>
-			<tr style='cursor:pointer' id='line-<?=$appkey['app_key']?>' class='mactive-<?=$appkey['is_mactive']?>'>
+			<tr style='cursor:pointer' id='line-<?=$appkey['app_key']?>' class='mactive-<?=$appkey['is_mactive']?> active-<?=$appkey['is_active']?>'>
 				<td <?=$td_onclick?>><?=$appkey['id']?></td>
 				<td <?=$td_onclick?>><?=$arr_active[$appkey['is_active']]?></td>
 				<td class='btn-td'>
@@ -212,7 +221,8 @@
 				<td <?=$td_onclick?>><?=$exec_day_cnt?></td>
 				<td <?=$td_onclick?>><?=$exec_tot_cnt?></td>
 				<td <?=$td_onclick?>><?=$filter?></td>
-				<td <?=$td_onclick?>><?=$appkey['is_active'] == 'Y' ? admin_to_date($appkey['last_active_time']).'<br>'.admin_to_time($appkey['last_active_time']) : ""?></td>
+				<td <?=$td_onclick?>><?=admin_to_datetime($appkey['last_active_time'])?></td>
+				<td <?=$td_onclick?>><?=admin_to_datetime($appkey['last_deactive_time'])?></td>
 				<td <?=$td_onclick?>><?=admin_to_date($appkey['reg_date']).'<br>'.admin_to_time($appkey['reg_date'])?></td>
 			</tr>
 			<?
