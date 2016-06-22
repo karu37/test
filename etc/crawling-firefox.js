@@ -28,7 +28,7 @@ var crawl = function(){
   eval(_hquery.data);
 
 	// hide images
-	$('<div />', {id: '-web-clear', html: '&shy;<style>img {display:none !important} * {background-image: none}</style>'}).appendTo('body');
+	_$('<div />', {id: '-web-clear', html: '&shy;<style>img {display:none !important} * {background-image: none}</style>'}).appendTo('body');
 
 	// 현재페이지의 카테고리 명을 얻어오기
 	var sz_type = '';
@@ -61,7 +61,6 @@ var crawl = function(){
 		console.log('Card Found Count : ' + n_found_count);
 		
 		if (n_found_count == 0 && _$('#error-section:visible').length > 0) {
-			clearTimeout(timer_check);
 			gather_market_url();
 			return;
 		}
@@ -83,7 +82,7 @@ var crawl = function(){
 			}
 			// 맨 바닥으로 스크롤시킴
 			window.scrollTo(0,0);
-			setTimeout(function(){window.scrollTo(0,$(document).height() - $(window).height());}, 500);
+			setTimeout(function(){window.scrollTo(0,_$(document).height() - _$(window).height());}, 500);
 		}
 		// 10 초 동안 아무 변화가 없으면 모두 로딩된것으로 판단함.
 		else {

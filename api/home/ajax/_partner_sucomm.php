@@ -1,29 +1,30 @@
 <?	
-$g_ohc['lib'] = 'OHC';					// 해당 광고에 대한 처리 routine 명 (이 파일)
-$g_ohc['mcode'] = 'mohc';				// 가져온 광고를 해당 mcode 밑으로 연결
-$g_ohc['aline-code'] = "aline";		// ohc 연동 매체 코드
-$g_ohc['appkey_prefix'] = "ohc";		// 앱키 시작 문자열 ( + md5한 mkey 결과 뒤에 붙임 )
+$g_sucom['lib'] = 'SUCOMM';				// 해당 광고에 대한 처리 routine 명 (이 파일)
+$g_sucom['mcode'] = 'msucomm';			// 가져온 광고를 해당 mcode 밑으로 연결
+$g_sucom['aline-code'] = "aline_json";	// sucomm 연동 매체 코드
+$g_sucom['appkey_prefix'] = "suc";		// 앱키 시작 문자열 ( + md5한 mkey 결과 뒤에 붙임 )
 
-$g_ohc['unique_prefix'] = "ohc";		// 적립 결과에 Unique 키
-$g_ohc['timeout_sec'] = 60;				// 시작 / 적립 요청시의 Timeout 초
+$g_sucom['unique_prefix'] = "suc";		// 적립 결과에 Unique 키
+$g_sucom['timeout_sec'] = 60;				// 시작 / 적립 요청시의 Timeout 초
 
-$g_ohc['list'] = "http://w6.ohpoint.co.kr/charge/banner/offerList.do";
-$g_ohc['start'] = "";					// OHC는 시작을 list에서 받아온 URL로 함
-$g_ohc['done'] = "http://w6.ohpoint.co.kr/charge/commit/callback.do";
+$g_sucom['list'] = "http://api.flexplatform.net/v1/get_ad_list_v2.php";
+$g_sucom['start'] = "http://api.flexplatform.net/v1/connect.php";
+$g_sucom['done'] = "http://api.flexplatform.net/v1/return_result.php";
+$g_sucom['img'] = "http://api.flexplatform.net/v1/get_ad_image.php";
 
-// http://api.aline-soft.kr/ajax-request.php?id=_partner_ohc&dev=1
-if ($_REQUEST['dev'] == 1 && $_REQUEST['id'] == "_partner_ohc") {
-	update_ohc_app(true, $conn);
+// http://api.aline-soft.kr/ajax-request.php?id=_partner_sucomm&dev=1
+if ($_REQUEST['dev'] == 1 && $_REQUEST['id'] == "_partner_sucomm") {
+	update_sucomm_app(true, $conn);
 	exit;
 }	
 
-function update_ohc_app($force_reload, $conn) 
+function update_sucomm_app($force_reload, $conn) 
 {
-	global $g_ohc;
+	global $g_sucom;
 
-	// g_ohc의 lib와 mcode
-	$db_lib = mysql_real_escape_string($g_ohc['lib']);
-	$db_mcode = mysql_real_escape_string($g_ohc['mcode']);
+	// g_sucom의 lib와 mcode
+	$db_lib = mysql_real_escape_string($g_sucom['lib']);
+	$db_mcode = mysql_real_escape_string($g_sucom['mcode']);
 	
 	//////////////////////////////////////////////////////////////////////////
 	// 기본 추가에 대한 is_delete 설정 : 
@@ -64,10 +65,16 @@ function update_ohc_app($force_reload, $conn)
 	$row = @mysql_fetch_assoc(mysql_query($sql, $conn));
 	$exchange_fee_rate = intval(ifempty($row['exchange_fee_rate'], 100));
 	
+	// ----------------------------------------------------------------------
 	// 요청 URL생성하기
 	$url_param = array();
-	$url_param['mId'] = $g_ohc['aline-code'];
-	$campain_url = $g_ohc['list'] . "?" . http_build_query($url_param);
+	$url_param['media'] = $g_sucom['aline-code'];
+	
+	$url_param['checktime'] = time();
+	$url_param['checkkey'] = md5($url_param['checktime'].$url_param['media']);
+	// ----------------------------------------------------------------------
+	
+	$campain_url = $g_sucom['list'] . "?" . http_build_query($url_param);
 	
 	// 광고 목록 요청
 	$start_tm = get_timestamp();
@@ -90,8 +97,8 @@ function update_ohc_app($force_reload, $conn)
 		/////////////////////////////////////////
 
 		//## app_key & m_key 
-		$app_key = $g_ohc['appkey_prefix'] . md5($item['eId']);
-		$m_key = $item['eId'];
+		$app_key = $g_sucom['appkey_prefix'] . md5($item['ads']);
+		$m_key = $item['ads'];
 
 		//-------------------------------------
 		
@@ -99,29 +106,29 @@ function update_ohc_app($force_reload, $conn)
 		$app_title = $item['title'];
 		
 		//## app_content
-		$app_content = $item['explain'];
+		$app_content = $item['details'];
 		
 		//## app_iconurl
-		$app_iconurl = $item['img'];
+		$app_iconurl = $g_sucom['img'] . "?ads=" . $item['ads'];
 
 		//## app_packageid
 		$app_packageid = $item['ads_package'];
 		
 		//## app_execurl
-		$app_execurl = $item['advr_link_url'];
+		$app_execurl = "";
 		
 		//-------------------------------------
 
 		//## app_gender
-		$arr_item_sex = array("0" => "", "1" => "M", "2" => "F");
-		$app_gender = $arr_item_sex[$item['limit_sex']];
+		$arr_item_sex = array("" => "", "mail" => "M", "female" => "F");
+		$app_gender = $arr_item_sex[$item['sex']];
 		
 		//## app_agefrom, app_ageto
 		$app_agefrom = "";
 		$app_ageto = "";
-		if (intval($item['start_age']) > 0 && intval($item['end_age']) > intval($item['start_age'])) {
-			$app_agefrom = $item['start_age'];
-			$app_ageto = $item['end_age'];
+		if (intval($item['age_from']) > 0 && intval($item['age_to']) > intval($item['age_from'])) {
+			$app_agefrom = $item['age_from'];
+			$app_ageto = $item['age_to'];
 		}
 
 		//## app_exec_type		
@@ -138,19 +145,20 @@ function update_ohc_app($force_reload, $conn)
 		$app_platform = 'A';
 		if ($item['os_type']) {
 			$arr_type = explode('|', $item['os_type']);
-			if (in_array("a", $arr_type)) 
+			if (in_array("android", $arr_type)) 
 				$app_platform = 'A';
-			else if (in_array("w", $arr_type))
+			else if (in_array("web", $arr_type))
 				$app_platform = 'W';
 			else continue;		// a타입도 없고,  w타입도 없는 경우엔 통과 (ios 만 있는 경우에는 통과)
 		}
 
 		//## app_market
-		$arr_markets = explode('|', $item['operator']);
-		if (in_array("all", $arr_markets)) $app_market = "P";
-		else if (in_array("T", $arr_markets)) $app_market = "T";
-		else if (in_array("K", $arr_markets)) $app_market = "O";
-		else if (in_array("U", $arr_markets)) $app_market = "U";
+		$arr_markets = explode('|', $item['market']);
+		if (!$item['market']) $app_market = "P";							// 별도 지정이 없으면 PLAYSTORE
+		else if (in_array("google_play", $arr_markets)) $app_market = "P";
+		else if (in_array("tstore", $arr_markets)) $app_market = "T";
+		else if (in_array("olleh", $arr_markets)) $app_market = "O";
+		else if (in_array("uplus", $arr_markets)) $app_market = "U";
 		else $app_market = "P";	// ELSE인 경우는 일단 P 로 처리
 
 		//## app_merchant_fee
@@ -204,8 +212,8 @@ function update_ohc_app($force_reload, $conn)
 			$app_id = $row['id'];
 			if ($row['last_deactive_time'] && $row['error_stopped_time'] != $row['last_deactive_time'] && 
 				$row['is_active'] != 'Y' && in_array($app_exec_type, array('I', 'E')) ) {
-				$g_ohc['reactive-added'] ++;
-				$g_ohc['reactive-added-title'][] = "{$app_exec_type} {$app_title}";
+				$g_sucom['reactive-added'] ++;
+				$g_sucom['reactive-added-title'][] = "{$app_exec_type} {$app_title}";
 			}
 			
 			if ($row['flag_keep_modify'] == 'Y') 
@@ -314,42 +322,44 @@ function update_ohc_app($force_reload, $conn)
 	return true;
 }
 
-function ohc_request_start($app_key, &$arr_data, &$conn) 
+function sucomm_request_start($app_key, &$arr_data, &$conn) 
 {
-	global $g_ohc;
+	global $g_sucom;
 	
 	$ar_app = $arr_data['ad'];
 	$userapp_id = $arr_data['user_app_id'];
 	
 	// 광고 시작 URL 생성
 	$url_param = array();
-	$url_param['mId'] = $g_ohc['aline-code'];
-	$url_param['eId'] = $ar_app['mkey'];
+	$url_param['media'] = $g_sucom['aline-code'];
+	$url_param['flexcode'] = $ar_app['mkey'];
+	$url_param['rewardkey'] = base64_encode(json_encode(array('aid' => $userapp_id)));		// appkey와 adid 의 HashCode
 	$url_param['adId'] = $arr_data['adid'];
-	$url_param['user_ip'] = $arr_data['ip'];
-	$url_param['etc1'] = base64_encode(json_encode(array('aid' => $userapp_id)));
-	$campain_url = concat_url($ar_app['app_execurl'], http_build_query($url_param));
+	$url_param['go_type'] = "json";
+	$url_param['real_ip'] = $arr_data['ip'];
+	
+	$campain_url = concat_url($g_sucom['start'], http_build_query($url_param));
 
 	// 광고 URL 요청하기
 	$start_tm = get_timestamp();
-	$ctx = stream_context_create( array( 'http'=> array('timeout' => $g_ohc['timeout_sec']), 'https'=> array('timeout' => $g_ohc['timeout_sec']) ) );
+	$ctx = stream_context_create( array( 'http'=> array('timeout' => $g_sucom['timeout_sec']), 'https'=> array('timeout' => $g_sucom['timeout_sec']) ) );
 	
 	// MYSQL을 닫은 후 요청이 완료되면 dbPConn()으로 재 연결한다.
 	mysql_close($conn);
 	$result_data = @file_get_contents($campain_url, 0, $ctx);
 	$conn = dbPConn();
 	
-	make_action_log("user-start-ohc", ($result_data?'Y':'N'), $arr_data['pcode'], $arr_data['adid'], null, get_timestamp() - $start_tm, $campain_url, null, $result_data, $conn);
+	make_action_log("user-start-sucomm", ($result_data?'Y':'N'), $arr_data['pcode'], $arr_data['adid'], null, get_timestamp() - $start_tm, $campain_url, null, $result_data, $conn);
 	if (!$result_data) return array('result' => 'N', 'code' => '-1003');
 	
 	//전달할 결과 조합
 	$js_data = json_decode($result_data, true);
-	$result_data = $js_data['resultCode'];
-	$result_msg = $js_data['errMsg'];
+	$result_data = $js_data['return_code'];
+	$result_msg = "";
 
 	// error-handling
-	if ($result_data != "E00") {
-		return ohc_code_mapping($result_data, $result_msg);
+	if ($result_data != "0000") {
+		return sucomm_code_mapping($result_data, $result_msg);
 	}
 	$arr_data['result'] = 'Y';
 	$arr_data['url'] = $js_data['url'];
@@ -358,7 +368,7 @@ function ohc_request_start($app_key, &$arr_data, &$conn)
 
 function local_request_done($app_key, $arr_data, &$conn) 
 {
-	global $g_ohc;
+	global $g_sucom;
 
 	$ar_app = $arr_data['ad'];
 	$userapp_id = $arr_data['user_app_id'];
@@ -368,47 +378,79 @@ function local_request_done($app_key, $arr_data, &$conn)
 
 	// 광고 적립 URL생성
 	$url_param = array();
-	$url_param['mId'] = $g_ohc['aline-code'];
-	$url_param['eId'] = $ar_app['mkey'];
+	$url_param['media'] = $g_sucom['aline-code'];
+	$url_param['flexcode'] = $ar_app['mkey'];
 	$url_param['adId'] = $arr_data['adid'];
-	$url_param['user_ip'] = $arr_data['ip'];
 
 	// 광고 적립 요청 보내기
 	$start_tm = get_timestamp();
 	
 	// MYSQL을 닫은 후 요청이 완료되면 dbPConn()으로 재 연결한다.
 	mysql_close($conn);
-	$result_data = post($g_ohc['done'], $url_param, $g_ohc['timeout_sec']);
+	$result_data = post($g_sucom['done'], $url_param, $g_sucom['timeout_sec']);
 	$conn = dbPConn();	
 	
-	make_action_log("user-done-ohc", ($result_data?'Y':'N'), $arr_data['pcode'], $arr_data['adid'], null, get_timestamp() - $start_tm, $g_ohc['done'], $url_param, $result_data, $conn);
+	make_action_log("user-done-sucomm", ($result_data?'Y':'N'), $arr_data['pcode'], $arr_data['adid'], null, get_timestamp() - $start_tm, $g_sucom['done'], $url_param, $result_data, $conn);
 	if (!$result_data) return array('result' => 'N', 'code' => '-1003');
 
 	// 전달할 결과 조합
 	$js_data = json_decode($result_data, true);
-	$result_data = $js_data['resultCode'];
-	$result_msg = $js_data['errMsg'];
+	$result_data = $js_data['return_code'];
+	$result_msg = "";
 	
 	// error-handling
-	if ($result_data != "E00") {
-		return ohc_code_mapping($result_data, $result_msg);
+	if ($result_data != "0000") {
+		return sucomm_code_mapping($result_data, $result_msg);
 	}
 	return array('result' => 'Y');
 }
 
-function ohc_code_mapping($code, $msg) {
+function sucomm_code_mapping($code, $msg) {
 
-	if ($code == 'E01') return array('result' => 'N', 'code' => '-1004', 'msg' => ifempty($msg, '파라미터 값이 없습니다.') );
-	if ($code == 'E03') return array('result' => 'N', 'code' => '-102', 'msg' => ifempty($msg, '등록되지 않은 매체입니다.') );
-	if ($code == 'E04') return array('result' => 'N', 'code' => '-103', 'msg' => ifempty($msg, '진행 중인 이벤트가 아닙니다.') );
+	$ar_err_msg = sucom_error_msg($code);
+	return array('result' => 'N', 'code' => $ar_err_msg[0], 'msg' => $ar_err_msg[1] );
+}
+
+function sucom_error_msg($code) {
 	
-	if ($code == 'E02') return array('result' => 'N', 'code' => '-103', 'msg' => ifempty($msg, '종료된 이벤트입니다.') );
-	if ($code == 'E06') return array('result' => 'N', 'code' => '-103', 'msg' => ifempty($msg, '전체 목표수량 달성.') );
-	if ($code == 'E07') return array('result' => 'N', 'code' => '-104', 'msg' => ifempty($msg, '오늘 목표수량 달성. 익일 참여 가능.') );
+	// 오류 설명
+	$arr_error_msg[1101] = array('-100', '정확하지 않는 정보로 접속 되었습니다. 다시 참여해 주십시오.');
+	$arr_error_msg[1102] = array('-100', '정확하지 않는 정보로 접속 되었습니다. 다시 참여해 주십시오.');
+	$arr_error_msg[1103] = array('-103', '이벤트가 일시 중지 되었거나 오픈 전 입니다.');
+	$arr_error_msg[1104] = array('-103', '이벤트가 일시 중지 되었거나 오픈 전 입니다.');
+	$arr_error_msg[1105] = array('-103', '이벤트가 일시 중지 되었거나 오픈 전 입니다.');
+	$arr_error_msg[1106] = array('-103', '이벤트가 일시 중지 되었거나 오픈 전 입니다.');
+	$arr_error_msg[1107] = array('-104', '일시 중지 되었거나 오픈 전 입니다.');
+	$arr_error_msg[1108] = array('-104', '일시 중지 되었거나 오픈 전 입니다.');
+	$arr_error_msg[1109] = array('-104', '일시 중지 되었습니다.');
+	$arr_error_msg[1110] = array('-111', '광고 접속에 실패 하였습니다. 다시 참여해 주십시오.');
+	$arr_error_msg[1111] = array('-105', '이미 참여한 이벤트 입니다.');
+	$arr_error_msg[1112] = array('-105', '이미 참여한 이벤트 입니다.');
+	$arr_error_msg[1113] = array('-105', '이미 참여한 이벤트 입니다.');
+	$arr_error_msg[1114] = array('-105', '이미 참여한 이벤트 입니다.');
+	$arr_error_msg[1115] = array('-105', '이미 참여한 이벤트 입니다.');
+	$arr_error_msg[1116] = array('-106', '모바일웹 환경에서만 참여 가능합니다.');
+	$arr_error_msg[1117] = array('-106', '참여하셨거나, 이벤트 참여 대상자가 대상자가 아닙니다.');
+	$arr_error_msg[1118] = array('-103', '이벤트가 일시 중지 되었거나 오픈 전 입니다.');
+	$arr_error_msg[1119] = array('-104', '당일 이벤트 참여가 일시 중지 되었습니다. 내일 다시 참여 해 주세요.');
+	$arr_error_msg[1120] = array('-103', 'IMEI전용 광고 입니다');
 	
-	if ($code == 'E05') return array('result' => 'N', 'code' => '-106', 'msg' => ifempty($msg, '이미 참여하셨거나, 이벤트 참여 대상자가 아닙니다.') );
+	$arr_error_msg[1201] = array('-107', '정확하지 않는 정보로 접속 되었습니다. 다시 참여해 주십시오.');
+	$arr_error_msg[1202] = array('-111', '광고 접속에 실패 하였습니다. 다시 참여해 주십시오');
+	$arr_error_msg[1203] = array('-111', '광고 접속에 실패 하였습니다. 다시 참여해 주십시오');
+	$arr_error_msg[1204] = array('-104', '이벤트가 일시 중지 되었거나 오픈 전 입니다');
+	$arr_error_msg[1205] = array('-111', '광고 접속에 실패 하였습니다. 다시 참여해 주십시오');
+	$arr_error_msg[1206] = array('-103', '이벤트가 일시 중지 되었거나 오픈 전 입니다');
+	$arr_error_msg[1207] = array('-106', '참여하셨거나, 이벤트 참여 대상자가 아닙니다');
+	$arr_error_msg[1208] = array('-104', '이벤트가 일시 중지 되었거나 오픈 전 입니다');
+	$arr_error_msg[1209] = array('-104', '금일 광고 수량이 모두 소진되었습니다. 익일 참여하시기 바랍니다');
+	$arr_error_msg[1210] = array('-111', '광고 접속에 실패 하였습니다. 다시 참여해 주십시오');
+	$arr_error_msg[1211] = array('-111', '광고 접속에 실패 하였습니다. 다시 참여해 주십시오');
+	$arr_error_msg[1212] = array('-100', '정확하지 않는 정보로 접속 되었습니다. 다시 참여해 주십시오');
+	$arr_error_msg[1213] = array('-160', '참여하셨거나, 이벤트 참여 대상자가 아닙니다');
+
+	if ($arr_error_msg[$code]) return $arr_error_msg[$code];
+	return array('-1005', '알 수 없는 오류');
 	
-	// if ($code == 'E99') 
-	return array('result' => 'N', 'code' => '-1005', 'msg' => ifempty($msg, "알 수 없는 오류입니다.($code)") );
 }
 ?>

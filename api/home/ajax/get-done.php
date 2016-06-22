@@ -160,6 +160,11 @@
 		include dirname(__FILE__)."/_partner_ohc.php";
 		$ar_data = ohc_request_done($appkey, $arr_param, $conn);
 		
+	} else if ($row_app['lib'] == 'SUCOMM') {
+		
+		include dirname(__FILE__)."/_partner_sucomm.php";
+		$ar_data = sucomm_request_done($appkey, $arr_param, $conn);
+		
 	} else {
 		
 		return_die('N', array('code'=>'-110'), '광고 오류입니다.');

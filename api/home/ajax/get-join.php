@@ -136,7 +136,7 @@
 	// ## al_user_app_t.id 값을 저장
 	$arr_param['user_app_id'] = $user_app_id;
 	
-	// var_dump($arr_param);
+	var_dump($arr_param);
 
 	// --------------------------------------------------------
 	if ($row_app['lib'] == 'LOCAL') {
@@ -148,6 +148,11 @@
 
 		include dirname(__FILE__)."/_partner_ohc.php";
 		$ar_data = ohc_request_start($appkey, $arr_param, $conn);
+		
+	} else if ($row_app['lib'] == 'SUCOMM') {
+
+		include dirname(__FILE__)."/_partner_sucomm.php";
+		$ar_data = sucomm_request_start($appkey, $arr_param, $conn);
 		
 	} else {
 		
