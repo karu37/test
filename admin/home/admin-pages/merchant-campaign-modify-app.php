@@ -22,17 +22,15 @@
 	<div id='app-info' class='ui-grid-a'>
 		<div class='ui-block-a'>ALINE 광고키</div>
 		<div class='ui-block-b'>
-			<t3 style='line-height: 48px'><?=$row['app_key']?></t3>
+			<t3 style='line-height: 43px'><?=$row['app_key']?></t3>
 		</div>
 		<div class='ui-block-a'>광고주 광고키</div>
 		<div class='ui-block-b'>
-			<t3 style='line-height: 48px'><?=$row['lib'] == 'LOCAL' ? '<span style="color:gray">(ALINE 등록 광고 - 해당사항 없음)</span>' : $row['mkey']?></t3>
+			<t3 style='line-height: 43px'><?=$row['lib'] == 'LOCAL' ? "<span style='font-size:14px; color:gray'>없음 (ALINE에서 등록)</span>" : $row['mkey']?></t3>
 		</div>
-		<div>
-			<div class='ui-block-a'>광고주 명</div>
-			<div class='ui-block-b'>
-			<t3 style='line-height: 48px'><?=$row['m_name']?></t3>
-			</div>
+		<div class='ui-block-a'>광고주 명</div>
+		<div class='ui-block-b'>
+			<t3 style='line-height: 43px'><?=$row['m_name']?></t3>
 		</div>
 		<div class='ui-block-a'>적립 상태</div>
 		<div class='ui-block-b'>

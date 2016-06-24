@@ -14,12 +14,12 @@
 		<textarea id='input-data' name='input-data' wrap="off" init-value=""></textarea>	
     	<div style='text-align:left;'>ADID값 예: dc2f080f-2c83-4459-962f-a336de1de7cc<br>1줄에 1개 ADID로 작성</div>
 		<br>
-		<a href='#' onclick='<?=$js_page_id?>.action.on_btn_upload_adid()' data-role='button' data-inline='true' data-mini='true' data-theme='b'>ADID 등록</a>
-		<a href='#' data-role='button' data-rel='back' data-inline='true' data-mini='true' data-theme='b'>닫기</a>
-		<br>
-		<a href='#' onclick='<?=$js_page_id?>.action.on_btn_adid_download()' data-role='button' data-inline='true' data-mini='true'>업로드한 ADID 목록</a>
-		<a href='#' onclick='<?=$js_page_id?>.action.on_btn_reset_adid()' data-role='button' data-inline='true' data-mini='true'>ADID 초기화</a>
-		
+		<div class='ui-grid-a'>
+			<div class='ui-block-a'><a href='#' onclick='<?=$js_page_id?>.action.on_btn_upload_adid()' data-role='button' data-mini='true' data-theme='b'>ADID 등록</a></div>
+			<div class='ui-block-b'><a href='#' onclick='<?=$js_page_id?>.action.on_btn_reset_adid()' data-role='button' data-mini='true' data-theme='b'>ADID 초기화</a></div>
+			<div class='ui-block-a'><a href='#' onclick='<?=$js_page_id?>.action.on_btn_adid_download()' data-role='button' data-mini='true'>업로드한 ADID 목록</a></div>
+			<div class='ui-block-b'><a href='#' data-role='button' data-rel='back' data-mini='true'>닫기</a></div>
+		</div>			
 	</div>		
 <script type="text/javascript"> 
 
