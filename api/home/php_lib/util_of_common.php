@@ -1,65 +1,65 @@
 <?
 /* 
 	IFNULL(pa.app_offer_fee, FLOOR(app.app_merchant_fee * IFNULL(pa.app_offer_fee_rate, p.offer_fee_rate) / 100) ) AS 'publisher_fee', 
-		: pa¿¡ ÁöÁ¤µÈ °¡°İÀÌ ÀÖÀ¸¸é ±×°ÍÀ» »ç¿ëÇÏ°í
-		: ±×·¸Áö ¾Ê°í pa¿¡ ÁöÁ¤µÈ À²ÀÌ ÀÖÀ¸¸é ±× À²·Î °è»ê
-		: ±×·¸Áö ¾ÊÀ¸¸é ±âº» °è»ê¹ıÀ¸·Î °è»ê
+		: paì— ì§€ì •ëœ ê°€ê²©ì´ ìˆìœ¼ë©´ ê·¸ê²ƒì„ ì‚¬ìš©í•˜ê³ 
+		: ê·¸ë ‡ì§€ ì•Šê³  paì— ì§€ì •ëœ ìœ¨ì´ ìˆìœ¼ë©´ ê·¸ ìœ¨ë¡œ ê³„ì‚°
+		: ê·¸ë ‡ì§€ ì•Šìœ¼ë©´ ê¸°ë³¸ ê³„ì‚°ë²•ìœ¼ë¡œ ê³„ì‚°
 
-	1¹ø al_app_t.is_mactive						: [°ü¸®ÀÚ]°¡ ÇØ´ç ±¤°í È°¼º/ÁßÁö/»èÁ¦ ( Y/N/D )
-	2¹ø al_app_t.is_active						: [Merchant]°¡ ÇØ´ç ±¤°í È°¼º/ÁßÁö ( Y/N )
+	1ë²ˆ al_app_t.is_mactive						: [ê´€ë¦¬ì]ê°€ í•´ë‹¹ ê´‘ê³  í™œì„±/ì¤‘ì§€/ì‚­ì œ ( Y/N/D )
+	2ë²ˆ al_app_t.is_active						: [Merchant]ê°€ í•´ë‹¹ ê´‘ê³  í™œì„±/ì¤‘ì§€ ( Y/N )
 	
-	3¹ø al_merchant_t.is_mactive				: [°ü¸®ÀÚ]°¡ Merchant Code È°¼º/Å×½ºÆ®/ÁßÁö/»èÁ¦ ( Y/T/N/D )
-	4¹ø al_publisher_t.is_mactive				: [°ü¸®ÀÚ]°¡ Publisher Code È°¼º/Å×½ºÆ®/ÁßÁö/»èÁ¦ ( Y/T/N/D )
+	3ë²ˆ al_merchant_t.is_mactive				: [ê´€ë¦¬ì]ê°€ Merchant Code í™œì„±/í…ŒìŠ¤íŠ¸/ì¤‘ì§€/ì‚­ì œ ( Y/T/N/D )
+	4ë²ˆ al_publisher_t.is_mactive				: [ê´€ë¦¬ì]ê°€ Publisher Code í™œì„±/í…ŒìŠ¤íŠ¸/ì¤‘ì§€/ì‚­ì œ ( Y/T/N/D )
 	
-	5¹ø al_publisher_app_t.is_mactive 			: [°ü¸®ÀÚ]°¡ Publisher¿¡°Ô app°ø±Ş È°¼º/ÁßÁö/»èÁ¦ ( Y/N/D )
-	6¹ø al_publisher_app_t.publisher_disabled 	: [Publisher]°¡ ±¤°í ¹Ş±â¸¦ ÁßÁö ( Y )
+	5ë²ˆ al_publisher_app_t.is_mactive 			: [ê´€ë¦¬ì]ê°€ Publisherì—ê²Œ appê³µê¸‰ í™œì„±/ì¤‘ì§€/ì‚­ì œ ( Y/N/D )
+	6ë²ˆ al_publisher_app_t.publisher_disabled 	: [Publisher]ê°€ ê´‘ê³  ë°›ê¸°ë¥¼ ì¤‘ì§€ ( Y )
 
-	7¹ø al_app_t.publisher_level				: Publisher °ø±Ş ·¹º§ ÁöÁ¤
-			al_publisher_t.level				: 	appÀÇ °ø±Ş·¹º§º¸´Ù ³·Àº °æ¿ì(¼ıÀÚ·Î´Â ³ôÀº°æ¿ì) °ø±Ş Â÷´Ü
+	7ë²ˆ al_app_t.publisher_level				: Publisher ê³µê¸‰ ë ˆë²¨ ì§€ì •
+			al_publisher_t.level				: 	appì˜ ê³µê¸‰ë ˆë²¨ë³´ë‹¤ ë‚®ì€ ê²½ìš°(ìˆ«ìë¡œëŠ” ë†’ì€ê²½ìš°) ê³µê¸‰ ì°¨ë‹¨
 		
-	8¹ø al_app_t.is_public_mode					: [Merchant]ÀÇ public ¸ğµå ¼³Á¤
-			al_publisher_app_t.merchant_disabled: is_public_mode = YÀÎ °æ¿ì Âü°íÇÔ 'N'ÀÌ¸é Â÷´Ü
-			al_publisher_app_t.merchant_enabled	: is_public_mode = NÀÎ °æ¿ì Âü°íÇÔ 'Y'ÀÌ¸é Â÷´Ü
+	8ë²ˆ al_app_t.is_public_mode					: [Merchant]ì˜ public ëª¨ë“œ ì„¤ì •
+			al_publisher_app_t.merchant_disabled: is_public_mode = Yì¸ ê²½ìš° ì°¸ê³ í•¨ 'N'ì´ë©´ ì°¨ë‹¨
+			al_publisher_app_t.merchant_enabled	: is_public_mode = Nì¸ ê²½ìš° ì°¸ê³ í•¨ 'Y'ì´ë©´ ì°¨ë‹¨
 
-	-- ±¤°í ÀÚÃ¼ ¿ÀÇÂ ½Ã°£ Á¶Á¤ (¾Æ·¡Á¶°ÇÀº ¸ğµÎ AND)
+	-- ê´‘ê³  ìì²´ ì˜¤í”ˆ ì‹œê°„ ì¡°ì • (ì•„ë˜ì¡°ê±´ì€ ëª¨ë‘ AND)
 
-	 	al_app_t.exec_stime ~ exec_etime		: ±¤°í¿¡ ¼³Á¤µÈ ±¤°í ½ÃÀÛ ½Ã°£
+	 	al_app_t.exec_stime ~ exec_etime		: ê´‘ê³ ì— ì„¤ì •ëœ ê´‘ê³  ì‹œì‘ ì‹œê°„
 	
-	 	al_publisher_app_t.active_time			: ±¤°í È°¼º ½Ã°£ - °ü¸®ÀÚ°¡ ¼³Á¤ÇÔ - ÇØ´ç Publisher & ±¤°í¸¦ Çã¿ë/±İÁö
+	 	al_publisher_app_t.active_time			: ê´‘ê³  í™œì„± ì‹œê°„ - ê´€ë¦¬ìê°€ ì„¤ì •í•¨ - í•´ë‹¹ Publisher & ê´‘ê³ ë¥¼ í—ˆìš©/ê¸ˆì§€
 	 	
-¡Ø¡Ø¡Ø al_app_t.exec_edate					: end ½Ã°£º¸´Ù ÀÌÀüÀÏ ¶§¿¡¸¸ µ¿ÀÛ (ÇØ´çÀÏ 23:59:59 ±îÁö µ¿ÀÛ )
-	 		IF (app.exec_edate IS NULL OR DATE(app.exec_edate) >= CURRENT_DATE, 'N', 'Y') as 'edate_expired' ## ¿À´ÃÆ÷ÇÔÇØ¼­ ¹Ì·¡±îÁö¸ğµÎ µ¿ÀÛÇÏµµ·Ï ÇÔ (¾îÁ¦³¯Â¥ÀÎ°æ¿ì Â÷´Ü)
-	 		==> ÃÊ°ú Ã¼Å©ÇØ¼­ app.is_active ¸¦ 'N'
+â€»â€»â€» al_app_t.exec_edate					: end ì‹œê°„ë³´ë‹¤ ì´ì „ì¼ ë•Œì—ë§Œ ë™ì‘ (í•´ë‹¹ì¼ 23:59:59 ê¹Œì§€ ë™ì‘ )
+	 		IF (app.exec_edate IS NULL OR DATE(app.exec_edate) >= CURRENT_DATE, 'N', 'Y') as 'edate_expired' ## ì˜¤ëŠ˜í¬í•¨í•´ì„œ ë¯¸ë˜ê¹Œì§€ëª¨ë‘ ë™ì‘í•˜ë„ë¡ í•¨ (ì–´ì œë‚ ì§œì¸ê²½ìš° ì°¨ë‹¨)
+	 		==> ì´ˆê³¼ ì²´í¬í•´ì„œ app.is_active ë¥¼ 'N'
 		
-		¡Ø exec°³¼ö Á¤º¸°¡ ¾ø´Â °æ¿ì ¶Ç´Â NOT( exec °³¼ö Ã¼Å©ÇØ¼­ °³¼ö°¡ 0 ÀÌ»óÀ¸·Î ¼³Á¤µÇ¾î ÀÖÀ¸¸é¼­ °³¼ö ÃÊ°ú¸¦ ÇÑ °æ¿ì Ç¥½ÃÇÏÁö ¾ÊÀ½ )
+		â€» execê°œìˆ˜ ì •ë³´ê°€ ì—†ëŠ” ê²½ìš° ë˜ëŠ” NOT( exec ê°œìˆ˜ ì²´í¬í•´ì„œ ê°œìˆ˜ê°€ 0 ì´ìƒìœ¼ë¡œ ì„¤ì •ë˜ì–´ ìˆìœ¼ë©´ì„œ ê°œìˆ˜ ì´ˆê³¼ë¥¼ í•œ ê²½ìš° í‘œì‹œí•˜ì§€ ì•ŠìŒ )
 			(
-				# ½Ã°£¹× ÀÏÀÏ Á¦ÇÑÀÌ ¾ø´Â °æ¿ì ±×³É OK
+				# ì‹œê°„ë° ì¼ì¼ ì œí•œì´ ì—†ëŠ” ê²½ìš° ê·¸ëƒ¥ OK
 				(
-				  IFNULL(pa.exec_hour_max_cnt, app.exec_hour_max_cnt) IS NULL 	# ½Ã°£´ç Á¦ÇÑÀÌ ¾ø´Â °æ¿ì 
+				  IFNULL(pa.exec_hour_max_cnt, app.exec_hour_max_cnt) IS NULL 	# ì‹œê°„ë‹¹ ì œí•œì´ ì—†ëŠ” ê²½ìš° 
 				   AND
-				  IFNULL(pa.exec_day_max_cnt, app.exec_day_max_cnt) IS NULL		# ÀÏÀÏ Á¦ÇÑÀÌ ¾ø´Â °æ¿ì
+				  IFNULL(pa.exec_day_max_cnt, app.exec_day_max_cnt) IS NULL		# ì¼ì¼ ì œí•œì´ ì—†ëŠ” ê²½ìš°
 				)
 				OR
 				(
-				 # ½Ã°£´ç Á¦ÇÑÀÌ ¼³Á¤µÇ¾î ÀÖ°í, ½Ã°£´ç °³¼ö°¡ ÃÊ°úÇÏÁö ¾ÊÀº °æ¿ì
+				 # ì‹œê°„ë‹¹ ì œí•œì´ ì„¤ì •ë˜ì–´ ìˆê³ , ì‹œê°„ë‹¹ ê°œìˆ˜ê°€ ì´ˆê³¼í•˜ì§€ ì•Šì€ ê²½ìš°
 				 ( IFNULL(pa.exec_hour_max_cnt, app.exec_hour_max_cnt) IS NOT NULL AND IFNULL(pa.exec_hour_max_cnt, app.exec_hour_max_cnt) > IF(s.exec_time = '{$ar_time['datehour']}', s.exec_hour_cnt, 0) )
 				  OR
-				 # ÀÏÀÏ Á¦ÇÑÀÌ ¼³Á¤µÇ¾î ÀÖ°í, ÀÏÀÏ °³¼ö°¡ ÃÊ°úÇÏÁö ¾ÊÀº °æ¿ì
+				 # ì¼ì¼ ì œí•œì´ ì„¤ì •ë˜ì–´ ìˆê³ , ì¼ì¼ ê°œìˆ˜ê°€ ì´ˆê³¼í•˜ì§€ ì•Šì€ ê²½ìš°
 				 ( IFNULL(pa.exec_day_max_cnt, app.exec_day_max_cnt) IS NOT NULL AND IFNULL(pa.exec_day_max_cnt, app.exec_day_max_cnt) > IF(s.exec_time = CURRENT_DATE, s.exec_day_cnt, 0) )
 				)
 			)
 
-	 	¡Ø al_publisher_app_t.exec_tot_max_cnt or al_app_t.exec_tot_max_cnt <vs> al_app_exec_stat_t.exec_tot_cnt	
-			==> ÃÊ°ú Ã¼Å©ÇØ¼­ app.is_active ¸¦ 'N'
+	 	â€» al_publisher_app_t.exec_tot_max_cnt or al_app_t.exec_tot_max_cnt <vs> al_app_exec_stat_t.exec_tot_cnt	
+			==> ì´ˆê³¼ ì²´í¬í•´ì„œ app.is_active ë¥¼ 'N'
 
-	# Äõ¸® °á°ú¿¡¼­ ==> ¾Æ·¡ ´ë»óÀº is_active = 'N' º¯°æ 
+	# ì¿¼ë¦¬ ê²°ê³¼ì—ì„œ ==> ì•„ë˜ ëŒ€ìƒì€ is_active = 'N' ë³€ê²½ 
 		if ($row['tot_not_complished'] != 'Y' || $row['edate_not_expired'] != 'Y')
 
 */
 function get_query_app_list($pcode, $ar_time, $b_hide_exhauseted, $b_test_publisher, $conn)
 {
 	$where_add = "";
-	// ±â°£ Á¾·á ¹× ÃÖ´ë °³¼ö ÃÊ°ú¸¦ ¹Ì¸® Á¦°ÅÇÒÁö ¸®ÅÏ½ÃÅ³Áö ¿©ºÎ ==> ÀÌ ±¤°í´Â is_active='N' º¯°æ ´ë»ó Ã³¸®
+	// ê¸°ê°„ ì¢…ë£Œ ë° ìµœëŒ€ ê°œìˆ˜ ì´ˆê³¼ë¥¼ ë¯¸ë¦¬ ì œê±°í• ì§€ ë¦¬í„´ì‹œí‚¬ì§€ ì—¬ë¶€ ==> ì´ ê´‘ê³ ëŠ” is_active='N' ë³€ê²½ ëŒ€ìƒ ì²˜ë¦¬
 	if ($b_hide_exhauseted) {
 		$where_add = "AND IF (app.exec_edate IS NULL OR DATE(app.exec_edate) >= CURRENT_DATE, 'Y', 'N') = 'N'
 					AND IF (s.app_key IS NULL OR IFNULL(pa.exec_tot_max_cnt, app.exec_tot_max_cnt) > s.exec_tot_cnt, 'Y', 'N') = 'N'";
@@ -67,7 +67,7 @@ function get_query_app_list($pcode, $ar_time, $b_hide_exhauseted, $b_test_publis
 	
 	$app_is_mactive = "Y";
 	$p_is_mactive = "'Y'";
-	// Å×½ºÆ® ¸ğµå´Â app.is_mactive = 'T' ·Î Á¶È¸
+	// í…ŒìŠ¤íŠ¸ ëª¨ë“œëŠ” app.is_mactive = 'T' ë¡œ ì¡°íšŒ
 	if ($b_test_publisher) {
 		$app_is_mactive = "T";
 		$p_is_mactive = "'Y', 'T'";
@@ -136,11 +136,11 @@ function get_query_app_list($pcode, $ar_time, $b_hide_exhauseted, $b_test_publis
 /*
 // IF (IFNULL(pa.exec_hour_max_cnt, app.exec_hour_max_cnt) IS NULL OR IFNULL(pa.exec_hour_max_cnt, app.exec_hour_max_cnt) > IF(s.exec_time = '{$ar_time['datehour']}', s.exec_hour_cnt, 0), 'Y', 'N') as 'check_hour_executed',
 // IF (IFNULL(pa.exec_day_max_cnt, app.exec_day_max_cnt) IS NULL OR IFNULL(pa.exec_day_max_cnt, app.exec_day_max_cnt) > IF(s.exec_time = CURRENT_DATE, s.exec_day_cnt, 0), 'Y', 'N') as 'check_day_executed',
-	pa¿¡ ½Ã°£´ç Á¦ÇÑÀÌ NULLÀÌ¸é --> appÀÇ Á¦°ªÀ» »ç¿ëÇÏ°í, ¸ğµÎ NULLÀÌ¸é Y
-	¾Æ´Ï¸é °ªÀÌ ÇöÀç ½ÇÇà ¼öº¸´Ù Å©¸é Y (°°¾Æµµ ¿Ï·áµÈ°ÍÀÌ¹Ç·Î N ÀÌµÊ)
+	paì— ì‹œê°„ë‹¹ ì œí•œì´ NULLì´ë©´ --> appì˜ ì œê°’ì„ ì‚¬ìš©í•˜ê³ , ëª¨ë‘ NULLì´ë©´ Y
+	ì•„ë‹ˆë©´ ê°’ì´ í˜„ì¬ ì‹¤í–‰ ìˆ˜ë³´ë‹¤ í¬ë©´ Y (ê°™ì•„ë„ ì™„ë£Œëœê²ƒì´ë¯€ë¡œ N ì´ë¨)
 	
-	check_xxxxxxxxxxxx ´Â ±âº» DEFAULT´Â Y ÀÓ
-	check_tot_executed °ª¸¸ DEFAULTÀÏ ¶§ N ÀÓ
+	check_xxxxxxxxxxxx ëŠ” ê¸°ë³¸ DEFAULTëŠ” Y ì„
+	check_tot_executed ê°’ë§Œ DEFAULTì¼ ë•Œ N ì„
 */
 function get_query_publisher_app($pcode, $appkey, $ar_time, $conn)
 {
@@ -200,24 +200,24 @@ function get_query_publisher_app($pcode, $appkey, $ar_time, $conn)
 	return $ret;
 }
 
-// »ç¿ëÀÚ Àû¸³ÇÏ±â (»ç¿ëÀÚ Àû¸³ ¹× al_user_app_t »óÅÂ º¯°æ ¸ğµÎ Ã³¸®)
+// ì‚¬ìš©ì ì ë¦½í•˜ê¸° (ì‚¬ìš©ì ì ë¦½ ë° al_user_app_t ìƒíƒœ ë³€ê²½ ëª¨ë‘ ì²˜ë¦¬)
 /*
-	* ±¤°í Àû¸³°¡´É »óÅÂ (mactive, activeµî)´Â Ã¼Å©ÇÏÁö ¾ÊÀ½ È£Ãâ Àü¿¡ ÀÌ¹Ì Ã¼Å© ³¡³»¾ß ÇÔ.
+	* ê´‘ê³  ì ë¦½ê°€ëŠ¥ ìƒíƒœ (mactive, activeë“±)ëŠ” ì²´í¬í•˜ì§€ ì•ŠìŒ í˜¸ì¶œ ì „ì— ì´ë¯¸ ì²´í¬ ëë‚´ì•¼ í•¨.
 	
-	user_app_t ¿¡ ÇöÀç »óÅÂ¸¦ È®ÀÎ (D, UniqkeyÅ° Áßº¹ÀÎ °æ¿ì Á¦¿ÜÇÏ±â)
+	user_app_t ì— í˜„ì¬ ìƒíƒœë¥¼ í™•ì¸ (D, Uniqkeyí‚¤ ì¤‘ë³µì¸ ê²½ìš° ì œì™¸í•˜ê¸°)
 
-	- al_app_exec_stat_t ¿¡ ½Ç½Ã°£ Àû¸³ °³¼ö Ãß°¡
-	- al_user_app_t ¿¡ Àû¸³ ¿Ï·á ¹× unique_key ¼³Á¤ (°­Á¦ Àû¸³ÀÌ ÀÖ´Â °æ¿ì ÀÏ¹İ Àû¸³À¸·Î º¯°æ)
-	- al_user_app_saving_t ¿¡ Àû¸³¿Ï·á ·Î±× ±â·Ï (merchant ¸ÅÃâ, publisher ¸ÅÃâ Row´ÜÀ§ ±â·Ï)
-	- al_user_saving_h_t ¿¡ mcode, merchant_fee, pcode, publisher_fee, cnt°ª Áõ°¡
+	- al_app_exec_stat_t ì— ì‹¤ì‹œê°„ ì ë¦½ ê°œìˆ˜ ì¶”ê°€
+	- al_user_app_t ì— ì ë¦½ ì™„ë£Œ ë° unique_key ì„¤ì • (ê°•ì œ ì ë¦½ì´ ìˆëŠ” ê²½ìš° ì¼ë°˜ ì ë¦½ìœ¼ë¡œ ë³€ê²½)
+	- al_user_app_saving_t ì— ì ë¦½ì™„ë£Œ ë¡œê·¸ ê¸°ë¡ (merchant ë§¤ì¶œ, publisher ë§¤ì¶œ Rowë‹¨ìœ„ ê¸°ë¡)
+	- al_user_saving_h_t ì— mcode, merchant_fee, pcode, publisher_fee, cntê°’ ì¦ê°€
 	
-	- ¿À·ù Á¾·ù
-		1. SQL Äõ¸® Áß ¿À·ù
-		2. ÀÌ¹Ì Áö±Ş ¿Ï·áµÈ »óÅÂ (Unique Å° Ã¼Å© ¶Ç´Â »óÅÂ°¡ ÀÌ¹Ì D)
+	- ì˜¤ë¥˜ ì¢…ë¥˜
+		1. SQL ì¿¼ë¦¬ ì¤‘ ì˜¤ë¥˜
+		2. ì´ë¯¸ ì§€ê¸‰ ì™„ë£Œëœ ìƒíƒœ (Unique í‚¤ ì²´í¬ ë˜ëŠ” ìƒíƒœê°€ ì´ë¯¸ D)
 */
 
-// Á¤»ó Àû¸³ Ã³¸® (°­Á¦ Àû¸³µÈ »óÅÂ·Î Ã³¸®ÇÔ)
-// ¸¸¾à $ar_return['callback_done'] == 'Y' ÀÌ¸é ÀÌ¹Ì Äİ¹éÀ» È£ÃâÇÔ ¾ÈµÊ
+// ì •ìƒ ì ë¦½ ì²˜ë¦¬ (ê°•ì œ ì ë¦½ëœ ìƒíƒœë¡œ ì²˜ë¦¬í•¨)
+// ë§Œì•½ $ar_return['callback_done'] == 'Y' ì´ë©´ ì´ë¯¸ ì½œë°±ì„ í˜¸ì¶œí•¨ ì•ˆë¨
 function callback_reward($pcode, $mcode, $appkey, $adid, 
 						$merchant_fee, $publisher_fee, $unique_key, 
 						$ar_time, $b_local, $conn) {
@@ -236,14 +236,14 @@ function callback_reward($pcode, $mcode, $appkey, $adid,
 	try {
 		begin_trans($conn);
 		
-			// al_user_app_t LOCK °É±â
+			// al_user_app_t LOCK ê±¸ê¸°
 			$sql = "SELECT count(*) cnt FROM al_user_app_t WHERE adid = '{$db_adid}' AND app_key = '{$db_appkey}' FOR UPDATE";
 			mysql_query($sql, $conn);
 			
-			// ÀÌ¹Ì ÇØ´ç ¾ÛÅ°¿¡ ´ëÇØ¼­ adid°¡ Àû¸³(°­Á¦Àû¸³Á¦¿Ü) ¹ŞÀºÀûÀÌ ÀÖ´Ù¸é ¿À·ù
+			// ì´ë¯¸ í•´ë‹¹ ì•±í‚¤ì— ëŒ€í•´ì„œ adidê°€ ì ë¦½(ê°•ì œì ë¦½ì œì™¸) ë°›ì€ì ì´ ìˆë‹¤ë©´ ì˜¤ë¥˜
 			$sql = "SELECT id FROM al_user_app_t WHERE adid = '{$db_adid}' AND app_key = '{$db_appkey}' and status = 'D' AND forced_done = 'N'";
 			$row = @mysql_fetch_assoc(mysql_query($sql, $conn));
-			if ($row['id']) {		// ÀÌ¹Ì Á¸ÀçÇÏ¸é ¿À·ù ¸®ÅÏ
+			if ($row['id']) {		// ì´ë¯¸ ì¡´ì¬í•˜ë©´ ì˜¤ë¥˜ ë¦¬í„´
 				rollback($conn);
 				return array('result' => 'N', 'code' => '-3001');
 			}
@@ -258,7 +258,7 @@ function callback_reward($pcode, $mcode, $appkey, $adid,
 			$is_forceddone = ifempty($row['forced_done'], 'N');
 			$callback_done = $row['callback_done'];
 			
-			// unique_key Áßº¹¿¡ ´ëÇÑ Ã³¸®
+			// unique_key ì¤‘ë³µì— ëŒ€í•œ ì²˜ë¦¬
 			$sql = "SELECT id FROM al_user_app_saving_t WHERE unique_key = '{$db_unique_key}'";
 			$row = @mysql_fetch_assoc(mysql_query($sql, $conn));
 			if ($row['id']) {
@@ -269,10 +269,10 @@ function callback_reward($pcode, $mcode, $appkey, $adid,
 			if ($is_forceddone == 'N')
 			{
 				//////////////////////////////////////////////////////
-				// ÃÖÃÊ Àû¸³
+				// ìµœì´ˆ ì ë¦½
 				//////////////////////////////////////////////////////
 		
-				// al_user_app_t »óÅÂ ¿Ï·á·Î º¯°æ
+				// al_user_app_t ìƒíƒœ ì™„ë£Œë¡œ ë³€ê²½
 				$sql = "UPDATE al_user_app_t 
 						SET action_dtime = '{$ar_time['now']}', 
 							done_day = '{$ar_time['day']}', 
@@ -284,13 +284,13 @@ function callback_reward($pcode, $mcode, $appkey, $adid,
 						WHERE id = '{$user_app_id}'";
 				mysql_execute($sql, $conn);
 				
-				// al_user_app_saving_t ¸ÅÃâ ·¹ÄÚµå Ãß°¡
+				// al_user_app_saving_t ë§¤ì¶œ ë ˆì½”ë“œ ì¶”ê°€
 				$sql = "INSERT INTO al_user_app_saving_t (user_app_id, mcode, pcode, app_key, adid, merchant_fee, publisher_fee, unique_key, m_reg_day, m_reg_date, p_reg_day, p_reg_date)
 						SELECT id, mcode, pcode, app_key, adid, '{$merchant_fee}', '{$publisher_fee}', '{$db_unique_key}', done_day, action_dtime, done_day, action_dtime FROM al_user_app_t WHERE id = '{$user_app_id}'";
 				mysql_execute($sql, $conn);
 
 				////////////////////////////////////////////////////////////////////////////////////
-				// ½Ç½Ã°£ Åë°è¿¡ Á¤º¸ Ãß°¡
+				// ì‹¤ì‹œê°„ í†µê³„ì— ì •ë³´ ì¶”ê°€
 				////////////////////////////////////////////////////////////////////////////////////
 				$sql = "SELECT id FROM al_summary_sales_h_t WHERE pcode = '{$db_pcode}' AND app_key = '{$db_appkey}' AND reg_day = '{$ar_time['day']}' AND hr = HOUR('{$ar_time['now']}') FOR UPDATE";
 				$row = @mysql_fetch_assoc(mysql_query($sql, $conn));
@@ -303,13 +303,13 @@ function callback_reward($pcode, $mcode, $appkey, $adid,
 							WHERE id = '{$row['id']}'";
 					mysql_execute($sql, $conn);
 				} else {
-					// Merchant Fee°¡ 0º¸´Ù Å«°æ¿ì¿¡ Merchant_cnt¸¦ 1 Áõ°¡½ÃÅ²´Ù.
+					// Merchant Feeê°€ 0ë³´ë‹¤ í°ê²½ìš°ì— Merchant_cntë¥¼ 1 ì¦ê°€ì‹œí‚¨ë‹¤.
 					$sql = "INSERT al_summary_sales_h_t (mcode, pcode, app_key, merchant_cnt, merchant_fee, publisher_cnt, publisher_fee, reg_day, hr)
 							VALUES ('{$db_mcode}', '{$db_pcode}', '{$db_appkey}', '1', '{$merchant_fee}', '1', '{$publisher_fee}', '{$ar_time['day']}', HOUR('{$ar_time['now']}'));";
 					mysql_execute($sql, $conn);
 				}
 				////////////////////////////////////////////////////////////////////////////////////
-				// merchantº° ¼öÇà ÃÑ ¼öÀÎ al_app_exec_stat_t ¿¡ ¼öÇà °³¼ö¸¦ Ãß°¡ÇÑ´Ù
+				// merchantë³„ ìˆ˜í–‰ ì´ ìˆ˜ì¸ al_app_exec_stat_t ì— ìˆ˜í–‰ ê°œìˆ˜ë¥¼ ì¶”ê°€í•œë‹¤
 				$sql = "INSERT INTO al_app_exec_stat_t (app_key, exec_time, exec_hour_cnt, exec_day_cnt, exec_tot_cnt)
 						VALUES ('{$db_appkey}', '{$ar_time['datehour']}', '1', '1', '1')
 						ON DUPLICATE KEY UPDATE exec_hour_cnt = IF(exec_time = '{$ar_time['datehour']}', exec_hour_cnt + 1, 1),
@@ -318,7 +318,7 @@ function callback_reward($pcode, $mcode, $appkey, $adid,
 												exec_time = '{$ar_time['datehour']}'";
 				mysql_execute($sql, $conn);				
 				
-				// publisherº° ¼öÇà¼öÀÎ ==> al_app_exec_pub_stat_t ¿¡ ¼öÇà °³¼ö¸¦ Ãß°¡ÇÑ´Ù
+				// publisherë³„ ìˆ˜í–‰ìˆ˜ì¸ ==> al_app_exec_pub_stat_t ì— ìˆ˜í–‰ ê°œìˆ˜ë¥¼ ì¶”ê°€í•œë‹¤
 				$sql = "INSERT INTO al_app_exec_pub_stat_t (app_key, pcode, exec_time, exec_hour_cnt, exec_day_cnt, exec_tot_cnt)
 						VALUES ('{$db_appkey}', '{$db_pcode}', '{$ar_time['datehour']}', '1', '1', '1')
 						ON DUPLICATE KEY UPDATE exec_hour_cnt = IF(exec_time = '{$ar_time['datehour']}', exec_hour_cnt + 1, 1),
@@ -331,11 +331,11 @@ function callback_reward($pcode, $mcode, $appkey, $adid,
 			else
 			{
 						//////////////////////////////////////////////////////
-						// °­Á¦ Àû¸³µÈ »óÅÂ 
-						// 	·ÎÄÃÀº ÀÌ¹Ì ÀÌÀü¿¡ ¸ğµÎ Àû¸³ÀÌ µÈ »óÅÂÀÌ¹Ç·Î º¯°æ»çÇ×Àº FORCED_DONE¸¸ N ·Î º¯°æÇÏ°í ³ª¹«Áö´Â ¼öÇàÇÏÁö ¾ÊÀ½.
+						// ê°•ì œ ì ë¦½ëœ ìƒíƒœ 
+						// 	ë¡œì»¬ì€ ì´ë¯¸ ì´ì „ì— ëª¨ë‘ ì ë¦½ì´ ëœ ìƒíƒœì´ë¯€ë¡œ ë³€ê²½ì‚¬í•­ì€ FORCED_DONEë§Œ N ë¡œ ë³€ê²½í•˜ê³  ë‚˜ë¬´ì§€ëŠ” ìˆ˜í–‰í•˜ì§€ ì•ŠìŒ.
 						//////////////////////////////////////////////////////
 						
-						// al_user_app_t »óÅÂ ¿Ï·á·Î º¯°æ <== [°­Á¦Àû¸³ÇÑ°æ¿ì]¿¡´Â publisher_fee¸¦ ¼³Á¤ÇÏÁö ¾ÊÀ½, ½ÇÁ¦ Àû¸³¿Ï·á½Ã°£Àº Áö±İ½Ã°£À¸·Î ÇÔ.
+						// al_user_app_t ìƒíƒœ ì™„ë£Œë¡œ ë³€ê²½ <== [ê°•ì œì ë¦½í•œê²½ìš°]ì—ëŠ” publisher_feeë¥¼ ì„¤ì •í•˜ì§€ ì•ŠìŒ, ì‹¤ì œ ì ë¦½ì™„ë£Œì‹œê°„ì€ ì§€ê¸ˆì‹œê°„ìœ¼ë¡œ í•¨.
 						$sql = "UPDATE al_user_app_t 
 								SET action_dtime = '{$ar_time['now']}', 
 									done_day = '{$ar_time['day']}', 
@@ -348,7 +348,7 @@ function callback_reward($pcode, $mcode, $appkey, $adid,
 
 						if (!$b_local) 
 						{
-							// al_user_app_saving_t ¸ÅÃâ <== [°­Á¦Àû¸³ÇÑ°æ¿ì]¿¡´Â ±âÁ¸ ¸ÅÃâÅ×ÀÌºí¿¡ merchant_fee¿Í unique_key, ±×¸®°í m_reg_day, m_reg_date¸¸ °»½ÅÇÑ´Ù.
+							// al_user_app_saving_t ë§¤ì¶œ <== [ê°•ì œì ë¦½í•œê²½ìš°]ì—ëŠ” ê¸°ì¡´ ë§¤ì¶œí…Œì´ë¸”ì— merchant_feeì™€ unique_key, ê·¸ë¦¬ê³  m_reg_day, m_reg_dateë§Œ ê°±ì‹ í•œë‹¤.
 							$sql = "UPDATE al_user_app_saving_t
 									SET merchant_fee = '{$merchant_fee}',
 										unique_key = '{$db_unique_key}',
@@ -358,9 +358,9 @@ function callback_reward($pcode, $mcode, $appkey, $adid,
 							mysql_execute($sql, $conn);
 							
 							////////////////////////////////////////////////////////////////////////////////////
-							// ½Ç½Ã°£ Åë°è¿¡ Á¤º¸ Ãß°¡
+							// ì‹¤ì‹œê°„ í†µê³„ì— ì •ë³´ ì¶”ê°€
 							////////////////////////////////////////////////////////////////////////////////////
-							// <== [°­Á¦Àû¸³ÇÑ°æ¿ì]¿¡´Â Merchant¸ÅÃâ ¸¸ °»½ÅÇÑ´Ù.
+							// <== [ê°•ì œì ë¦½í•œê²½ìš°]ì—ëŠ” Merchantë§¤ì¶œ ë§Œ ê°±ì‹ í•œë‹¤.
 							$sql = "SELECT id FROM al_summary_sales_h_t WHERE pcode = '{$db_pcode}' AND app_key = '{$db_appkey}' AND reg_day = '{$ar_time['day']}' AND hr = HOUR('{$ar_time['now']}') FOR UPDATE";
 							$row = @mysql_fetch_assoc(mysql_query($sql, $conn));
 							if ($row['id']) {
@@ -370,16 +370,16 @@ function callback_reward($pcode, $mcode, $appkey, $adid,
 										WHERE id = '{$row['id']}'";
 								mysql_execute($sql, $conn);
 							} else {
-								// <== [°­Á¦Àû¸³ÇÑ°æ¿ì]¿¡´Â Merchant ¸¸ °»½ÅÇÑ´Ù. (Publisher´Â 0°Ç, 0¿ø)
+								// <== [ê°•ì œì ë¦½í•œê²½ìš°]ì—ëŠ” Merchant ë§Œ ê°±ì‹ í•œë‹¤. (PublisherëŠ” 0ê±´, 0ì›)
 								$sql = "INSERT al_summary_sales_h_t (mcode, pcode, app_key, merchant_cnt, merchant_fee, publisher_cnt, publisher_fee, reg_day, hr)
 										VALUES ('{$db_mcode}', '{$db_pcode}', '{$db_appkey}', '1', '{$merchant_fee}', '0', '0', '{$ar_time['day']}', HOUR('{$ar_time['now']}'))";
 								mysql_execute($sql, $conn);
 							}
 											
 							////////////////////////////////////////////////////////////////////////////////////
-							// al_app_exec_stat_t ¿¡ ¼öÇà °³¼ö¸¦ Ãß°¡ÇÑ´Ù
-							//	·ÎÄÃ °­Á¦Àû¸³ ÈÄ Àû¸³Àº º¯°æ ¾ø°í													<== ÀÌ¹Ì °­Á¦Àû¸³½Ã Àû¿ë¿Ï·á
-							//	¿ÜºÎ °­Á¦Àû¸³ ÈÄ Àû¸³Àº al_app_exec_stat_t Áõ°¡, al_app_exec_pub_stat_t À¯Áö		<== ÀÌ¹Ì °­Á¦Àû¸³½Ã al_app_exec_pub_stat_t´Â Áõ°¡µÊ
+							// al_app_exec_stat_t ì— ìˆ˜í–‰ ê°œìˆ˜ë¥¼ ì¶”ê°€í•œë‹¤
+							//	ë¡œì»¬ ê°•ì œì ë¦½ í›„ ì ë¦½ì€ ë³€ê²½ ì—†ê³ 													<== ì´ë¯¸ ê°•ì œì ë¦½ì‹œ ì ìš©ì™„ë£Œ
+							//	ì™¸ë¶€ ê°•ì œì ë¦½ í›„ ì ë¦½ì€ al_app_exec_stat_t ì¦ê°€, al_app_exec_pub_stat_t ìœ ì§€		<== ì´ë¯¸ ê°•ì œì ë¦½ì‹œ al_app_exec_pub_stat_tëŠ” ì¦ê°€ë¨
 							////////////////////////////////////////////////////////////////////////////////////
 							$sql = "INSERT INTO al_app_exec_stat_t (app_key, exec_time, exec_hour_cnt, exec_day_cnt, exec_tot_cnt)
 									VALUES ('{$db_appkey}', '{$ar_time['datehour']}', '1', '1', '1')
@@ -406,7 +406,7 @@ function callback_reward($pcode, $mcode, $appkey, $adid,
 	return array('result' => 'Y', 'callback_done' => $callback_done);
 }
 
-// °­Á¦ Àû¸³ Ã³¸®ÇÏ±â (°­Á¦Àû¸³Àº $merchant_fee, $unique_key°¡ Àü´ŞµÇÁö ¾ÊÀ½)
+// ê°•ì œ ì ë¦½ ì²˜ë¦¬í•˜ê¸° (ê°•ì œì ë¦½ì€ $merchant_fee, $unique_keyê°€ ì „ë‹¬ë˜ì§€ ì•ŠìŒ)
 /*
 	al_user_app_saving_t
 		merchant_fee : 0
@@ -415,8 +415,8 @@ function callback_reward($pcode, $mcode, $appkey, $adid,
 		unique_key	: NULL
 		forced_done	: Y	
 		
-	´Ü, LOCAL±¤°í´Â merchant_fee, merchant_cnt ¸¦ Ãß°¡ÇÏ°í (ÀÚÃ¼ ±¤°í´Â ÃßÈÄ Àû¸³ÀÌ ÇÊ¿ä ¾øÀ¸¹Ç·Î).
-		¿ÜºÎ ¿¬µ¿ ±¤°í´Â merchant_fee = NULL, merchant_cnt ´Â À¯Áö ÇÑ´Ù.
+	ë‹¨, LOCALê´‘ê³ ëŠ” merchant_fee, merchant_cnt ë¥¼ ì¶”ê°€í•˜ê³  (ìì²´ ê´‘ê³ ëŠ” ì¶”í›„ ì ë¦½ì´ í•„ìš” ì—†ìœ¼ë¯€ë¡œ).
+		ì™¸ë¶€ ì—°ë™ ê´‘ê³ ëŠ” merchant_fee = NULL, merchant_cnt ëŠ” ìœ ì§€ í•œë‹¤.
 */
 
 function force_reward($pcode, $mcode, $appkey, $adid, 
@@ -434,19 +434,19 @@ function force_reward($pcode, $mcode, $appkey, $adid,
 	try {
 		begin_trans($conn);
 						
-								// al_user_app_t LOCK °É±â
+								// al_user_app_t LOCK ê±¸ê¸°
 								$sql = "SELECT count(*) cnt FROM al_user_app_t WHERE adid = '{$db_adid}' AND app_key = '{$db_appkey}' FOR UPDATE";
 								mysql_query($sql, $conn);
 								
-								// ÀÌ¹Ì ÇØ´ç ¾ÛÅ°¿¡ ´ëÇØ¼­ adid°¡ Àû¸³(°­Á¦Àû¸³Á¦¿Ü) ¹ŞÀºÀûÀÌ ÀÖ´Ù¸é ¿À·ù
+								// ì´ë¯¸ í•´ë‹¹ ì•±í‚¤ì— ëŒ€í•´ì„œ adidê°€ ì ë¦½(ê°•ì œì ë¦½ì œì™¸) ë°›ì€ì ì´ ìˆë‹¤ë©´ ì˜¤ë¥˜
 								$sql = "SELECT id FROM al_user_app_t WHERE adid = '{$db_adid}' AND app_key = '{$db_appkey}' and status = 'D' AND forced_done = 'N'";
 								$row = @mysql_fetch_assoc(mysql_query($sql, $conn));
-								if ($row['id']) {		// ÀÌ¹Ì Á¸ÀçÇÏ¸é ¿À·ù ¸®ÅÏ
+								if ($row['id']) {		// ì´ë¯¸ ì¡´ì¬í•˜ë©´ ì˜¤ë¥˜ ë¦¬í„´
 									rollback($conn);
 									return array('result' => 'N', 'code' => '-3001');
 								}
 								
-								//// Àû¸³ ½Ãµµ Á¤º¸¸¦ Ã¼Å©ÇÏ°í <== [°­Á¦Àû¸³]µÇ¾î ÀÖ´Â °æ¿ì ¿À·ù Ã³¸®ÇÑ´Ù.
+								//// ì ë¦½ ì‹œë„ ì •ë³´ë¥¼ ì²´í¬í•˜ê³  <== [ê°•ì œì ë¦½]ë˜ì–´ ìˆëŠ” ê²½ìš° ì˜¤ë¥˜ ì²˜ë¦¬í•œë‹¤.
 								$sql = "SELECT id, forced_done FROM al_user_app_t WHERE pcode = '{$db_pcode}' AND adid = '{$db_adid}' AND app_key = '{$db_appkey}'";
 								$row = @mysql_fetch_assoc(mysql_query($sql, $conn));
 								if (!$row['id']) {
@@ -460,7 +460,7 @@ function force_reward($pcode, $mcode, $appkey, $adid,
 								$user_app_id = $row['id'];
 								
 								////////////////////////////////////////////////////////////////////////////////////
-								// al_user_app_t »óÅÂ <== [°­Á¦Àû¸³] »óÅÂ·Î º¯°æÇÏ°í, merchant_fee´Â ¼³Á¤ÇÏÁö ¾Ê´Â´Ù.
+								// al_user_app_t ìƒíƒœ <== [ê°•ì œì ë¦½] ìƒíƒœë¡œ ë³€ê²½í•˜ê³ , merchant_feeëŠ” ì„¤ì •í•˜ì§€ ì•ŠëŠ”ë‹¤.
 								////////////////////////////////////////////////////////////////////////////////////
 								$sql = "UPDATE al_user_app_t 
 										SET action_dtime = '{$ar_time['now']}', 
@@ -473,11 +473,11 @@ function force_reward($pcode, $mcode, $appkey, $adid,
 								mysql_execute($sql, $conn);
 								
 								////////////////////////////////////////////////////////////////////////////////////
-								// al_user_app_saving_t »óÅÂ <== [°­Á¦Àû¸³] »óÅÂ·Î º¯°æÇÏ°í, merchant_fee´Â ¼³Á¤ÇÏÁö ¾Ê´Â´Ù.
-								// °­Á¦Àû¸³½Ã p¿¡´ëÇÑ ¸ÅÃâ°Ç¼ö,¸ÅÃâÀº ÇöÀç ½ÃÁ¡
-								//			  m¿¡ ´ëÇÑ ¸ÅÃâ°Ç¼ö,¸ÅÃâÀº ==> ·ÎÄÃÀº ÇöÀç, ¿ÜºÎ´Â ¾øÀ½
+								// al_user_app_saving_t ìƒíƒœ <== [ê°•ì œì ë¦½] ìƒíƒœë¡œ ë³€ê²½í•˜ê³ , merchant_feeëŠ” ì„¤ì •í•˜ì§€ ì•ŠëŠ”ë‹¤.
+								// ê°•ì œì ë¦½ì‹œ pì—ëŒ€í•œ ë§¤ì¶œê±´ìˆ˜,ë§¤ì¶œì€ í˜„ì¬ ì‹œì 
+								//			  mì— ëŒ€í•œ ë§¤ì¶œê±´ìˆ˜,ë§¤ì¶œì€ ==> ë¡œì»¬ì€ í˜„ì¬, ì™¸ë¶€ëŠ” ì—†ìŒ
 								////////////////////////////////////////////////////////////////////////////////////
-								//// al_user_app_saving_t ¸ÅÃâ ·¹ÄÚµå Ãß°¡ <== [°­Á¦Àû¸³]Àº Merchant¸ÅÃâ = 0, UniqueÅ°´Â Á¸ÀçÇÏÁö ¾ÊÀ½, ¶ÇÇÑ ¾Æ·¡ÀÇ Áßº¹Å°°¡ Á¸ÀçÇØ¼­µµ ¾ÈµÊ (³¯Â¥´Â ÇöÀç ½Ã°£ <-- À§¿¡¼­ ¼³Á¤µÊ)
+								//// al_user_app_saving_t ë§¤ì¶œ ë ˆì½”ë“œ ì¶”ê°€ <== [ê°•ì œì ë¦½]ì€ Merchantë§¤ì¶œ = 0, Uniqueí‚¤ëŠ” ì¡´ì¬í•˜ì§€ ì•ŠìŒ, ë˜í•œ ì•„ë˜ì˜ ì¤‘ë³µí‚¤ê°€ ì¡´ì¬í•´ì„œë„ ì•ˆë¨ (ë‚ ì§œëŠ” í˜„ì¬ ì‹œê°„ <-- ìœ„ì—ì„œ ì„¤ì •ë¨)
 								$sql = "INSERT INTO al_user_app_saving_t (user_app_id, mcode, pcode, app_key, adid, merchant_fee, publisher_fee, m_reg_day, m_reg_date, p_reg_day, p_reg_date)
 										SELECT id, mcode, pcode, app_key, adid, IF('{$is_local}'='Y','{$merchant_fee}',NULL), '{$publisher_fee}', 
 											IF('{$is_local}'='Y',done_day,NULL),
@@ -486,12 +486,12 @@ function force_reward($pcode, $mcode, $appkey, $adid,
 								mysql_execute($sql, $conn);
 
 								////////////////////////////////////////////////////////////////////////////////////
-								// ½Ç½Ã°£ Åë°è¿¡ Á¤º¸ Ãß°¡
+								// ì‹¤ì‹œê°„ í†µê³„ì— ì •ë³´ ì¶”ê°€
 								////////////////////////////////////////////////////////////////////////////////////
 								$sql = "SELECT id FROM al_summary_sales_h_t WHERE pcode = '{$db_pcode}' AND adid = '{$db_adid}' AND app_key = '{$db_appkey}' AND reg_day = '{$ar_time['day']}' AND hr = HOUR('{$ar_time['now']}') FOR UPDATE";
 								$row = @mysql_fetch_assoc(mysql_query($sql, $conn));
 								if ($row['id']) {
-									// <== [°­Á¦Àû¸³]Àº Merchant ¸ÅÃâ Á¤º¸¸¦ °Çµå¸®Áö ¾ÊÀ½.
+									// <== [ê°•ì œì ë¦½]ì€ Merchant ë§¤ì¶œ ì •ë³´ë¥¼ ê±´ë“œë¦¬ì§€ ì•ŠìŒ.
 									$sql = "UPDATE al_summary_sales_h_t 
 											SET merchant_cnt = merchant_cnt + IF('{$is_local}'='Y',1,0), 
 												merchant_fee = merchant_fee + IF('{$is_local}'='Y','{$merchant_fee}',NULL),
@@ -500,7 +500,7 @@ function force_reward($pcode, $mcode, $appkey, $adid,
 											WHERE id = '{$row['id']}'";
 									mysql_execute($sql, $conn);
 								} else {
-									// <== [°­Á¦Àû¸³]Àº Merchant ¸ÅÃâ¹× °Ç¼ö¸¦ 0À¸·Î
+									// <== [ê°•ì œì ë¦½]ì€ Merchant ë§¤ì¶œë° ê±´ìˆ˜ë¥¼ 0ìœ¼ë¡œ
 									$sql = "INSERT al_summary_sales_h_t (mcode, pcode, adid, app_key, merchant_cnt, merchant_fee, publisher_cnt, publisher_fee, reg_day, hr)
 											VALUES ('{$db_mcode}', '{$db_pcode}', '{$db_adid}', '{$db_appkey}', 
 													IF('{$is_local}'='Y',1,0),
@@ -512,8 +512,8 @@ function force_reward($pcode, $mcode, $appkey, $adid,
 								}
 
 								////////////////////////////////////////////////////////////////////////////////////
-								//	·ÎÄÃ °­Á¦ Àû¸³ ½ÃÁ¡Àº al_app_exec_stat_t °³¼ö Áõ°¡, al_app_exec_pub_stat_t °³¼ö Áõ°¡
-								//	¿ÜºÎ °­Á¦ Àû¸³ ½ÃÁ¡Àº al_app_exec_stat_t À¯Áö, 		al_app_exec_pub_stat_t °³¼ö Áõ°¡
+								//	ë¡œì»¬ ê°•ì œ ì ë¦½ ì‹œì ì€ al_app_exec_stat_t ê°œìˆ˜ ì¦ê°€, al_app_exec_pub_stat_t ê°œìˆ˜ ì¦ê°€
+								//	ì™¸ë¶€ ê°•ì œ ì ë¦½ ì‹œì ì€ al_app_exec_stat_t ìœ ì§€, 		al_app_exec_pub_stat_t ê°œìˆ˜ ì¦ê°€
 								if ($b_local) 
 								{
 									$sql = "INSERT INTO al_app_exec_stat_t (app_key, exec_time, exec_hour_cnt, exec_day_cnt, exec_tot_cnt)
@@ -525,7 +525,7 @@ function force_reward($pcode, $mcode, $appkey, $adid,
 									mysql_execute($sql, $conn);
 								}
 								
-								// publisherº° ¼öÇà¼öÀÎ ==> al_app_exec_pub_stat_t ¿¡ ¼öÇà °³¼ö¸¦ Ãß°¡ÇÑ´Ù
+								// publisherë³„ ìˆ˜í–‰ìˆ˜ì¸ ==> al_app_exec_pub_stat_t ì— ìˆ˜í–‰ ê°œìˆ˜ë¥¼ ì¶”ê°€í•œë‹¤
 								$sql = "INSERT INTO al_app_exec_pub_stat_t (app_key, pcode, exec_time, exec_hour_cnt, exec_day_cnt, exec_tot_cnt)
 										VALUES ('{$db_appkey}', '{$db_pcode}', '{$ar_time['datehour']}', '1', '1', '1')
 										ON DUPLICATE KEY UPDATE exec_hour_cnt = IF(exec_time = '{$ar_time['datehour']}', exec_hour_cnt + 1, 1),
@@ -587,34 +587,34 @@ function get_error_msg($code, $msg) {
 	
 	if ($msg) return $msg;
 	switch ($code) {
-		case '-100': return 'À¯È¿ÇÏÁö ¾ÊÀº ¸ÅÃ¼ÄÚµåÀÔ´Ï´Ù.';
-		case '-101': return 'ÆÄ¶ó¹ÌÅÍ ¿À·ùÀÔ´Ï´Ù.  ÀÏºÎ ÆÄ¶ó¹ÌÅÍ°¡ ºüÁ®ÀÖ½À´Ï´Ù.';
-		case '-102': return 'ÆÄ¶ó¹ÌÅÍ ÄÚµå °ª ¿À·ùÀÔ´Ï´Ù.';
-		case '-110': return '±¤°í ¿À·ùÀÔ´Ï´Ù.';
+		case '-100': return 'ìœ íš¨í•˜ì§€ ì•Šì€ ë§¤ì²´ì½”ë“œì…ë‹ˆë‹¤.';
+		case '-101': return 'íŒŒë¼ë¯¸í„° ì˜¤ë¥˜ì…ë‹ˆë‹¤.  ì¼ë¶€ íŒŒë¼ë¯¸í„°ê°€ ë¹ ì ¸ìˆìŠµë‹ˆë‹¤.';
+		case '-102': return 'íŒŒë¼ë¯¸í„° ì½”ë“œ ê°’ ì˜¤ë¥˜ì…ë‹ˆë‹¤.';
+		case '-110': return 'ê´‘ê³  ì˜¤ë¥˜ì…ë‹ˆë‹¤.';
 		
-		case '-103': return '±¤°í°¡ ¾ø°Å³ª Âü¿©ÇÒ ¼ö ¾ø´Â »óÅÂÀÔ´Ï´Ù.';
-		case '-104': return '±¤°í°¡ ÀÓ½Ã Áß´ÜµÈ »óÅÂÀÔ´Ï´Ù.';
-		case '-105': return 'ÀÌ¹Ì Âü¿©ÇÑ ±¤°íÀÔ´Ï´Ù.';
-		case '-106': return '´õ ÀÌ»ó Âü¿©ÇÒ ¼ö ¾ø´Â ±¤°íÀÔ´Ï´Ù.';
+		case '-103': return 'ê´‘ê³ ê°€ ì—†ê±°ë‚˜ ì°¸ì—¬í•  ìˆ˜ ì—†ëŠ” ìƒíƒœì…ë‹ˆë‹¤.';
+		case '-104': return 'ê´‘ê³ ê°€ ì„ì‹œ ì¤‘ë‹¨ëœ ìƒíƒœì…ë‹ˆë‹¤.';
+		case '-105': return 'ì´ë¯¸ ì°¸ì—¬í•œ ê´‘ê³ ì…ë‹ˆë‹¤.';
+		case '-106': return 'ë” ì´ìƒ ì°¸ì—¬í•  ìˆ˜ ì—†ëŠ” ê´‘ê³ ì…ë‹ˆë‹¤.';
 		
-		case '-107': return '±¤°í Âü¿©ÇÑ ±â·ÏÀÌ ¾ø½À´Ï´Ù.';
-		case '-108': return '±¤°í Âü¿©ÇÑ ±â·ÏÀÌ ¾ø½À´Ï´Ù.';
-		case '-109': return 'À¯È¿ÇÏÁö ¾ÊÀº ¿äÃ»ÀÔ´Ï´Ù';
+		case '-107': return 'ê´‘ê³  ì°¸ì—¬í•œ ê¸°ë¡ì´ ì—†ìŠµë‹ˆë‹¤.';
+		case '-108': return 'ê´‘ê³  ì°¸ì—¬í•œ ê¸°ë¡ì´ ì—†ìŠµë‹ˆë‹¤.';
+		case '-109': return 'ìœ íš¨í•˜ì§€ ì•Šì€ ìš”ì²­ì…ë‹ˆë‹¤';
 		
-		case '-1001': return '±¤°í ¿À·ùÀÔ´Ï´Ù. (no-packageid)';
-		case '-1002': return '±¤°í ¿À·ùÀÔ´Ï´Ù. (unknown-market)';
-		case '-1003': return '±¤°í ¿À·ùÀÔ´Ï´Ù. (no-url)';
-		case '-1004': return '¸ÅÃ¼»ç ¿äÃ» ÆÄ¶ó¹ÌÅÍ ¿À·ùÀÔ´Ï´Ù.';
+		case '-1001': return 'ê´‘ê³  ì˜¤ë¥˜ì…ë‹ˆë‹¤. (no-packageid)';
+		case '-1002': return 'ê´‘ê³  ì˜¤ë¥˜ì…ë‹ˆë‹¤. (unknown-market)';
+		case '-1003': return 'ê´‘ê³  ì˜¤ë¥˜ì…ë‹ˆë‹¤. (no-url)';
+		case '-1004': return 'ë§¤ì²´ì‚¬ ìš”ì²­ íŒŒë¼ë¯¸í„° ì˜¤ë¥˜ì…ë‹ˆë‹¤.';
 		
-		case '-2001': return 'Àû¸³¿À·ù ÀÔ´Ï´Ù.';
+		case '-2001': return 'ì ë¦½ì˜¤ë¥˜ ì…ë‹ˆë‹¤.';
 		
-		case '-3001': return 'Áßº¹ Àû¸³ ¿À·ù';
-		case '-3002': return 'Àû¸³ ½Ãµµ ±â·ÏÀÌ ¾øÀ½';
-		case '-3003': return 'UNIQUE Å° Áßº¹ ¿À·ù';
-		case '-3004': return 'DB Ã³¸® Áß ¿À·ù ¹ß»ı';
-		case '-3101': return '°­Á¦ Áßº¹ Àû¸³ ¿À·ù';
+		case '-3001': return 'ì¤‘ë³µ ì ë¦½ ì˜¤ë¥˜';
+		case '-3002': return 'ì ë¦½ ì‹œë„ ê¸°ë¡ì´ ì—†ìŒ';
+		case '-3003': return 'UNIQUE í‚¤ ì¤‘ë³µ ì˜¤ë¥˜';
+		case '-3004': return 'DB ì²˜ë¦¬ ì¤‘ ì˜¤ë¥˜ ë°œìƒ';
+		case '-3101': return 'ê°•ì œ ì¤‘ë³µ ì ë¦½ ì˜¤ë¥˜';
 	}
-	return 'E-UNKNOWN';
+	return "ì˜¤ë¥˜ ë°œìƒ ({$code})";
 }
 
 ?>

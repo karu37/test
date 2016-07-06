@@ -62,7 +62,11 @@ function local_request_done($app_key, $arr_data, $b_forcedone, &$conn)
 	global $g_local, $dev_mode;
 
 	$ar_app = $arr_data['ad'];
+	$ar_userapp = $arr_data['userapp'];
 	$userapp_id = $arr_data['user_app_id'];
+	
+	// al_user_app_t 테이블의 성공 레크드의 값을 unique_key로 사용한다.
+	$unique_key = "ALI".md5('local'.$userapp_id);
 
 	/////////////////////////////////////////////////////////////////////////
 	// MERCHANT CALLBACK 발생 영역과 동일
@@ -80,12 +84,14 @@ function local_request_done($app_key, $arr_data, $b_forcedone, &$conn)
 			// ----------------------------------------------------------------------
 			if (!$b_forcedone) 
 			{
+				// util_of_common.php
 				$ar_reward = callback_reward($arr_data['pcode'], $arr_data['mcode'], $app_key, $arr_data['adid'], 
 										$ar_app['app_merchant_fee'], $ar_app['publisher_fee'], $unique_key, 
 										$ar_time, ($ar_app['lib'] == 'LOCAL'), $conn);
 			} 
 			else 
 			{
+				// util_of_common.php
 				$ar_reward = force_reward($arr_data['pcode'], $arr_data['mcode'], $app_key, $arr_data['adid'], 
 										$ar_app['app_merchant_fee'], $ar_app['publisher_fee'], 
 										$ar_time, ($ar_app['lib'] == 'LOCAL'), $conn);
@@ -100,15 +106,17 @@ function local_request_done($app_key, $arr_data, $b_forcedone, &$conn)
 
 		// 강제적립된 대상을 적립한 경우 콜백호출하면 안됨 (Y 가 아닌 N 또는 F 인 경우에 호출함)
 		if ($ar_reward['callback_done'] != 'Y') {
-			
+
 			// ----------------------------------------------------------------------
 			// CALLBACK 파라미터 생성 후 Publisher 콜백 호출
 			// ----------------------------------------------------------------------
 			$url_param['ad'] = $app_key;
 			$url_param['price'] = $ar_app['publisher_fee'];
 			$url_param['reward'] = intval($ar_app['publisher_fee'] * $arr_data['reward_percent'] / 100);
+			
 			$url_param['uid'] = $ar_userapp['uid'];
 			$url_param['userdata'] = $ar_userapp['userdata'];
+			
 			$url_param['unique'] = $unique_key;
 			$req_base_url = $arr_data['callback_url'];
 			// echo "POST URL : " . concat_url($req_base_url, http_build_query($url_param));

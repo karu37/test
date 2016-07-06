@@ -98,7 +98,7 @@
 	if ($row) {
 		return_die('N', array('code'=>'-106'), '더 이상 참여할 수 없는 광고입니다.');
 	}	
-	
+
 	// ---------------------------------------------	
 	// 해당 사용자의 참여 가능 여부를 확인한다.
 	$sql = "SELECT id, status, permanent_fail FROM al_user_app_t WHERE app_key = '{$db_appkey}' AND adid = '{$db_adid}' AND ( (status = 'D' AND forced_done = 'N') OR permanent_fail = 'Y' )";
@@ -160,38 +160,38 @@
 			day
 	*/
 	// --------------------------------------------------------
-	
+
  	// var_dump($arr_param);
 	if ($row_app['lib'] == 'LOCAL') {
-		
+
 		include dirname(__FILE__)."/_partner_local.php";
 		$ar_result = local_request_done($appkey, $arr_param, false, $conn);
 		
 	} else if ($row_app['lib'] == 'OHC') {
 		
 		include dirname(__FILE__)."/_partner_ohc.php";
-		$ar_data = ohc_request_done($appkey, $arr_param, $conn);
+		$ar_result = ohc_request_done($appkey, $arr_param, $conn);
 		
 	} else if ($row_app['lib'] == 'SUCOMM') {
 		
 		include dirname(__FILE__)."/_partner_sucomm.php";
-		$ar_data = sucomm_request_done($appkey, $arr_param, $conn);
+		$ar_result = sucomm_request_done($appkey, $arr_param, $conn);
 		
 	} else {
 		
 		return_die('N', array('code'=>'-110'), '광고 오류입니다.');
 		
 	}
-	
+
 	// --------------------------------------------------------
 	// 광고 오류상태를 저장 (단 status가 B인 경우에만 갱신함 - 요청시에 바로 답이 오는 경우 변경이 되므로 이 경우 손대지 않도록 함)
 	if ($ar_result['result'] == 'N') {
 		$sql = "UPDATE al_user_app_t 
 				SET action_ftime = '{$ar_time['now']}', status = 'F', error = '{$ar_data['code']}' 
 				WHERE id = '{$user_app_id}' AND status = 'B'";
-		return_die('N', $ar_data);
+		return_die('N', $ar_result);
 	}
 	
-	return_die('Y', $ar_data);
+	return_die('Y', $ar_result);
 	
 ?>
