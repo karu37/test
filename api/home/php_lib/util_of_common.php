@@ -393,8 +393,6 @@ function callback_reward($pcode, $mcode, $appkey, $adid,
 
 			}
 			
-				
-	
 		commit($conn);
 	} 
 	catch(Exception $e) 

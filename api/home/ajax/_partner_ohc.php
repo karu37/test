@@ -34,24 +34,33 @@ function update_ohc_app($force_reload, $conn)
 	// 자동 Reload 여부 체크
 	if (!$force_reload) 
 	{
-		// 1 분 주기로 갱신 대상 및 권한 가져오기
-		begin_trans($conn);
-		$sql = "SELECT id, IF(up_date is null OR up_date < date_sub(NOW(), interval 10 minute), 'Y', 'N') as 'flag_update' FROM merchant_update_t WHERE mcode = '{$db_mcode}' FOR UDPATE;";
-		$result = mysql_query($sql, $conn);
-		$row = @mysql_fetch_assoc($result);
-		if (!$row['id']) {
-			// 대상 자체가 없는 경우 자동 필드 추가
-			mysql_execute("INSERT al_merchant_update_t (mcode, up_date) VALUES ('{$db_mcode}', '2000-01-01')", $conn);
-		} else {
-			// 대상이 있는데 업데이트 시간이 1분 경과 안한 경우 ==> 취소
-			if ($row['flag_update'] == 'N') {
-				rollback($conn);
-				return false;	// no need to update
+		
+		try {
+			// 1 분 주기로 갱신 대상 및 권한 가져오기
+			begin_trans($conn);
+			$sql = "SELECT id, IF(up_date is null OR up_date < date_sub(NOW(), interval 10 minute), 'Y', 'N') as 'flag_update' FROM merchant_update_t WHERE mcode = '{$db_mcode}' FOR UDPATE;";
+			$result = mysql_query($sql, $conn);
+			$row = @mysql_fetch_assoc($result);
+			if (!$row['id']) {
+				// 대상 자체가 없는 경우 자동 필드 추가
+				mysql_execute("INSERT al_merchant_update_t (mcode, up_date) VALUES ('{$db_mcode}', '2000-01-01')", $conn);
+			} else {
+				// 대상이 있는데 업데이트 시간이 1분 경과 안한 경우 ==> 취소
+				if ($row['flag_update'] == 'N') {
+					rollback($conn);
+					return false;	// no need to update
+				}
 			}
+	
+			mysql_query("UPDATE merchant_update_t SET up_date=NOW() WHERE mcode = '{$db_mcode}'", $conn);
+			commit($conn);
+		} 
+		catch(Exception $e) 
+		{
+			echo $e->getMessage();
+			rollback($conn);
+			return false;
 		}
-
-		mysql_query("UPDATE merchant_update_t SET up_date=NOW() WHERE mcode = '{$db_mcode}'", $conn);
-		commit($conn);
 	}
 	else 
 	{

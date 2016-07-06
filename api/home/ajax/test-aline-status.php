@@ -44,7 +44,9 @@
 		echo "<br>";
 		
 		////////////////////////////////////////////////////////////////////////////////////////////////////////
-		$sql = "SELECT a.mcode, a.pcode, b.app_title, a.merchant_fee, a.publisher_fee, a.status, a.forced_done, a.action_atime, a.action_btime, a.action_dtime, a.callback_done, a.callback_data, a.reg_date
+		$sql = "SELECT a.mcode, a.pcode, 
+						CONCAT(b.app_title, '<br>IPIMEI:', IFNULL(a.ip,''), ',' , IFNULL(a.imei,''), '<br>BMM:', IFNULL(a.brand,''), ', ', IFNULL(a.manufacturer,''), ', ', IFNULL(a.model,''), '<br>ADID:', IFNULL(a.adid,''), '<br>ACC:', IFNULL(a.account,'')) AS 'app_title',
+						a.merchant_fee, a.publisher_fee, a.status, a.forced_done, a.action_atime, a.action_btime, a.action_dtime, a.callback_done, a.callback_data, a.reg_date
 				FROM al_user_app_t a
 					INNER JOIN al_app_t b ON a.app_key = b.app_key
 				WHERE adid = '{$db_adid}' ORDER BY a.id DESC LIMIT 10";

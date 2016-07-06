@@ -14,37 +14,49 @@
 		return_die('N', array('code'=>'-100'), '유효하지 않은 매체코드입니다.');
 	}
 	
-	$pcode = $_REQUEST['pcode'];
-	$appkey = $_REQUEST['ad'];
-	$adid = $_REQUEST['adid'];
-	$ip = $_REQUEST['ip'];
-	$account = $_REQUEST['account'];
-	$imei = $_REQUEST['imei'];
-	$uid = $_REQUEST['uid'];			// publisher사의 사용자 구별값 varchar(64)
-	$userdata = $_REQUEST['userdata'];	// publisher사의 사용자 context text
-	
 	// $arr_param 기본 정보는 $_REQUEST 파라미터로 초기화
 	$arr_param = $_REQUEST;
 	
-	if (!$pcode || !$appkey || !$uid || !$adid || !$ip || !$account || !$imei) {
+	$pcode = $_REQUEST['pcode'];
+	$appkey = $_REQUEST['ad'];
+	$ip = $_REQUEST['ip'];
+	$adid = $_REQUEST['adid'];
+	
+	// Base64로 전달되는 파라미터 (Base64 Decoding해서 arr_param에 갱신 저장)
+	$arr_param['imei'] 		= $imei 		= base64_decode($_REQUEST['imei']);
+	$arr_param['model'] 	= $model 		= base64_decode($_REQUEST['model']);
+	$arr_param['mf'] 		= $manufacturer = base64_decode($_REQUEST['mf']);		// optional
+	$arr_param['brand'] 	= $brand 		= base64_decode($_REQUEST['brand']);	// optional
+	$arr_param['account'] 	= $account 		= base64_decode($_REQUEST['account']);	// optional
+	
+	$uid = $_REQUEST['uid'];			// publisher사의 사용자 구별값 varchar(64)
+	$userdata = $_REQUEST['userdata'];	// publisher사의 사용자 context text
+	
+	
+	if (!$pcode || !$appkey || !$ip || !$adid || !$imei || !$model || !$uid) {
 		$omit = "";
 		if (!$pcode) $omit .= "pcode,";
 		if (!$appkey) $omit .= "ad,";
-		if (!$uid) $omit .= "uid,";
-		if (!$adid) $omit .= "adid,";
 		if (!$ip) $omit .= "ip,";
-		if (!$account) $omit .= "account,";
+		if (!$adid) $omit .= "adid,";
 		if (!$imei) $omit .= "imei,";
+		if (!$model) $omit .= "model,";
+		if (!$uid) $omit .= "uid,";
 		$omit = trim($omit, ",");
 		return_die('N', array('code'=>'-101'), "파라미터 오류입니다. (파라미터 없음:{$omit})");
 	}
 	
 	$db_pcode = mysql_real_escape_string($pcode);
 	$db_appkey = mysql_real_escape_string($appkey);
-	$db_adid = mysql_real_escape_string($adid);
 	$db_ip = mysql_real_escape_string($ip);
-	$db_account = mysql_real_escape_string($account);
+	$db_adid = mysql_real_escape_string($adid);
+
 	$db_imei = mysql_real_escape_string($imei);
+	$db_model = mysql_real_escape_string($model);
+	$db_manufacturer = mysql_real_escape_string($manufacturer);
+	$db_brand = mysql_real_escape_string($brand);
+	$db_account = mysql_real_escape_string($account);
+	
 	$db_uid = mysql_real_escape_string($uid);
 	$db_userdata = mysql_real_escape_string($userdata);
 	
@@ -129,8 +141,11 @@
 	if ($row_userapp) {
 		$sql = "UPDATE al_user_app_t 
 				SET ip = '{$db_ip}',
-						account = '{$db_account}',
 						imei = '{$db_imei}',
+						model = '{$db_model}',
+						manufacturer = '{$db_manufacturer}',
+						brand = '{$db_brand}',
+						account = '{$db_account}',
 						uid = '{$db_uid}', 
 						userdata = '{$db_userdata}', 
 						merchant_fee = '{$row_app['app_merchant_fee']}', 
@@ -141,8 +156,12 @@
 		mysql_query($sql, $conn);
 		$user_app_id = $row_userapp['id'];	
 	} else {
-		$sql = "INSERT al_user_app_t (mcode, pcode, app_key, adid, ip, account, imei, uid, userdata, merchant_fee, publisher_fee, action_atime, status, reg_day, reg_date)
-				VALUES ('{$row_app['mcode']}', '{$db_pcode}', '{$db_appkey}', '{$db_adid}', '{$db_ip}', '{$db_account}', '{$db_imei}', '{$db_uid}', '{$db_userdata}', '{$row_app['app_merchant_fee']}', '{$row_app['publisher_fee']}', '{$ar_time['now']}', 'A', '{$ar_time['day']}', '{$ar_time['now']}')";
+		$sql = "INSERT al_user_app_t (mcode, pcode, app_key, 
+					ip, adid, imei, model, manufacturer, brand, account, 
+					uid, userdata, merchant_fee, publisher_fee, action_atime, status, reg_day, reg_date)
+				VALUES ('{$row_app['mcode']}', '{$db_pcode}', '{$db_appkey}', 
+					'{$db_ip}', '{$db_adid}', '{$db_imei}', '{$db_model}', '{$db_manufacturer}', '{$db_brand}', '{$db_account}', 
+					'{$db_uid}', '{$db_userdata}', '{$row_app['app_merchant_fee']}', '{$row_app['publisher_fee']}', '{$ar_time['now']}', 'A', '{$ar_time['day']}', '{$ar_time['now']}')";
 		mysql_query($sql, $conn);
 		$user_app_id = mysql_insert_id($conn);
 	}
@@ -150,8 +169,25 @@
 	// ## al_user_app_t.id 값을 저장
 	$arr_param['user_app_id'] = $user_app_id;
 	
-	// var_dump($arr_param);
-
+	/* --------------------------------------------------------
+		$arr_param
+			pcode
+			ad ==> al_app_t.*
+			
+			ip
+			adid
+			imei
+			model
+			mf
+			brand
+			account
+			uid
+			userdata
+			
+			user_app_id
+			now
+			day
+	*/
 	// --------------------------------------------------------
 	if ($row_app['lib'] == 'LOCAL') {
 		

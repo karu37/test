@@ -113,7 +113,7 @@
 
 	// ---------------------------------------------	
 	// pcode로 해당 사용자의 참여 기록을 찾고 없으면 추가한다.
-	$sql = "SELECT id, status, permanent_fail, uid, userdata FROM al_user_app_t WHERE pcode = '{$db_pcode}' AND app_key = '{$db_appkey}' AND adid = '{$db_adid}'";
+	$sql = "SELECT * FROM al_user_app_t WHERE pcode = '{$db_pcode}' AND app_key = '{$db_appkey}' AND adid = '{$db_adid}'";
 	$row_userapp = @mysql_fetch_assoc(mysql_query($sql, $conn));
 	if ($row_userapp && $row_userapp['status'] != 'F') {
 		$sql = "UPDATE al_user_app_t 
@@ -146,6 +146,18 @@
 		3. 요청완료가 되고 Merchant로부터 Callback을 받게 되면 적립, 상태 완료 후 Publisher Callback을 호출한다.
 			Publisher Callback이 실패한 경우 callback_done => 'F' 로 설정한다
 			( 관련 요청 로그는 site_action_log에 기록 )
+	*/
+	/* --------------------------------------------------------
+		$arr_param
+			pcode
+			ad ==> al_app_t.*
+			userapp ==> al_user_app_t.* (imei 등의 정보 존재) <-- get-join 과 차이
+			ip
+			adid
+			
+			user_app_id
+			now
+			day
 	*/
 	// --------------------------------------------------------
 	
