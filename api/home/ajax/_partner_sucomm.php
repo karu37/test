@@ -244,6 +244,7 @@ function update_sucomm_app($force_reload, $conn)
 						SET
 							app_iconurl = '{$db_app_iconurl}' , 
 							app_merchant_fee = '{$db_app_merchant_fee}' , 
+							app_tag_price = '{$db_app_merchant_fee}' , 
 							
 							exec_stime = IF('{$db_app_exec_stime}'<>'', '{$db_app_exec_stime}', NULL) , 
 							exec_etime = IF('{$db_app_exec_etime}'<>'', '{$db_app_exec_etime}', NULL) , 
@@ -276,6 +277,7 @@ function update_sucomm_app($force_reload, $conn)
 							app_platform = '{$db_app_platform}',
 							app_market = '{$db_app_market}', 
 							app_merchant_fee = '{$db_app_merchant_fee}', 
+							app_tag_price = '{$db_app_merchant_fee}', 
 							
 							exec_stime = IF('{$db_app_exec_stime}'<>'', '{$db_app_exec_stime}', NULL) , 
 							exec_etime = IF('{$db_app_exec_etime}'<>'', '{$db_app_exec_etime}', NULL) , 
@@ -296,7 +298,7 @@ function update_sucomm_app($force_reload, $conn)
 			$sql = "INSERT INTO al_app_t (app_key, mkey, lib, mcode, 
 						app_title, app_content, app_iconurl, app_packageid, app_execurl, 
 						app_gender, app_agefrom, app_ageto, app_exec_type, 
-						app_exec_desc, app_platform, app_market, app_merchant_fee,
+						app_exec_desc, app_platform, app_market, app_merchant_fee, app_tag_price,
 						exec_stime, exec_etime, exec_edate, exec_day_max_cnt, exec_tot_max_cnt, 
 						is_active, is_mactive, last_active_time, flag_updating, up_date, reg_date) 
 					VALUES (
@@ -319,6 +321,7 @@ function update_sucomm_app($force_reload, $conn)
 						'{$db_app_exec_desc}', 
 						'{$db_app_platform}',
 						'{$db_app_market}', 
+						'{$db_app_merchant_fee}', 
 						'{$db_app_merchant_fee}', 
 						
 						IF('{$db_app_exec_stime}'<>'', '{$db_app_exec_stime}', NULL) , 

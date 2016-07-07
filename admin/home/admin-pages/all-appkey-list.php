@@ -130,6 +130,7 @@
 			<th width=65px>기간<br>종료</th>
 			<th>환경</th>
 			<th>제목</th>
+			<th width=30px>판매가</th>
 			<th width=30px>원가</th>
 			<th width=40px>시간당<br>수행수</th>
 			<th width=40px>일일당<br>수행수</th>
@@ -216,6 +217,7 @@
 				<td <?=$td_onclick?>><?=$arr_platform[$appkey['app_platform']]?><br><?=$arr_market[$appkey['app_market']]?><br><?=$arr_exectype[$appkey['app_exec_type']]?></td>
 				
 				<td <?=$td_onclick?>><div style='text-align:left; padding: 0 5px; color:inherit'><?=$appkey['app_title']?></div><?=$app_packageid?></td>
+				<td <?=$td_onclick?>><?=$appkey['app_tag_price']?></td>
 				<td <?=$td_onclick?>><?=$appkey['app_merchant_fee']?></td>
 				<td <?=$td_onclick?>><?=$exec_hour_cnt?></td>
 				<td <?=$td_onclick?>><?=$exec_day_cnt?></td>

@@ -24,7 +24,7 @@
 	// ---------------------------------------
 	// merchant info
 	// ---------------------------------------
-	$sql = "SELECT a.id, a.type, a.mcode, m.name, m.is_mactive
+	$sql = "SELECT a.id, a.type, a.mcode, m.name, m.is_mactive, m.exchange_fee_rate
 			FROM al_partner_mpcode_t a 
 				INNER JOIN al_merchant_t m ON a.mcode = m.mcode AND a.type = 'M'
 			WHERE a.partner_id = '{$db_partner_id}'
@@ -74,6 +74,7 @@
 					<th width=1px><div class='th_status'>상태</div></th>
 					<th>코드</th>
 					<th>이름</th>
+					<th width=20%px>전환율(%)</th>
 					<th width=1px></th>
 					<th width=1px></th>
 				</tr>
@@ -103,6 +104,7 @@
 						</td>
 						<td <?=$td_onclick?>><?=$merchant['mcode']?></td>
 						<td <?=$td_onclick?>><?=$merchant['name']?></td>
+						<td <?=$td_onclick?>><?=$merchant['exchange_fee_rate']?></td>
 						<td><a href='#' onclick='goPage("dlg-merchant-modify", null, {merchant_code:"<?=$merchant['mcode']?>"})' data-theme='b' data-role='button' data-mini='true' data-inline='true'>정보<br>변경</a></td>
 						<td><a href='#' onclick='<?=$js_page_id?>.action.on_btn_delete_partner_merchant_code("<?=$partner_id?>", "<?=$merchant['mcode']?>")' data-theme='a' data-role='button' data-mini='true' data-inline='true'>목록<br>삭제</a></td>
 					</tr>
