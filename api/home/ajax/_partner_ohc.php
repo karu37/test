@@ -11,6 +11,12 @@ $g_ohc['list'] = "http://w6.ohpoint.co.kr/charge/banner/offerList.do";
 $g_ohc['start'] = "";					// OHC는 시작을 list에서 받아온 URL로 함
 $g_ohc['done'] = "http://w6.ohpoint.co.kr/charge/commit/callback.do";
 
+// ---------------------------------------
+// 처음 가져온 광고에 대한 관리자 차단 여부
+// 필요할 경우에만 특별히 사용
+$g_ohc['is_mactive'] = 'Y';
+// ---------------------------------------
+
 // http://api.aline-soft.kr/ajax-request.php?id=_partner_ohc&dev=1
 if ($_REQUEST['dev'] == 1 && $_REQUEST['id'] == "_partner_ohc") {
 	update_ohc_app(true, $conn);
@@ -26,9 +32,9 @@ function update_ohc_app($force_reload, $conn)
 	$db_mcode = mysql_real_escape_string($g_ohc['mcode']);
 	
 	//////////////////////////////////////////////////////////////////////////
-	// 기본 추가에 대한 is_delete 설정 : 
+	// 기본 추가에 대한 is_mactive 설정 : 
 	//////////////////////////////////////////////////////////////////////////
-	$flag_is_deleted = 'N';	// Aline 개발 완료후에 N 으로 변경
+	$flag_is_mactive = $g_ohc['is_mactive'];
 	//////////////////////////////////////////////////////////////////////////
 	
 	// 자동 Reload 여부 체크
@@ -306,7 +312,7 @@ function update_ohc_app($force_reload, $conn)
 						NULL, 
 						'100000000', 
 						
-						'Y', '{$flag_is_deleted}', NOW(), 'N', NOW(), NOW()
+						'Y', '{$flag_is_mactive}', NOW(), 'N', NOW(), NOW()
 					);";
 		}
 		mysql_execute($sql, $conn);

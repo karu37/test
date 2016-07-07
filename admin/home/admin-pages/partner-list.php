@@ -132,7 +132,9 @@
 		?>
 	</tbody>
 	</table>
-	
+	<div style='padding: 5px; color:#888; background: #eef; font-size:11px; border-radius:0.6em; border: 1px solid #88f'>
+		* 파트너 삭제 : 파트너 로그인 계정을 차단함 (관련 설정된 Merchant / Publisher 광고 공급에는 영향 없음)
+	</div>
 	<div style='padding: 10px'>
   			<a href='?id=partner-add' data-role='button' data-mini='true' data-inline='true'>새 업체 등록</a>
 	</div>		

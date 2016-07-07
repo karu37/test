@@ -44,7 +44,7 @@
 		.list .btn-td .btn-wrapper					{width: 46px}
 		.list .btn-td a								{padding:7px 4px; font-size: 10px; letter-spacing:0px; margin: 2px -2px 2px -1px; box-shadow:none;}
 	</style>
-<div style='width:800px'>	
+<div style='width:900px'>	
 	<t4 style='line-height: 40px'><b3 style='color:darkred'><?=$row_app['app_title']?></b3> 의 Publisher별 설정</t4>
 	<hr>
 
@@ -55,8 +55,9 @@
 			<tr>
 				<td valign=top align=right><t4 style='padding-top:6px; line-height:22px'>광고명 :<t4></td>
 				<td valign=center><t3 style='padding-top: 4px'><?=$row_app['app_title']?></t3></td>
+				<td></td>
 			</tr><tr>		
-				<td align=right><t4>광고 송출 :<t4></td>
+				<td align=right><t4>관리자 차단 :<t4></td>
 				<td>
 					<div class='ui-block-a' style='width:150px'>
 						<fieldset class='fieldset-nopadding' id="app-active" data-role="controlgroup" data-type="horizontal" data-mini=true init-value="<?=$row_app['is_mactive']?>" >
@@ -69,6 +70,12 @@
 					<div class='ui-block-b' style='padding-top:5px'>
 						<a href='#' onclick='<?=$js_page_id?>.action.on_btn_save_app_active()' data-role='button' data-theme='a' data-transition="none" data-inline='true' data-mini='true'>상태 적용</a>
 					</div>
+				</td>
+				<td>
+					<div style='padding: 5px; color:#888; background: #eef; font-size:11px; border-radius:0.6em; border: 1px solid #88f'>
+						* 정상 상태: 이 광고 노출<br>
+						* 중지 상태: 이 광고 차단
+					</div>						
 				</td>
 			</tr><tr>		
 				<td align=right><t4>공개 모드 :<t4></td>
@@ -85,6 +92,12 @@
 						<a href='#' onclick='<?=$js_page_id?>.action.on_btn_save_publicmode()' data-role='button' data-theme='a' data-transition="none" data-inline='true' data-mini='true'>상태 적용</a>
 					</div>
 				</td>
+				<td>
+					<div style='padding: 5px; color:#888; background: #eef; font-size:11px; border-radius:0.6em; border: 1px solid #88f'>
+						* 공개 상태: 지정외에 모두 노출<br>
+						* 비공개 상태: 지정외에 모두 차단
+					</div>						
+				</td>				
 			</tr>
 			</table>				
 		</td><td valign=top align=right>
@@ -153,6 +166,16 @@
 	?>
 	</tbody>
 	</table>
+	
+	<div style='padding: 5px; color:#888; background: #eef; font-size:11px; border-radius:0.6em; border: 1px solid #88f'>
+		<? if ($is_public_mode == 'Y') { ?>
+		* 기본 상태: 지정 Publisher 노출<br>
+		* 차단 상태: 지정 Publisher 차단
+		<? } else { ?>
+		* 기본 상태: 지정 Publisher 차단<br>
+		* 허용 상태: 지정 Publisher 노출
+		<? } ?>
+	</div>		
 	<!-- -------------------------------- -->	
 	<div class='ui-grid-a' style='padding:5px 10px; <?=$pages->num_pages <= 1 ? "display:none" : ""?>'>
 		<div class='ui-block-a' style='width:70%; padding-top:5px'><?=$pages->display_pages()?></div>

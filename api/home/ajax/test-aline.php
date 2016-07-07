@@ -2,7 +2,7 @@
 	// 요청 URL (pcode = aline)
 	//	http://api.aline-soft.kr/ajax-request.php?id=get-list&pcode=aline&is_web=Y
 	
-	if (!$_REQUEST['pcode']) $_REQUEST['pcode'] = 'aline';
+	if (!$_REQUEST['pcode']) $_REQUEST['pcode'] = 'autoring_p';
 	
 	$pub_mactive = get_publisher_info();
 	if (!$pub_mactive || $pub_mactive == 'N' || $pub_mactive == 'D') return_die('N', array('code'=>'-100', 'type'=>'E-REQUEST'), '유효하지 않은 매체코드입니다.');

@@ -104,15 +104,16 @@
 						<?=$row_merchant['mcode']?>
 					</t3>
 				</td>
+				<td></td>
 			</tr><tr>	
-				<td align=right><t4>광고 송출 :<t4></td>
+				<td align=right><t4>Merchant 상태 :<t4></td>
 				<td>
 					<div class='ui-block-a' style='width:200px'>
 						<fieldset class='fieldset-nopadding' id="merchant-active" data-role="controlgroup" data-type="horizontal" data-mini=true init-value="<?=$row_merchant['is_mactive']?>" >
 					        <input name="merchant-active" id="merchant-active-Y" value="Y" type="radio" />
-					        <label for="merchant-active-Y">정상</label>
+					        <label for="merchant-active-Y">연동</label>
 					        <input name="merchant-active" id="merchant-active-T" value="T" type="radio" />
-					        <label for="merchant-active-T">테스트</label>
+					        <label for="merchant-active-T">개발</label>
 					        <input name="merchant-active" id="merchant-active-N" value="N" type="radio" />
 					        <label for="merchant-active-N">중지</label>
 					    </fieldset>
@@ -121,6 +122,13 @@
 						<a href='#' onclick='<?=$js_page_id?>.action.on_btn_save_merchant_active()' data-role='button' data-theme='a' data-transition="none" data-inline='true' data-mini='true'>상태 적용</a>
 					</div>
 				</td>
+				<td>
+					<div style='padding: 5px; color:#888; background: #eef; font-size:11px; border-radius:0.6em; border: 1px solid #88f'>
+						* 연동 상태: 사용자 목록에 노출 + 사용자 적립 가능<br>
+						* 개발 상태: 사용자 목록에 숨김 + 사용자 적립 가능<br>
+						* 중지 상태: 사용자 목록에 숨김 + 사용자 적립 불가
+					</div>
+				</td>				
 			</tr>
 			</table>			
 		<td valign=top align=right style='border-left: 1px solid #ddd'>
@@ -208,6 +216,14 @@
 	</tbody>
 	</table>
 	
+	<div style='padding: 5px; color:#888; background: #eef; font-size:11px; border-radius:0.6em; border: 1px solid #88f'>
+		<b>[관리자 차단]</b><br>
+		* 정상: 사용자 목록에 노출 + 사용자 적립 가능<br>
+		* 중지: 사용자 목록에 숨김 + 사용자 적립 불가<br>
+		* 삭제: 관리 목록에서 제외 (사용자 목록에 숨김 + 사용자 적립 불가)<br>
+		* 개발: Publisher 개발사에게만 노출 + 적립되는 것처럼 동작 (실제 적립 안 함)
+	</div>	
+	
 	<div style='padding:10px' class='ui-grid-a'>
 		<div class='ui-block-a' style='width:70%; padding-top:20px'><?=$pages->display_pages()?></div>
 		<div class='ui-block-b' style='width:30%; text-align:right'><?=$pages->display_jump_menu() . $pages->display_items_per_page()?></div>
@@ -223,7 +239,7 @@
 var <?=$js_page_id?> = function()
 {
 	// 외부에서 사용할 (Event Callback)함수 정의
-	var ar_merchant_active = {'Y':'정상', 'T':'테스트', 'N':'중지'};
+	var ar_merchant_active = {'Y':'연동', 'T':'개발', 'N':'중지'};
 	var page = 
 	{			
 		action: {

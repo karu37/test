@@ -12,6 +12,12 @@ $g_sucom['start'] = "http://api.flexplatform.net/v1/connect.php";
 $g_sucom['done'] = "http://api.flexplatform.net/v1/return_result.php";
 $g_sucom['img'] = "http://api.flexplatform.net/v1/get_ad_image.php";
 
+// ---------------------------------------
+// 처음 가져온 광고에 대한 관리자 차단 여부
+// 필요할 경우에만 특별히 사용
+$g_sucom['is_mactive'] = 'Y';
+// ---------------------------------------
+
 // http://api.aline-soft.kr/ajax-request.php?id=_partner_sucomm&dev=1
 if ($_REQUEST['dev'] == 1 && $_REQUEST['id'] == "_partner_sucomm") {
 	update_sucomm_app(true, $conn);
@@ -25,11 +31,11 @@ function update_sucomm_app($force_reload, $conn)
 	// g_sucom의 lib와 mcode
 	$db_lib = mysql_real_escape_string($g_sucom['lib']);
 	$db_mcode = mysql_real_escape_string($g_sucom['mcode']);
-	
+
 	//////////////////////////////////////////////////////////////////////////
 	// 기본 추가에 대한 is_mactive 설정 : 
 	//////////////////////////////////////////////////////////////////////////
-	$flag_is_mactive = 'N';	// Aline 개발 완료후에 N 으로 변경
+	$flag_is_mactive = $g_sucom['is_mactive'];
 	//////////////////////////////////////////////////////////////////////////
 	
 	// 자동 Reload 여부 체크

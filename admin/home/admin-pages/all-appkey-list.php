@@ -231,7 +231,13 @@
 	?>
 	</tbody>
 	</table>
-	
+	<div style='padding: 5px; color:#888; background: #eef; font-size:11px; border-radius:0.6em; border: 1px solid #88f'>
+		<b>[관리자 차단]</b><br>
+		* 정상: 사용자 목록에 노출 + 사용자 적립 가능<br>
+		* 중지: 사용자 목록에 숨김 + 사용자 적립 불가<br>
+		* 삭제: 관리 목록에서 제외 (사용자 목록에 숨김 + 사용자 적립 불가)<br>
+		* 개발: Publisher 개발사에게만 노출 + 적립되는 것처럼 동작 (실제 적립 안 함)
+	</div>	
 	<hr>
 	<div style='padding:10px' class='ui-grid-a'>
 		<div class='ui-block-a' style='width:70%; padding-top:20px'><?=$pages->display_pages()?></div>

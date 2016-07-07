@@ -103,8 +103,8 @@
 						</td>
 						<td <?=$td_onclick?>><?=$merchant['mcode']?></td>
 						<td <?=$td_onclick?>><?=$merchant['name']?></td>
-						<td><a href='#' onclick='<?=$js_page_id?>.action.on_btn_delete_partner_merchant_code("<?=$partner_id?>", "<?=$merchant['mcode']?>")' data-theme='a' data-role='button' data-mini='true' data-inline='true'>코드<br>제외</a></td>
 						<td><a href='#' onclick='goPage("dlg-merchant-modify", null, {merchant_code:"<?=$merchant['mcode']?>"})' data-theme='b' data-role='button' data-mini='true' data-inline='true'>정보<br>변경</a></td>
+						<td><a href='#' onclick='<?=$js_page_id?>.action.on_btn_delete_partner_merchant_code("<?=$partner_id?>", "<?=$merchant['mcode']?>")' data-theme='a' data-role='button' data-mini='true' data-inline='true'>목록<br>삭제</a></td>
 					</tr>
 					<?
 				}
@@ -112,6 +112,14 @@
 			?>
 			</tbody>
 			</table>
+			
+			<div style='padding: 5px; color:#888; background: #eef; font-size:11px; border-radius:0.6em; border: 1px solid #88f'>
+				* 연동 상태: 광고 노출 + 적립 가능<br>
+				* 개발 상태: 광고 숨김 + 적립 가능<br>
+				* 중지 상태: 광고 숨김 + 적립 불가<br>
+				* 목록 삭제: Partner의 Merchant로서만 제외 (서비스에 영향 없음)
+			</div>
+			
 			<!-- -------------------------------- -->
 		</td>		
 	</tr><tr>
@@ -173,8 +181,8 @@
 						<td <?=$td_onclick?>><?=$publisher['offer_fee_rate']?></td>
 						<td <?=$td_onclick?>><?=$publisher['level']?></td>
 						<td><a href='#' onclick='mvPage("publisher-setup-callback", null, {pcode:"<?=$publisher['pcode']?>"})' data-theme='e' data-role='button' data-mini='true' data-inline='true'>콜백<br>설정</a></td>
-						<td><a href='#' onclick='<?=$js_page_id?>.action.on_btn_delete_partner_publisher_code("<?=$partner_id?>", "<?=$publisher['pcode']?>")' data-theme='a' data-role='button' data-mini='true' data-inline='true'>코드<br>제외</a></td>
 						<td><a href='#' onclick='goPage("dlg-publisher-modify", null, {publisher_code:"<?=$publisher['pcode']?>"})' data-theme='b' data-role='button' data-mini='true' data-inline='true'>정보<br>변경</a></td>
+						<td><a href='#' onclick='<?=$js_page_id?>.action.on_btn_delete_partner_publisher_code("<?=$partner_id?>", "<?=$publisher['pcode']?>")' data-theme='a' data-role='button' data-mini='true' data-inline='true'>목록<br>삭제</a></td>
 					</tr>
 					<?
 				}
@@ -182,6 +190,13 @@
 			?>
 			</tbody>
 			</table>
+			
+			<div style='padding: 5px; color:#888; background: #eef; font-size:11px; border-radius:0.6em; border: 1px solid #88f'>
+				* 연동 상태: 광고 노출 + 적립 가능<br>
+				* 개발 상태: 테스트 광고만 노출<br>
+				* 중지 상태: 광고 차단 + 적립 불가<br>
+				* 목록 삭제: Partner의 Publisher로서만 제외 (서비스에 영향 없음)				
+			</div>			
 			<!-- -------------------------------- -->
 		<tr>
 	</tr>
@@ -244,24 +259,36 @@ var <?=$js_page_id?> = function()
 			},
 			on_btn_delete_partner_publisher_code: function(partner_id, pcode) 
 			{
-				var ar_param = {partnerid: partner_id, 'pcode': pcode};
-				util.request(get_ajax_url('admin-partner-delete-publisher', ar_param), function(sz_data) {
-					var js_data = util.to_json(sz_data);
-					if (js_data['result']) {
-						$("#line-p-" + pcode).hide();
-						toast('제거되었습니다. (' + pcode + ')');
-					} else util.Alert(js_data['msg']);
+				util.MessageBox('알림', '선택한 매체사를 목록에서 삭제시키겠습니까 ?', function(sel) {
+					if (sel == 1) {
+
+						var ar_param = {partnerid: partner_id, 'pcode': pcode};
+						util.request(get_ajax_url('admin-partner-delete-publisher', ar_param), function(sz_data) {
+							var js_data = util.to_json(sz_data);
+							if (js_data['result']) {
+								$("#line-p-" + pcode).hide();
+								toast('제거되었습니다. (' + pcode + ')');
+							} else util.Alert(js_data['msg']);
+						});
+						
+					}
 				});
 			},
 			on_btn_delete_partner_merchant_code: function(partner_id, mcode) 
 			{
-				var ar_param = {partnerid: partner_id, 'mcode': mcode};
-				util.request(get_ajax_url('admin-partner-delete-merchant', ar_param), function(sz_data) {
-					var js_data = util.to_json(sz_data);
-					if (js_data['result']) {
-						$("#line-m-" + mcode).hide();
-						toast('제거되었습니다. (' + mcode + ')');
-					} else util.Alert(js_data['msg']);
+				util.MessageBox('알림', '선택한 광고사를 목록에서 삭제시키겠습니까 ?', function(sel) {
+					if (sel == 1) {
+				
+						var ar_param = {partnerid: partner_id, 'mcode': mcode};
+						util.request(get_ajax_url('admin-partner-delete-merchant', ar_param), function(sz_data) {
+							var js_data = util.to_json(sz_data);
+							if (js_data['result']) {
+								$("#line-m-" + mcode).hide();
+								toast('제거되었습니다. (' + mcode + ')');
+							} else util.Alert(js_data['msg']);
+						});
+						
+					}
 				});
 			},
 		},

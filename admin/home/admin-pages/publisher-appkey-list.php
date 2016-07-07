@@ -185,6 +185,7 @@
 						<?=$row_publisher['pcode']?> (<?=$row_publisher['level']?> 레벨)
 					</t3>
 				</td>
+				<td></td>
 			</tr><tr>	
 				<td valign=top align=right><t4 style='padding-top:6px'>기본 수수료 :<t4></td>
 				<td valign=top>
@@ -204,21 +205,29 @@
 						</div>
 					</div>
 				</td>
+				<td></td>
 			</tr><tr>		
-				<td align=right><t4>광고 송출 :<t4></td>
+				<td align=right><t4>Publisher 상태 :<t4></td>
 				<td>
 					<div class='ui-block-a' style='width:200px'>
 						<fieldset class='fieldset-nopadding' id="publisher-active" data-role="controlgroup" data-type="horizontal" data-mini=true init-value="<?=$row_publisher['is_mactive']?>" >
 					        <input name="publisher-active" id="publisher-active-Y" value="Y" type="radio" />
-					        <label for="publisher-active-Y">정상</label>
+					        <label for="publisher-active-Y">연동</label>
 					        <input name="publisher-active" id="publisher-active-T" value="T" type="radio" />
-					        <label for="publisher-active-T">테스트</label>
+					        <label for="publisher-active-T">개발</label>
 					        <input name="publisher-active" id="publisher-active-N" value="N" type="radio" />
 					        <label for="publisher-active-N">중지</label>
 					    </fieldset>
 					</div>
 					<div class='ui-block-b' style='padding-top:5px'>
 						<a href='#' onclick='<?=$js_page_id?>.action.on_btn_save_publisher_active()' data-role='button' data-theme='a' data-transition="none" data-inline='true' data-mini='true'>상태 적용</a>
+					</div>
+				</td>
+				<td>
+					<div style='padding: 5px; color:#888; background: #eef; font-size:11px; border-radius:0.6em; border: 1px solid #88f'>
+					* 연동 상태: 광고 노출 + 적립 가능<br>
+					* 개발 상태: 테스트로 광고만 노출<br>
+					* 중지 상태: 광고 숨김 + 적립 불가
 					</div>
 				</td>
 			</tr>
@@ -409,7 +418,11 @@
 		?>
 	</tbody>
 	</table>
-	
+	<div style='padding: 5px; color:#888; background: #eef; font-size:11px; border-radius:0.6em; border: 1px solid #88f'>
+		<b>[P 수신 거부]</b><br>
+		* 정상: Publisher에게 지정광고 송출 허용<br>
+		* 중지: Publisher에게 지정광고 송출 금지
+	</div>		
 	<div style='padding:10px' class='ui-grid-a'>
 		<div class='ui-block-a' style='width:70%; padding-top:20px'><?=$pages->display_pages()?></div>
 		<div class='ui-block-b' style='width:30%; text-align:right'><?=$pages->display_jump_menu() . $pages->display_items_per_page()?></div>
@@ -435,7 +448,7 @@
 var <?=$js_page_id?> = function()
 {
 	// 외부에서 사용할 (Event Callback)함수 정의
-	var ar_publisher_active = {'Y':'정상', 'T':'테스트', 'N':'중지'};
+	var ar_publisher_active = {'Y':'연동', 'T':'개발', 'N':'중지'};
 	var page = 
 	{			
 		action: {
