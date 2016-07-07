@@ -12,7 +12,7 @@
         <div style="padding: 10px 0">
 	        <div style="padding: 5px 20px 0px 20px; text-align:left">
 	        	
-	        	<t5>Publisher Code<n7> &nbsp; (API 연동 코드로 사용됨)</n7></t5>
+	        	<t5>Publisher Code<n7> &nbsp; (<span style='color:darkred'>생성 후 변경 불가</span> - API 연동 코드로 사용됨)</n7></t5>
 	        	<input type=text id="txt_publisher_code" init-value="" />
 				(영문 소문자와 "_" 만 사용, 띄워쓰기 불가, 4 ~ 16자 이내)
 	        	<br>
