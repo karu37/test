@@ -100,6 +100,7 @@
 			<th>환경</th>
 			<th>제목</th>
 			<th width=30px>원가</th>
+			<th width=30px>판매</th>
 			<th width=40px>총실행</th>
 			<th>필터</th>
 			<th>활성일</th>
@@ -164,7 +165,8 @@
 				<td <?=$td_onclick?>><?=$arr_platform[$appkey['app_platform']]?><br><?=$arr_market[$appkey['app_market']]?><br><?=$arr_exectype[$appkey['app_exec_type']]?></td>
 				
 				<td <?=$td_onclick?>><div style='text-align:left; padding: 0 5px; color:inherit'><?=$appkey['app_title']?></div><?=$app_packageid?></td>
-				<td <?=$td_onclick?>><?=$appkey['app_merchant_fee']?></td>
+				<td <?=$td_onclick?>><?=number_format($appkey['app_merchant_fee'])?></td>
+				<td <?=$td_onclick?>><?=number_format($appkey['app_tag_price'])?></td>
 				<td <?=$td_onclick?>><?=$exec_tot_cnt?></td>
 				<td <?=$td_onclick?>><?=$filter?></td>
 				<td <?=$td_onclick?>><?=$appkey['is_active'] == 'Y' ? admin_to_date($appkey['last_active_time']).'<br>'.admin_to_time($appkey['last_active_time']) : ""?></td>

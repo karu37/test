@@ -149,6 +149,7 @@
 						uid = '{$db_uid}', 
 						userdata = '{$db_userdata}', 
 						merchant_fee = '{$row_app['app_merchant_fee']}', 
+						tag_price = '{$row_app['app_tag_price']}', 
 						publisher_fee = '{$row_app['publisher_fee']}', 
 						action_atime = '{$ar_time['now']}', 
 						status = 'A'
@@ -158,10 +159,10 @@
 	} else {
 		$sql = "INSERT al_user_app_t (mcode, pcode, app_key, 
 					ip, adid, imei, model, manufacturer, brand, account, 
-					uid, userdata, merchant_fee, publisher_fee, action_atime, status, reg_day, reg_date)
+					uid, userdata, merchant_fee, tag_price, publisher_fee, action_atime, status, reg_day, reg_date)
 				VALUES ('{$row_app['mcode']}', '{$db_pcode}', '{$db_appkey}', 
 					'{$db_ip}', '{$db_adid}', '{$db_imei}', '{$db_model}', '{$db_manufacturer}', '{$db_brand}', '{$db_account}', 
-					'{$db_uid}', '{$db_userdata}', '{$row_app['app_merchant_fee']}', '{$row_app['publisher_fee']}', '{$ar_time['now']}', 'A', '{$ar_time['day']}', '{$ar_time['now']}')";
+					'{$db_uid}', '{$db_userdata}', '{$row_app['app_merchant_fee']}', '{$row_app['app_tag_price']}', '{$row_app['publisher_fee']}', '{$ar_time['now']}', 'A', '{$ar_time['day']}', '{$ar_time['now']}')";
 		mysql_query($sql, $conn);
 		$user_app_id = mysql_insert_id($conn);
 	}

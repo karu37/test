@@ -60,7 +60,7 @@
 	// NULL이 Y인경우 (FALSE에 Y를 함), 조건은 거짓으로 만듬 ==> IF (COMPARE-WITH-NULL, 'N', 'Y')
 	
 	// --------------------------------
-	// IFNULL(b.app_offer_fee, FLOOR(a.app_merchant_fee * IFNULL(b.app_offer_fee_rate, p.offer_fee_rate) / 100) ) as 'publisher_fee'
+	// IFNULL(b.app_offer_fee, FLOOR(a.app_tag_price * IFNULL(b.app_offer_fee_rate, p.offer_fee_rate) / 100) ) as 'publisher_fee'
 	// 공급가 계산 : 1. al_publisher_app_t.app_offer_fee 가 최우선
 	//               2. al_publisher_app_t.app_offer_fee_rate가 not null ==> floor( app_merchant_fee * al_publisher_app_t.app_offer_fee_rate / 100 )
 	//				 3. al_publisher_t.offer_fee_rate 로 결정 floor( app_merchant_fee * al_publisher_t.offer_fee_rate / 100 )
@@ -87,7 +87,7 @@
 				app.exec_tot_max_cnt as 'app_exec_tot_max_cnt',
 				
 				IFNULL(pa.is_mactive, 'Y') as 'pa_is_mactive',
-				IFNULL(pa.app_offer_fee, FLOOR(app.app_merchant_fee * IFNULL(pa.app_offer_fee_rate, p.offer_fee_rate) / 100) ) AS 'publisher_fee', 
+				IFNULL(pa.app_offer_fee, FLOOR(app.app_tag_price * IFNULL(pa.app_offer_fee_rate, p.offer_fee_rate) / 100) ) AS 'publisher_fee', 
 				
 				m.name AS 'merchant_name', m.is_mactive as 'm_is_mactive',
 				p.is_mactive as 'p_is_mactive',
@@ -288,7 +288,8 @@
 			
 			<th width=1px></th>
 			<th>원가</th>
-			<th>공급금액</th>
+			<th>판매</th>
+			<th>제공</th>
 		</tr>	
 	</thead>
 	<tbody>
@@ -410,7 +411,8 @@
 				
 				<td><a href='#' onclick='goPage("dlg-publisherapp-config", null, {pcode: "<?=$pcode?>", appkey:"<?=$row['app_key']?>"})' data-theme='b' data-role='button' data-mini='true' data-inline='true'>공급<br>지정</a></td>
 				<td <?=$td_onclick?>><?=number_format($row['app_merchant_fee'])?></td>
-				<td <?=$td_onclick?>><b><?=admin_number($row['publisher_fee'])?></b></td>
+				<td <?=$td_onclick?>><?=number_format($row['app_tag_price'])?></td>
+				<td <?=$td_onclick?>><?=admin_number($row['publisher_fee'])?></td>
 				
 			</tr>
 			<?

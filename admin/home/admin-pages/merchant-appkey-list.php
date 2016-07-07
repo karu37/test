@@ -164,6 +164,7 @@
 			<th>타입</th>
 			<th>제목</th>
 			<th>원가</th>
+			<th>판매</th>
 			<th>공개모드</th>
 			<th width=60px>적립<br>활성일</th>
 			<th width=60px>적립<br>불가일</th>
@@ -203,6 +204,7 @@
 				<td <?=$td_onclick?>><?=$row['app_exec_type_name']?></td>
 				<td <?=$td_onclick?>><?=$row['app_title']?></td>
 				<td <?=$td_onclick?>><?=number_format($row['app_merchant_fee'])?></td>
+				<td <?=$td_onclick?>><?=number_format($row['app_tag_price'])?></td>
 				<td <?=$td_onclick?>><?=$arr_public_mode[$row['is_public_mode']]?></td>
 				<td <?=$td_onclick?>><?=admin_to_datetime($row['last_active_time'])?></td>
 				<td <?=$td_onclick?>><?=admin_to_datetime($row['last_deactive_time'])?></td>

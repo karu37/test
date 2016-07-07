@@ -19,6 +19,7 @@
 	$app_ageto				= $_REQUEST['appageto'];
 	
 	$app_merchant_fee      = $_REQUEST['appmerchantfee'];
+	$app_tag_price         = $_REQUEST['apptagprice'];
 	$app_exec_edate        = $_REQUEST['appexecedate'];
 	$app_exec_stime        = $_REQUEST['appexecstime'];
 	$app_exec_etime        = $_REQUEST['appexecetime'];
@@ -58,6 +59,7 @@
 	$db_app_ageto           = mysql_real_escape_string($app_ageto);
 		
 	$db_app_merchant_fee      = mysql_real_escape_string($app_merchant_fee);
+	$db_app_tag_price      = mysql_real_escape_string($app_tag_price);
 	$db_app_exec_edate        = mysql_real_escape_string($app_exec_edate);
 	$db_app_exec_stime        = mysql_real_escape_string($app_exec_stime);
 	$db_app_exec_etime        = mysql_real_escape_string($app_exec_etime);
@@ -89,6 +91,7 @@
 				app_exec_desc = '$db_app_exec_desc', 
 				app_market = '$db_app_market', 
 				app_merchant_fee = '$db_app_merchant_fee', 
+				app_tag_price = '$db_app_tag_price', 
 				exec_edate = IF('$db_app_exec_edate' <> '', '$db_app_exec_edate', NULL), 
 				exec_stime = IF('$db_app_exec_stime' <> '00:00:00' OR '$db_app_exec_etime' <> '24:00:00', '$db_app_exec_stime', NULL), 
 				exec_etime = IF('$db_app_exec_stime' <> '00:00:00' OR '$db_app_exec_etime' <> '24:00:00', '$db_app_exec_etime', NULL), 

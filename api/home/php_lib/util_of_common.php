@@ -1,6 +1,6 @@
 <?
 /* 
-	IFNULL(pa.app_offer_fee, FLOOR(app.app_merchant_fee * IFNULL(pa.app_offer_fee_rate, p.offer_fee_rate) / 100) ) AS 'publisher_fee', 
+	IFNULL(pa.app_offer_fee, FLOOR(app.app_tag_price * IFNULL(pa.app_offer_fee_rate, p.offer_fee_rate) / 100) ) AS 'publisher_fee', 
 		: pa에 지정된 가격이 있으면 그것을 사용하고
 		: 그렇지 않고 pa에 지정된 율이 있으면 그 율로 계산
 		: 그렇지 않으면 기본 계산법으로 계산
@@ -77,7 +77,7 @@ function get_query_app_list($pcode, $ar_time, $b_hide_exhauseted, $b_test_publis
 	$sql = "SELECT app.*, 
 				m.name AS 'merchant_name', 
 				
-				IFNULL(pa.app_offer_fee, FLOOR(app.app_merchant_fee * IFNULL(pa.app_offer_fee_rate, p.offer_fee_rate) / 100) ) AS 'publisher_fee', 
+				IFNULL(pa.app_offer_fee, FLOOR(app.app_tag_price * IFNULL(pa.app_offer_fee_rate, p.offer_fee_rate) / 100) ) AS 'publisher_fee', 
 				
 				IF (app.exec_edate IS NULL OR DATE(app.exec_edate) >= CURRENT_DATE, 'Y', 'N') as 'edate_not_expired',
 				
@@ -148,7 +148,7 @@ function get_query_publisher_app($pcode, $appkey, $ar_time, $conn)
 	$db_appkey = mysql_real_escape_string($appkey);
 	
 	$sql = "SELECT app.*, 
-				IFNULL(pa.app_offer_fee, FLOOR(app.app_merchant_fee * IFNULL(pa.app_offer_fee_rate, p.offer_fee_rate) / 100) ) AS 'publisher_fee', 
+				IFNULL(pa.app_offer_fee, FLOOR(app.app_tag_price * IFNULL(pa.app_offer_fee_rate, p.offer_fee_rate) / 100) ) AS 'publisher_fee', 
 
 				m.is_mactive as 'm_mactive',
 				p.is_mactive as 'p_mactive',
@@ -219,7 +219,7 @@ function get_query_publisher_app($pcode, $appkey, $ar_time, $conn)
 // 정상 적립 처리 (강제 적립된 상태로 처리함)
 // 만약 $ar_return['callback_done'] == 'Y' 이면 이미 콜백을 호출함 안됨
 function callback_reward($pcode, $mcode, $appkey, $adid, 
-						$merchant_fee, $publisher_fee, $unique_key, 
+						$merchant_fee, $tag_price, $publisher_fee, $unique_key, 
 						$ar_time, $b_local, $conn) {
 	
 	// echo "callback_reward($pcode, $appkey, $adid)<br>";
@@ -280,17 +280,18 @@ function callback_reward($pcode, $mcode, $appkey, $adid,
 							forced_done = 'N',
 							unique_key = '{$db_unique_key}',
 							merchant_fee = '{$merchant_fee}', 
+							tag_price = '{$tag_price}', 
 							publisher_fee = '{$publisher_fee}'
 						WHERE id = '{$user_app_id}'";
 				mysql_execute($sql, $conn);
 				
 				// al_user_app_saving_t 매출 레코드 추가
-				$sql = "INSERT INTO al_user_app_saving_t (user_app_id, mcode, pcode, app_key, adid, merchant_fee, publisher_fee, unique_key, m_reg_day, m_reg_date, p_reg_day, p_reg_date)
-						SELECT id, mcode, pcode, app_key, adid, '{$merchant_fee}', '{$publisher_fee}', '{$db_unique_key}', done_day, action_dtime, done_day, action_dtime FROM al_user_app_t WHERE id = '{$user_app_id}'";
+				$sql = "INSERT INTO al_user_app_saving_t (user_app_id, mcode, pcode, app_key, adid, merchant_fee, tag_price, publisher_fee, unique_key, m_reg_day, m_reg_date, p_reg_day, p_reg_date)
+						SELECT id, mcode, pcode, app_key, adid, '{$merchant_fee}', '{$tag_price}', '{$publisher_fee}', '{$db_unique_key}', done_day, action_dtime, done_day, action_dtime FROM al_user_app_t WHERE id = '{$user_app_id}'";
 				mysql_execute($sql, $conn);
 
 				////////////////////////////////////////////////////////////////////////////////////
-				// 실시간 통계에 정보 추가
+				// 실시간 통계에 정보 추가 (tag_price는 무의미함)
 				////////////////////////////////////////////////////////////////////////////////////
 				$sql = "SELECT id FROM al_summary_sales_h_t WHERE pcode = '{$db_pcode}' AND app_key = '{$db_appkey}' AND reg_day = '{$ar_time['day']}' AND hr = HOUR('{$ar_time['now']}') FOR UPDATE";
 				$row = @mysql_fetch_assoc(mysql_query($sql, $conn));
@@ -342,7 +343,8 @@ function callback_reward($pcode, $mcode, $appkey, $adid,
 									status = 'D', 
 									forced_done = 'N',
 									unique_key = '{$db_unique_key}',
-									merchant_fee = '{$merchant_fee}'
+									merchant_fee = '{$merchant_fee}',
+									tag_price = '{$tag_price}'
 								WHERE id = '{$user_app_id}'";
 						mysql_execute($sql, $conn);
 
@@ -351,6 +353,7 @@ function callback_reward($pcode, $mcode, $appkey, $adid,
 							// al_user_app_saving_t 매출 <== [강제적립한경우]에는 기존 매출테이블에 merchant_fee와 unique_key, 그리고 m_reg_day, m_reg_date만 갱신한다.
 							$sql = "UPDATE al_user_app_saving_t
 									SET merchant_fee = '{$merchant_fee}',
+										tag_price = '{$tag_price}',
 										unique_key = '{$db_unique_key}',
 										m_reg_day = '{$ar_time['day']}',
 										m_reg_date = '{$ar_time['now']}'
@@ -420,7 +423,7 @@ function callback_reward($pcode, $mcode, $appkey, $adid,
 */
 
 function force_reward($pcode, $mcode, $appkey, $adid, 
-						$merchant_fee, $publisher_fee, 
+						$merchant_fee, $tag_price, $publisher_fee, 
 						$ar_time, $b_local, $conn) {
 	
 	// echo "callback_reward($pcode, $appkey, $adid)<br>";
@@ -468,6 +471,7 @@ function force_reward($pcode, $mcode, $appkey, $adid,
 											status = 'D', 
 											forced_done = 'Y',
 											merchant_fee = IF('{$is_local}'='Y','{$merchant_fee}',NULL),
+											tag_price = '{$tag_price}',
 											publisher_fee = '{$publisher_fee}'
 										WHERE id = '{$user_app_id}'";
 								mysql_execute($sql, $conn);
@@ -478,8 +482,8 @@ function force_reward($pcode, $mcode, $appkey, $adid,
 								//			  m에 대한 매출건수,매출은 ==> 로컬은 현재, 외부는 없음
 								////////////////////////////////////////////////////////////////////////////////////
 								//// al_user_app_saving_t 매출 레코드 추가 <== [강제적립]은 Merchant매출 = 0, Unique키는 존재하지 않음, 또한 아래의 중복키가 존재해서도 안됨 (날짜는 현재 시간 <-- 위에서 설정됨)
-								$sql = "INSERT INTO al_user_app_saving_t (user_app_id, mcode, pcode, app_key, adid, merchant_fee, publisher_fee, m_reg_day, m_reg_date, p_reg_day, p_reg_date)
-										SELECT id, mcode, pcode, app_key, adid, IF('{$is_local}'='Y','{$merchant_fee}',NULL), '{$publisher_fee}', 
+								$sql = "INSERT INTO al_user_app_saving_t (user_app_id, mcode, pcode, app_key, adid, merchant_fee, tag_price, publisher_fee, m_reg_day, m_reg_date, p_reg_day, p_reg_date)
+										SELECT id, mcode, pcode, app_key, adid, IF('{$is_local}'='Y','{$merchant_fee}',NULL), '{$tag_price}', '{$publisher_fee}', 
 											IF('{$is_local}'='Y',done_day,NULL),
 											IF('{$is_local}'='Y',action_dtime,NULL),
 											done_day, action_dtime FROM al_user_app_t WHERE id = '{$user_app_id}'";

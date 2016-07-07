@@ -48,7 +48,7 @@ $g_sucom['timeout_sec'] = 60;				// 시작 / 적립 요청시의 Timeout 초
 	
 	//## 적립하기
 	$ar_reward = callback_reward($arr_userapp['pcode'], $arr_userapp['mcode'], $arr_userapp['app_key'], $arr_userapp['adid'], 
-							$arr_userapp['merchant_fee'], $arr_userapp['publisher_fee'], $unique_key, 
+							$arr_userapp['merchant_fee'], $arr_userapp['tag_price'], $arr_userapp['publisher_fee'], $unique_key, 
 							$ar_time, false, $conn);	
 
 	//## 적립 실패 처리	

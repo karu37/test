@@ -86,14 +86,14 @@ function local_request_done($app_key, $arr_data, $b_forcedone, &$conn)
 			{
 				// util_of_common.php
 				$ar_reward = callback_reward($arr_data['pcode'], $arr_data['mcode'], $app_key, $arr_data['adid'], 
-										$ar_app['app_merchant_fee'], $ar_app['publisher_fee'], $unique_key, 
+										$ar_app['app_merchant_fee'], $ar_app['app_tag_price'], $ar_app['publisher_fee'], $unique_key, 
 										$ar_time, ($ar_app['lib'] == 'LOCAL'), $conn);
 			} 
 			else 
 			{
 				// util_of_common.php
 				$ar_reward = force_reward($arr_data['pcode'], $arr_data['mcode'], $app_key, $arr_data['adid'], 
-										$ar_app['app_merchant_fee'], $ar_app['publisher_fee'], 
+										$ar_app['app_merchant_fee'], $ar_app['app_tag_price'], $ar_app['publisher_fee'], 
 										$ar_time, ($ar_app['lib'] == 'LOCAL'), $conn);
 			}
 

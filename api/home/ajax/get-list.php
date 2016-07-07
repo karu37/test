@@ -45,7 +45,7 @@
 			echo "<td>{$row['app_title']}</td>";
 			echo "<td>{$row['app_key']}</td>";
 			echo "<td>{$row['app_exec_type']}</td>";
-			echo "<td>{$row['app_merchant_fee']}</td>";
+			echo "<td>{$row['app_tag_price']}</td>";
 			echo "<td>{$row['publisher_fee']}</td>";
 			echo "<td>{$row['app_agefrom']} ~ {$row['app_ageto']}</td>";
 			echo "<td>{$row['app_gender']}</td>";

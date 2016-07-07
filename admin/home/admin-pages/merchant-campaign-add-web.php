@@ -99,6 +99,14 @@
 			<div style='float:left; padding: 15px 10px'>원</div>
 			<div style='clear:both'></div>
 		</div>
+		<div class='ui-block-a required'>판매가격</div>
+		<div class='ui-block-b required'>
+			<div style='width:100px; display: inline-block; height: 20px; padding-top: 5px; float:left'>
+				<input type="text" id="app-tag-price" name="app-tag-price" />
+			</div>
+			<div style='float:left; padding: 15px 10px'>원</div>
+			<div style='clear:both'></div>
+		</div>
 		<div class='ui-block-a required'>총 실행 수</div>
 		<div class='ui-block-b required'>
 			<div style='width:100px; display: inline-block; height: 20px; padding-top: 5px; float:left'>
@@ -414,6 +422,7 @@ var <?=$js_page_id?> = function()
 					'appagefrom' : util.intval(_$("#app-agefrom").val()),
 					'appageto' : util.intval(_$("#app-ageto").val()),
 					'appmerchantfee' : util.intval(_$("#app-merchant-fee").val()),
+					'apptagprice' : util.intval(_$("#app-tag-price").val()),
 					'appexecedate' : _$("#app-exec-edate").val(),
 					'appexecstime' : _$("#app-exec-stime").val(),
 					'appexecetime' : _$("#app-exec-etime").val(),
