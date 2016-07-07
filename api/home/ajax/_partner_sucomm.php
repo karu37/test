@@ -1,6 +1,6 @@
 <?	
 $g_sucom['lib'] = 'SUCOMM';				// 해당 광고에 대한 처리 routine 명 (이 파일)
-$g_sucom['mcode'] = 'msucomm';			// 가져온 광고를 해당 mcode 밑으로 연결
+$g_sucom['mcode'] = 'sucomm-m';			// 가져온 광고를 해당 mcode 밑으로 연결
 $g_sucom['aline-code'] = "aline_json";	// sucomm 연동 매체 코드
 $g_sucom['appkey_prefix'] = "suc";		// 앱키 시작 문자열 ( + md5한 mkey 결과 뒤에 붙임 )
 

@@ -1,6 +1,6 @@
 <?	
 $g_ohc['lib'] = 'OHC';					// 해당 광고에 대한 처리 routine 명 (이 파일)
-$g_ohc['mcode'] = 'mohc';				// 가져온 광고를 해당 mcode 밑으로 연결
+$g_ohc['mcode'] = 'mohc-m';				// 가져온 광고를 해당 mcode 밑으로 연결
 $g_ohc['aline-code'] = "aline";		// ohc 연동 매체 코드
 $g_ohc['appkey_prefix'] = "ohc";		// 앱키 시작 문자열 ( + md5한 mkey 결과 뒤에 붙임 )
 
