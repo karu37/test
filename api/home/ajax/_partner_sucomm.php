@@ -391,7 +391,7 @@ function sucomm_request_start($app_key, &$arr_data, &$conn)
 	return array('result' => 'Y');
 }
 
-function local_request_done($app_key, $arr_data, &$conn) 
+function sucomm_request_done($app_key, $arr_data, &$conn) 
 {
 	global $g_sucom;
 
