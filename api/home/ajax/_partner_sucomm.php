@@ -114,7 +114,9 @@ function update_sucomm_app($force_reload, $conn)
 		/////////////////////////////////////////
 		// 광고 상태가 start가 아니면 스킵		
 		if ($item['ads_open'] != 'start') {
-			echo "{$item['ads_open']} ======> {$item['title']}, {$item['ads']}<br>\n";
+			if ($_REQUEST['dev'] == 1) {
+				echo "{$item['ads_open']} ======> {$item['title']}, {$item['ads']}<br>\n";
+			}
 			continue;
 		}
 		
