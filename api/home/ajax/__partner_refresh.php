@@ -2,8 +2,8 @@
 
 	//-----------------------------------------------------
 	// 특정 주기대로 자동 업데이트 함.
-	include dirname(__FILE__).'/_partner_sucom.php';
-	update_sucom_app(true, $conn);
+	include dirname(__FILE__).'/_partner_sucomm.php';
+	update_sucomm_app(true, $conn);
 	echo "sucom OK<br>";
 	//-----------------------------------------------------
 	
