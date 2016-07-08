@@ -10,7 +10,7 @@
 	//-----------------------------------------------------
 	// 특정 주기대로 자동 업데이트 함.
 	include dirname(__FILE__).'/_partner_ohc.php';
-	update_tnkad_app(true, $conn);
+	update_ohc_app(true, $conn);
 	echo "OHC OK<br>";
 	//-----------------------------------------------------
 	
