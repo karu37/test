@@ -26,7 +26,7 @@
 </head>
 <body>
 <?
-		$sql = "SELECT a.mcode, a.pcode, b.app_title, a.merchant_fee, a.publisher_fee, a.m_reg_date, a.p_reg_date 
+		$sql = "SELECT a.mcode, a.pcode, b.app_title, a.merchant_fee, a.tag_price, a.publisher_fee, a.m_reg_date, a.p_reg_date 
 				FROM al_user_app_saving_t a
 					INNER JOIN al_app_t b ON a.app_key = b.app_key
 				WHERE adid = '{$db_adid}' ORDER BY a.id DESC LIMIT 10";
@@ -37,6 +37,7 @@
 		$ar_col_define[] = array('type' => '', 'col' => '<col width=2%></col>', 'title' => 'P 코드');
 		$ar_col_define[] = array('type' => '', 'col' => '<col width=4%></col>', 'title' => '제목');
 		$ar_col_define[] = array('type' => 'number', 'col' => '<col width=2%></col>', 'title' => 'M가격');
+		$ar_col_define[] = array('type' => 'number', 'col' => '<col width=2%></col>', 'title' => 'T가격');
 		$ar_col_define[] = array('type' => 'number', 'col' => '<col width=2%></col>', 'title' => 'P가격');
 		$ar_col_define[] = array('type' => 'date', 'col' => '<col width=2%></col>', 'title' => 'M일시');
 		$ar_col_define[] = array('type' => 'date', 'col' => '<col width=2%></col>', 'title' => 'P일시');
@@ -46,7 +47,7 @@
 		////////////////////////////////////////////////////////////////////////////////////////////////////////
 		$sql = "SELECT a.mcode, a.pcode, 
 						CONCAT(b.app_title, '<br>IPIMEI:', IFNULL(a.ip,''), ',' , IFNULL(a.imei,''), '<br>BMM:', IFNULL(a.brand,''), ', ', IFNULL(a.manufacturer,''), ', ', IFNULL(a.model,''), '<br>ADID:', IFNULL(a.adid,''), '<br>ACC:', IFNULL(a.account,'')) AS 'app_title',
-						a.merchant_fee, a.publisher_fee, a.status, a.forced_done, a.action_atime, a.action_btime, a.action_dtime, a.callback_done, a.callback_data, a.reg_date
+						a.merchant_fee, a.tag_price, a.publisher_fee, a.status, a.forced_done, a.action_atime, a.action_btime, a.action_dtime, a.callback_done, a.callback_data, a.reg_date
 				FROM al_user_app_t a
 					INNER JOIN al_app_t b ON a.app_key = b.app_key
 				WHERE adid = '{$db_adid}' ORDER BY a.id DESC LIMIT 10";
@@ -58,6 +59,7 @@
 		$ar_col_define[] = array('type' => '', 'col' => '<col width=2%></col>', 'title' => 'P 코드');
 		$ar_col_define[] = array('type' => '', 'col' => '<col width=4%></col>', 'title' => '제목');
 		$ar_col_define[] = array('type' => 'number', 'col' => '<col width=2%></col>', 'title' => 'M가격');
+		$ar_col_define[] = array('type' => 'number', 'col' => '<col width=2%></col>', 'title' => 'T가격');
 		$ar_col_define[] = array('type' => 'number', 'col' => '<col width=2%></col>', 'title' => 'P가격');
 		$ar_col_define[] = array('type' => '', 'col' => '<col width=2%></col>', 'title' => '상태');
 		$ar_col_define[] = array('type' => '', 'col' => '<col width=2%></col>', 'title' => '강제<br>적립');

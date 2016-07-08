@@ -133,20 +133,20 @@
 				<textarea id="app-exec-desc" name="app-exec-desc"><?=$row['app_exec_desc']?></textarea>
 			</div>
 		</div>
-		<div class='ui-block-a required'>광고원가</div>
+		<div class='ui-block-a required'>매출원가</div>
 		<div class='ui-block-b required'>
 			<div style='width:100px; display: inline-block; height: 20px; padding-top: 5px; float:left'>
 				<input type="text" id="app-merchant-fee" name="app-merchant-fee" value='<?=number_format($row['app_merchant_fee'])?>'/>
 			</div>
-			<div style='float:left; padding: 15px 10px'>원</div>
+			<div style='float:left; padding: 15px 10px'>원 - 판매시 매출로 잡히는 금액</div>
 			<div style='clear:both'></div>
 		</div>
-		<div class='ui-block-a required'>판매가격</div>
+		<div class='ui-block-a required'>광고원가</div>
 		<div class='ui-block-b required'>
 			<div style='width:100px; display: inline-block; height: 20px; padding-top: 5px; float:left'>
 				<input type="text" id="app-tag-price" name="app-tag-price" value='<?=number_format($row['app_tag_price'])?>'/>
 			</div>
-			<div style='float:left; padding: 15px 10px'>원</div>
+			<div style='float:left; padding: 15px 10px'>원 - 일반적으로 매출원가와 같음</div>
 			<div style='clear:both'></div>
 		</div>
 		<div class='ui-block-a required'>총 실행 수</div>
@@ -479,8 +479,10 @@ var <?=$js_page_id?> = function()
 		$(document).on("pageinit", function(){page.action.initialize();} );
 		
 		_$("#upload-image-file").change(page.upload.on_change_file);
+		_$("#app-merchant-fee").change(function(){ _$("#app-tag-price").val(_$("#app-merchant-fee").val());});
 
 		util.set_event_for_input_number(_$("#app-merchant-fee"));
+		util.set_event_for_input_number(_$("#app-tag-price"));
 		
 		util.set_event_for_input_number(_$("#app-agefrom"), '0');
 		util.set_event_for_input_number(_$("#app-ageto"), '100');
