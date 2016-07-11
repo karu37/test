@@ -1,0 +1,8 @@
+drwxr-xr-x    2 1004     33           4096 Dec 24 16:45 .
+drwxr-xr-x    8 1004     33           4096 Dec 21 21:33 ..
+-rw-r--r--    1 1004     33           2442 Dec 16 19:29 __global.js.php
+-rw-r--r--    1 1004     33            764 Nov 06 11:23 __global_admin_ui.js
+-rw-r--r--    1 1004     33          10309 Nov 06 11:23 __global_string.js
+-rw-r--r--    1 1004     33           7269 Nov 06 11:23 __global_util.inc.txt
+-rw-r--r--    1 1004     33          19212 Feb 01 22:08 __global_util.js
+-rw-rw-r--    1 1004     1004          659 Jan 09 07:04 __global_util_for_admin.js

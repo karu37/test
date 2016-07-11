@@ -115,6 +115,17 @@
 			<div style='float:left; padding: 15px 10px'>회</div>
 			<div style='clear:both'></div>
 		</div>
+		<div class='ui-block-a'>주말수행</div>
+		<div class='ui-block-b'>
+			<div class='ui-block-a' style='width:200px; padding-left: 0px'>
+				<fieldset id="app-exec-weekend" class='td-2-item' data-role="controlgroup" data-type="horizontal" data-mini=true init-value="Y">
+			        <input name="app-exec-weekend" id="app-exec-weekend-Y" value="Y" type="radio" />
+			        <label for="app-exec-weekend-Y">주말수행</label>
+			        <input name="app-exec-weekend" id="app-exec-weekend-N" value="N" type="radio" />
+			        <label for="app-exec-weekend-N">주말중지</label>
+			    </fieldset>
+			</div>
+		</div>
 				
 		<div class='ui-block-a'>광고종료</div>
 		<div class='ui-block-b'>
@@ -423,6 +434,7 @@ var <?=$js_page_id?> = function()
 					'appageto' : util.intval(_$("#app-ageto").val()),
 					'appmerchantfee' : util.intval(_$("#app-merchant-fee").val()),
 					'apptagprice' : util.intval(_$("#app-tag-price").val()),
+					'appexecweekend' : util.get_item_value(_$("#app-exec-weekend")),
 					'appexecedate' : _$("#app-exec-edate").val(),
 					'appexecstime' : _$("#app-exec-stime").val(),
 					'appexecetime' : _$("#app-exec-etime").val(),

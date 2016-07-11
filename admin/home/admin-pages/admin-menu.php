@@ -25,5 +25,8 @@
 			(<a data-ajax="false" href='?id=stat-summary-p-sales-year'>년</a>,<a data-ajax="false" href='?id=stat-summary-p-sales-day'>일</a>)
 		</li>
 		<li style='padding-left:15px' class='frequent'>└ <a data-ajax="false" href='?id=stat-summary-sales-by-day'>일별 적립 목록</a></li>
+
+	<li class='cate'><b><?=$idx++?>. <span>광고주</span> 접속 계정</b><li>
+		<li style='padding-left:15px' class='frequent'>└ <a data-ajax="false" href='?id=guest-list'>광고주 계정 목록</a></li>
 	
 </ul>

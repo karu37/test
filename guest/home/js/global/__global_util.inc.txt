@@ -1,0 +1,167 @@
+/*
+		------------------
+		* util.set_item_value
+		------------------
+		# [입력박스] util.set_item_value("#txt-phoneno", "011-222-3333");	// input-tel
+			<label for="txt-usertel">전화번호</label>
+			<input type="tel" name="txt-usertel" id="txt-usertel" value="" />
+	
+		# [체크박스] util.set_item_value("#txt-agree", true);				// boolean
+		    <label for="txt-agree">약관 동의</label>
+		    <input type="checkbox" name="txt-agree" id="txt-agree" value="agree" />	
+	    
+			==> var ar_checked = [];	// $(this).attr('id') 또는 $(this).value 사용
+				$("input[name=txt-usertel]:checked").each(function(){ar_checked.push($(this).attr('id'))});	// 전체 Array로 
+				
+				var txt_return = null;
+				$("input[name=radio-gender]:checked").each(function(){txt_return = $(this).val();});	// 하나만 값으로
+	
+		    
+		# [다중선택] util.set_item_value("#txt-checkboxs", ["car", "phone"]);	// value 들 값
+		  	  <label for="txt-favorites">좋아하는 것</label>
+		  	  <fieldset data-role="controlgroup" id="txt-favorites">
+		  	    <input type="checkbox" name="txt-favorites" id="txt-favorites_0" class="custom" value="car" />
+		  	    <label for="txt-favorites_0">자동차</label>
+		  	    <input type="checkbox" name="txt-favorites" id="txt-favorites_1" class="custom" value="phone" />
+		  	    <label for="txt-favorites_1">핸드폰</label>
+		      </fieldset>	
+		      
+		    ==>	var ar_checked = [];	// $(this).attr('id') 또는 $(this).value 사용
+				$("input[name=txt-favorites]:checked").each(function(){ar_checked.push($(this).attr('id'))});
+		      
+		      
+		# [토글버튼] util.set_item_value("#txt-city", "지방");		// opton-value 값
+		    <label for="txt-city">지역</label>
+		    <select name="txt-city" id="txt-city" data-role="slider">
+		      <option value="서울">서울</option>
+		      <option value="지방">지방</option>
+		    </select>	      
+		      ==> $("#txt-city option:selected").val();
+		    
+		# [옵션선택] util.set_item_value("#txt-usersex", "1");		// input-value 값을 지정
+			  <label for="txt-usersex">성별</label>
+		  	  <fieldset data-role="controlgroup" data-type="horizontal" id="txt-usersex">
+		  	    <input type="radio" name="txt-usersex" id="txt-usersex_0" value="0" />
+		  	    <label for="txt-usersex_0">여성</label>
+		  	    <input type="radio" name="txt-usersex" id="txt-usersex_1" value="1" />
+		  	    <label for="txt-usersex_1">남성</label>
+		      </fieldset>
+		      
+
+
+
+		# js/css 를 강제로 로딩하기		      
+			load_js('http://~~', function(result){  alert('complete'); });
+		
+		# device에 있는 js를 로딩하기
+			load_js_local('js/kakao.min.js');
+			
+		------------------
+		* util.request
+		* util.set_item_array
+		------------------
+		util.request("/jquery-mobile/ajax/request.php?type="+util.urlencode(userinfo), function(sz_data) {
+				var js_data = eval('(' + sz_data + ')');
+				
+				js_data['phoneno_disp'] = util.to_phoneno(js_data['phoneno']);
+				var js_match_map = {
+					"#txt-userid":"id",
+					"#txt-userpw":"pw",
+					"#txt-userpw-r":"pw",
+					"#txt-username":"name",
+					"#txt-usersex":"sex",
+					"#txt-useremail":"email",
+					"#txt-city":"city",
+					"#txt-usertel":"phoneno_disp",
+					"#txt-favorites":"favorites",
+					"#txt-regdate":"regdate",
+					"#txt-level":"level"
+				};
+				util.set_item_array(js_match_map, js_data);
+				
+		});
+		
+		util.post("/jquery-mobile/ajax/request.php?type=userinfo", {param:"mydata"}, function(sz_data) {
+				alert(sz_data);
+		});
+		
+		------------------
+		* util.list_request
+		------------------
+		1. html 구성
+		    <label for="txt-list">목록 제목</label>
+		    <ul data-role="listview" data-inset="true" id="txt-list">
+		    </ul>
+		    
+		2. js에서 데이터 요청하기 (실제 서버요청시에는 last_id = -1 로 전달되며 이후 last_id로 전달된 값이 그대로 서버로 재 전달 됨)
+		
+			util.list_request("/jquery-mobile/ajax/lists.php", _$("#txt-list"));		// 추가로만 끝
+			
+			sz_more_script = '<li data-icon="plus" class="btn-more"><a href="#">더 보기</a></li>'; 			
+			// sz_more_script >> null: default사용, '': 사용 안함, 그외: li는 btn-more class를 가져야 함
+			util.list_request("/jquery-mobile/ajax/lists.php", _$("#txt-list"), sz_more_script, function(json_data){		// 추가 처리가 필요한 경우
+					// json_data['has_more']
+					// json_data['last_id']
+					// json_data['data']
+					
+					// -- 더보기 : Request에 list_id 만 추가해서 보내면 다음 목록을 받아옴 
+					//			$("#txt-list").data('last_id')에 마지막 값이 저장, list_request시 2번째 파라미터인 이 Element에서 값을 가져와 자동으로 추가되어 요청됨.
+				});
+			});
+			
+			'<li data-icon="plus" class="btn-more"><a href="#">더 보기</a></li>'
+			
+			# 서버 구현: 응답하기 {"last_id":10,"has_more":true,"data":"<li><a href='#' onclick=\"on_click_list(this, '{$list_id}')\" > ~~~~~~ </a>/li>"}  
+				<?
+				$last_id = intval($_REQUEST['last_id']);
+				// ----------------------------------------------------------------------------
+	
+				$last_id ++;
+				$sz_data = '';
+				for ($i=0; $i < 10; $i++)
+				{
+					$list_id = $last_id + $i;
+					$sz_data .= "<li><a href=\"#\" onclick=\"on_click_list(this, 'row-{$list_id}');\" >
+				        		<img src=\"images/toptoon.png\" style=\"position: absolute; margin-left: 0.3em; margin-top: 0.3em; border: 1px solid black; padding: 1px\"/>
+				        		<h3>{$list_id} 입니다</h3>
+				        		<p>{$list_id} 의 설명입니다. </p>
+				      			</a><a href=\"#\" onclick=\"on_click_list(this, 'go-{$list_id}');\" >기본값</a></li>";
+				}
+				
+				// ----------------------------------------------------------------------------
+				$arReturn['has_more'] = true;						// 더이상 없으면 false
+				$arReturn['last_id'] = $list_id;
+				$arReturn['data'] = $sz_data;
+				$arReturn['result'] = true;
+				echo json_encode($arReturn);
+				?>		
+			
+		3. click 처리하기
+			// 서버에서 각 <li><a> 단위에 onclick="on_click_list(this, '{$list_id}')" 형태로 설정을 해 주게 됨 --> 여러개인경우 바꾸거나, 상황에 따라서 추가 데이터도 전달함
+			function on_click_list(obj, list_id) {
+				alert(list_id);	// 여기에서 선택된 리스트에 대한 적당한 처리를 하면 됨
+			}
+		
+		------------------
+		* 기타 유틸리티 함수
+		------------------
+		# in_array
+			util.in_array('txt', ['abc', 'txt', 'cdc']) => true
+			
+		# phoneno
+			util.to_phoneno('01012341234') => '010-1234-1234'
+			util.from_phoneno('010-1234-1234') => '01012341234'
+			
+		# date
+			util.to_date('2015/06/11') => '2015-06-11'
+			util.to_date('20150611') => '2015-06-11'
+			util.from_date('2015-06-11') => '2015/06/11'
+			
+		# json
+			util.to_json("{a:1}") --> {a:1}
+			
+		# url (url파라미터에 기존 값을 변경/추가 한다)
+			util.url_add_param("http://ajax.site.com/request.php?id=2&type=blabla", "id", "3") => http://ajax.site.com/request.php?last_id=3&type=blabla"
+			util.urlencode(txt) ==> txt url encode
+			util.urldecode(txt) ==> txt url decode
+*/

@@ -59,6 +59,8 @@
 	
 	$db_uid = mysql_real_escape_string($uid);
 	$db_userdata = mysql_real_escape_string($userdata);
+
+	$db_lib = mysql_real_escape_string($row_app['lib']);
 	
 	$ar_time = mysql_get_time($conn);
 	
@@ -157,10 +159,10 @@
 		mysql_query($sql, $conn);
 		$user_app_id = $row_userapp['id'];	
 	} else {
-		$sql = "INSERT al_user_app_t (mcode, pcode, app_key, 
+		$sql = "INSERT al_user_app_t (mcode, pcode, app_key, lib,
 					ip, adid, imei, model, manufacturer, brand, account, 
 					uid, userdata, merchant_fee, tag_price, publisher_fee, action_atime, status, reg_day, reg_date)
-				VALUES ('{$row_app['mcode']}', '{$db_pcode}', '{$db_appkey}', 
+				VALUES ('{$row_app['mcode']}', '{$db_pcode}', '{$db_appkey}', '{$db_lib}',
 					'{$db_ip}', '{$db_adid}', '{$db_imei}', '{$db_model}', '{$db_manufacturer}', '{$db_brand}', '{$db_account}', 
 					'{$db_uid}', '{$db_userdata}', '{$row_app['app_merchant_fee']}', '{$row_app['app_tag_price']}', '{$row_app['publisher_fee']}', '{$ar_time['now']}', 'A', '{$ar_time['day']}', '{$ar_time['now']}')";
 		mysql_query($sql, $conn);

@@ -17,7 +17,11 @@
 		
 		<a href='?id=campaign-app-exec-view&appkey=<?=urlencode($row['app_key'])?>' data-role='button' data-theme='b' data-inline='true' data-mini='true' >일자별 수행수</a>
 		<a href='#' onclick='goPage("dlg-upload-app-adid", null, {appkey: "<?=$row['app_key']?>"})' data-theme='b' data-role='button' data-mini='true' data-inline='true'>ADID 등록(중복방지)</a>
-	</div>	
+	</div>
+	<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+	<script type="text/javascript">
+		google.charts.load('current', {packages:["corechart"]});
+	</script>
 	<hr>
 	<div id='app-info' class='ui-grid-a'>
 		<div class='ui-block-a'>ALINE 광고키</div>
@@ -165,6 +169,17 @@
 			<div style='float:left; padding: 15px 10px'>회</div>
 			<div style='clear:both'></div>
 		</div>
+		<div class='ui-block-a'>주말수행</div>
+		<div class='ui-block-b'>
+			<div class='ui-block-a' style='width:200px; padding-left: 0px; padding-top: 5px'>
+				<fieldset id="app-exec-weekend" class='td-2-item' data-role="controlgroup" data-type="horizontal" data-mini=true init-value="<?=$row['exec_weekend']?>">
+			        <input name="app-exec-weekend" id="app-exec-weekend-Y" value="Y" type="radio" />
+			        <label for="app-exec-weekend-Y">주말수행</label>
+			        <input name="app-exec-weekend" id="app-exec-weekend-N" value="N" type="radio" />
+			        <label for="app-exec-weekend-N">주말중지</label>
+			    </fieldset>
+			</div>
+		</div>
 		
 		<div class='ui-block-a'>광고종료</div>
 		<div class='ui-block-b'>
@@ -228,7 +243,6 @@
 			<div style='float:left; padding: 14px 10px'>세 까지 </div>
 			<div style='clear:both'></div>
 		</div>
-
 		<div class='ui-block-a'>시간 최대 실행</div>
 		<div class='ui-block-b'>
 			<div style='width:100px; display: inline-block; height: 20px; padding-top: 5px; float:left'>
@@ -244,6 +258,23 @@
 				<input type="text" id="app-exec-daily-cnt" name="app-exec-daily-cnt" data-clear-btn=true placeholder='제한 없음' init-value='<?=number_format(ifempty($row['exec_day_max_cnt'], ""))?>' />
 			</div>
 			<div style='float:left; padding: 15px 10px'>회</div>
+			<div style='clear:both'></div>
+		</div>
+		<div class='ui-block-a'>스케쥴 설정</div>
+		<div class='ui-block-b'>
+			<style>
+				.app-scheduled	{border: 1px solid blue; padding: 4px 10px; position: inline-block; border-radius: 0.4em; background: blue; color: yellow; font-size: 16px; font-weight: bold; text-align:center;}
+				.app-not-scheduled	{border: 1px solid #ddd; padding: 4px 10px; position: inline-block; border-radius: 0.4em; background: #eee; color: #888; font-size: 16px; font-weight: : bold; text-align:center;}
+				.schedule-Y .app-not-scheduled 	{display: none}
+				.schedule-N .app-scheduled 	{display: none}
+			</style>
+			<div class='schedule-<?=$row['schedule_cnt'] > 0 ? 'Y' : 'N'?>' style='width:100px; display: inline-block; float:left; padding-top:7px;'>
+				<div class='app-scheduled'>스케쥴 됨</div>
+				<div class='app-not-scheduled'>없음</div>
+			</div>
+			<div style='float:left; padding: 2px 10px'>
+				<a href='#' onclick="goPage('dlg-campaign-schedule', null, {appkey:'<?=$row['app_key']?>'})" data-theme='b' data-role='button' data-inline='true' data-mini='true' target=_blank style='float:right'>스케쥴 설정</a>
+			</div>
 			<div style='clear:both'></div>
 		</div>
 
@@ -419,6 +450,7 @@ var <?=$js_page_id?> = function()
 					'appageto' : util.intval(_$("#app-ageto").val()),
 					'appmerchantfee' : util.intval(_$("#app-merchant-fee").val()),
 					'apptagprice' : util.intval(_$("#app-tag-price").val()),
+					'appexecweekend' : util.get_item_value(_$("#app-exec-weekend")),
 					'appexecedate' : _$("#app-exec-edate").val(),
 					'appexecstime' : _$("#app-exec-stime").val(),
 					'appexecetime' : _$("#app-exec-etime").val(),
