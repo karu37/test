@@ -27,7 +27,10 @@
 	$arr_param['model'] 	= $model 		= base64_decode($_REQUEST['model']);
 	$arr_param['mf'] 		= $manufacturer = base64_decode($_REQUEST['mf']);		// optional
 	$arr_param['brand'] 	= $brand 		= base64_decode($_REQUEST['brand']);	// optional
-	$arr_param['account'] 	= $account 		= base64_decode($_REQUEST['account']);	// optional
+	$arr_param['account'] 	= $account 		= base64_decode($_REQUEST['account']);	// optional : a@gmail.com,b@gmail.com,c@gail.com 처럼 comma로 연결된 문자열임
+	
+	$ar_acounts = explode(',', $account);
+	$arr_param['first-account'] = base64_encode($ar_acounts[0]);
 	
 	$uid = $_REQUEST['uid'];			// publisher사의 사용자 구별값 varchar(64)
 	$userdata = $_REQUEST['userdata'];	// publisher사의 사용자 context text

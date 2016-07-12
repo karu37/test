@@ -365,6 +365,12 @@ function sucomm_request_start($app_key, &$arr_data, &$conn)
 	$url_param['go_type'] = "json";
 	$url_param['real_ip'] = $arr_data['ip'];
 	
+	$url_param['udid'] = base64_encode($arr_data['imei']);
+	$url_param['ugid'] = base64_encode($arr_data['first-account']);		// account중 첫번째 것만 
+	$url_param['mcode'] = $arr_data['model'];
+	$url_param['fcode'] = $arr_data['mf'];
+	$url_param['submdeia'] = "";	
+	
 	$campain_url = concat_url($g_sucom['start'], http_build_query($url_param));
 
 	// 광고 URL 요청하기
