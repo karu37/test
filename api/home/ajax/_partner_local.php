@@ -128,10 +128,10 @@ function local_request_done($app_key, $arr_data, $b_forcedone, &$conn)
 			mysql_close($conn);
 			$response_data = post($req_base_url, $url_param, $g_local['timeout_sec']);
 			$conn = dbConn();
-			
+
 			$ar_resp = json_decode($response_data, true);
 			
-			make_action_log("callback-pub-local", ifempty($ar_resp['result'], 'N'), $arr_userapp['pcode'], $arr_userapp['adid'], null, get_timestamp() - $start_tm, $req_base_url, $url_param, $response_data, $conn);
+			make_action_log("callback-pub-local", ifempty($ar_resp['result'], 'N'), $arr_data['pcode'], $arr_data['adid'], null, get_timestamp() - $start_tm, $req_base_url, $url_param, $response_data, $conn);
 			
 			// ----------------------------------------------------------------------
 			// 리턴 데이터 구성 (리턴 불필요 -- 자체 해결해야 함)
@@ -149,7 +149,6 @@ function local_request_done($app_key, $arr_data, $b_forcedone, &$conn)
 	/////////////////////////////////////////////////////////////////////////
 	// MERCHANT CALLBACK END
 	/////////////////////////////////////////////////////////////////////////
-	
 	return array('result' => 'Y');
 }
 ?>
