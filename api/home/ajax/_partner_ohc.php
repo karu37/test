@@ -352,10 +352,10 @@ function ohc_request_start($app_key, &$arr_data, &$conn)
 	$start_tm = get_timestamp();
 	$ctx = stream_context_create( array( 'http'=> array('timeout' => $g_ohc['timeout_sec']), 'https'=> array('timeout' => $g_ohc['timeout_sec']) ) );
 	
-	// MYSQL을 닫은 후 요청이 완료되면 dbPConn()으로 재 연결한다.
+	// MYSQL을 닫은 후 요청이 완료되면 재 연결한다.
 	mysql_close($conn);
 	$result_data = @file_get_contents($campain_url, 0, $ctx);
-	$conn = dbPConn();
+	$conn = dbConn();
 	
 	make_action_log("user-start-ohc", ($result_data?'Y':'N'), $arr_data['pcode'], $arr_data['adid'], null, get_timestamp() - $start_tm, $campain_url, null, $result_data, $conn);
 	if (!$result_data) return array('result' => 'N', 'code' => '-1003');
@@ -394,10 +394,10 @@ function ohc_request_done($app_key, $arr_data, &$conn)
 	// 광고 적립 요청 보내기
 	$start_tm = get_timestamp();
 	
-	// MYSQL을 닫은 후 요청이 완료되면 dbPConn()으로 재 연결한다.
+	// MYSQL을 닫은 후 요청이 완료되면 재 연결한다.
 	mysql_close($conn);
 	$result_data = post($g_ohc['done'], $url_param, $g_ohc['timeout_sec']);
-	$conn = dbPConn();	
+	$conn = dbConn();	
 	
 	make_action_log("user-done-ohc", ($result_data?'Y':'N'), $arr_data['pcode'], $arr_data['adid'], null, get_timestamp() - $start_tm, $g_ohc['done'], $url_param, $result_data, $conn);
 	if (!$result_data) return array('result' => 'N', 'code' => '-1003');

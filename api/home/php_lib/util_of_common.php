@@ -297,7 +297,7 @@ function callback_reward($pcode, $mcode, $appkey, $adid,
 				$row = @mysql_fetch_assoc(mysql_query($sql, $conn));
 				if ($row['id']) {
 					$sql = "UPDATE al_summary_sales_h_t 
-							SET merchant_cnt = merchant_cnt + 1, 
+							SET merchant_cnt = merchant_cnt + IF('{$merchant_fee}'<>0,1,0),
 								merchant_fee = merchant_fee + '{$merchant_fee}',
 								publisher_cnt = publisher_cnt + 1,
 								publisher_fee = publisher_fee + '{$publisher_fee}'
@@ -306,7 +306,7 @@ function callback_reward($pcode, $mcode, $appkey, $adid,
 				} else {
 					// Merchant Fee가 0보다 큰경우에 Merchant_cnt를 1 증가시킨다.
 					$sql = "INSERT al_summary_sales_h_t (mcode, pcode, app_key, merchant_cnt, merchant_fee, publisher_cnt, publisher_fee, reg_day, hr)
-							VALUES ('{$db_mcode}', '{$db_pcode}', '{$db_appkey}', '1', '{$merchant_fee}', '1', '{$publisher_fee}', '{$ar_time['day']}', HOUR('{$ar_time['now']}'));";
+							VALUES ('{$db_mcode}', '{$db_pcode}', '{$db_appkey}', IF('{$merchant_fee}'<>0,1,0), '{$merchant_fee}', '1', '{$publisher_fee}', '{$ar_time['day']}', HOUR('{$ar_time['now']}'));";
 					mysql_execute($sql, $conn);
 				}
 				////////////////////////////////////////////////////////////////////////////////////
@@ -368,14 +368,14 @@ function callback_reward($pcode, $mcode, $appkey, $adid,
 							$row = @mysql_fetch_assoc(mysql_query($sql, $conn));
 							if ($row['id']) {
 								$sql = "UPDATE al_summary_sales_h_t 
-										SET merchant_cnt = merchant_cnt + 1, 
+										SET merchant_cnt = merchant_cnt + IF('{$merchant_fee}'<>0,1,0), 
 											merchant_fee = merchant_fee + '{$merchant_fee}'
 										WHERE id = '{$row['id']}'";
 								mysql_execute($sql, $conn);
 							} else {
 								// <== [강제적립한경우]에는 Merchant 만 갱신한다. (Publisher는 0건, 0원)
 								$sql = "INSERT al_summary_sales_h_t (mcode, pcode, app_key, merchant_cnt, merchant_fee, publisher_cnt, publisher_fee, reg_day, hr)
-										VALUES ('{$db_mcode}', '{$db_pcode}', '{$db_appkey}', '1', '{$merchant_fee}', '0', '0', '{$ar_time['day']}', HOUR('{$ar_time['now']}'))";
+										VALUES ('{$db_mcode}', '{$db_pcode}', '{$db_appkey}', IF('{$merchant_fee}'<>0,1,0), '{$merchant_fee}', '0', '0', '{$ar_time['day']}', HOUR('{$ar_time['now']}'))";
 								mysql_execute($sql, $conn);
 							}
 											
@@ -497,7 +497,7 @@ function force_reward($pcode, $mcode, $appkey, $adid,
 								if ($row['id']) {
 									// <== [강제적립]은 Merchant 매출 정보를 건드리지 않음.
 									$sql = "UPDATE al_summary_sales_h_t 
-											SET merchant_cnt = merchant_cnt + IF('{$is_local}'='Y',1,0), 
+											SET merchant_cnt = merchant_cnt + IF('{$is_local}'='Y' AND '{$merchant_fee}' <> 0,1,0), 
 												merchant_fee = merchant_fee + IF('{$is_local}'='Y','{$merchant_fee}',NULL),
 												publisher_cnt = publisher_cnt + 1,
 												publisher_fee = publisher_fee + '{$publisher_fee}'
@@ -507,7 +507,7 @@ function force_reward($pcode, $mcode, $appkey, $adid,
 									// <== [강제적립]은 Merchant 매출및 건수를 0으로
 									$sql = "INSERT al_summary_sales_h_t (mcode, pcode, adid, app_key, merchant_cnt, merchant_fee, publisher_cnt, publisher_fee, reg_day, hr)
 											VALUES ('{$db_mcode}', '{$db_pcode}', '{$db_adid}', '{$db_appkey}', 
-													IF('{$is_local}'='Y',1,0),
+													IF('{$is_local}'='Y' AND '{$merchant_fee}' <> 0,1,0),
 													IF('{$is_local}'='Y','{$merchant_fee}',NULL), 
 													'1', 
 													'{$publisher_fee}', 

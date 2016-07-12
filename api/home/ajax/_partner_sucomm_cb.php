@@ -74,28 +74,27 @@ $g_sucom['timeout_sec'] = 60;				// 시작 / 적립 요청시의 Timeout 초
 	
 		// ----------------------------------------------------------------------
 		$start_tm = get_timestamp();
-		$response_data = post($req_base_url, $url_param, $g_sucom['timeout_sec']);
-		$ar_resp = json_decode($response_data, true);
 
 		// MYSQL을 닫은 후 요청이 완료되면 dbPConn()으로 재 연결한다.
 		mysql_close($conn);
+		$response_data = post($req_base_url, $url_param, $g_sucom['timeout_sec']);
+		$conn = dbConn();
+		
+		$ar_resp = json_decode($response_data, true);
 		
 		make_action_log("callback-pub-ohc", ifempty($ar_resp['result'], 'N'), $arr_userapp['pcode'], $arr_userapp['adid'], null, get_timestamp() - $start_tm, $req_base_url, $url_param, $response_data, $conn);
 		
-		$conn = dbPConn();
-	
 		// ----------------------------------------------------------------------
 		// 리턴 데이터 구성 (리턴 불필요 -- 자체 해결해야 함)
 		// 	 callback_done 결과를 al_user_app_t 에 기록하기 실패시 F 로 설정함.
 		// ----------------------------------------------------------------------
-		if ($ar_resp['result'] == 'Y') {
-			$sql = "UPDATE al_user_app_t SET callback_done = 'Y', callback_data = NULL, callback_time = '{$ar_time['now']}' WHERE id = '{$userapp_id}'";
-			mysql_query($sql, $conn);
-		} else {
-			$db_response_data = mysql_real_escape_string($response_data);
-			$sql = "UPDATE al_user_app_t SET callback_done = 'F', callback_data = '{$db_response_data}', callback_time = '{$ar_time['now']}' WHERE id = '{$userapp_id}'";
-			mysql_query($sql, $conn);
-		}
+		$db_callback_url = mysql_real_escape_string($req_base_url);
+		$db_callback_post = mysql_real_escape_string(json_encode($url_param));
+		$db_result = mysql_real_escape_string($ar_resp['result'] == 'Y' ? 'Y' : 'N');
+		$db_response_data = mysql_real_escape_string($response_data);
+		
+		$sql = "UPDATE al_user_app_t SET callback_done = '{$db_result}', callback_url = '{$db_callback_url}', callback_post = '{$db_callback_post}', callback_resp = '{$db_response_data}', callback_time = '{$ar_time['now']}', callback_tried = callback_tried + 1 WHERE id = '{$userapp_id}'";
+		mysql_query($sql, $conn);
 	}
 	echo_response('success');
 	die();

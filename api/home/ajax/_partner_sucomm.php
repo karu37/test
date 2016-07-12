@@ -369,7 +369,7 @@ function sucomm_request_start($app_key, &$arr_data, &$conn)
 	$url_param['ugid'] = base64_encode($arr_data['first-account']);		// account중 첫번째 것만 
 	$url_param['mcode'] = $arr_data['model'];
 	$url_param['fcode'] = $arr_data['mf'];
-	$url_param['submdeia'] = "";	
+	$url_param['submdeia'] = md5($arr_data['pcode']);
 	
 	$campain_url = concat_url($g_sucom['start'], http_build_query($url_param));
 
@@ -377,10 +377,10 @@ function sucomm_request_start($app_key, &$arr_data, &$conn)
 	$start_tm = get_timestamp();
 	$ctx = stream_context_create( array( 'http'=> array('timeout' => $g_sucom['timeout_sec']), 'https'=> array('timeout' => $g_sucom['timeout_sec']) ) );
 	
-	// MYSQL을 닫은 후 요청이 완료되면 dbPConn()으로 재 연결한다.
+	// MYSQL을 닫은 후 요청이 완료되면 재 연결한다.
 	mysql_close($conn);
 	$result_data = @file_get_contents($campain_url, 0, $ctx);
-	$conn = dbPConn();
+	$conn = dbConn();
 	
 	make_action_log("user-start-sucomm", ($result_data?'Y':'N'), $arr_data['pcode'], $arr_data['adid'], null, get_timestamp() - $start_tm, $campain_url, null, $result_data, $conn);
 	if (!$result_data) return array('result' => 'N', 'code' => '-1003');
@@ -418,10 +418,10 @@ function sucomm_request_done($app_key, $arr_data, &$conn)
 	// 광고 적립 요청 보내기
 	$start_tm = get_timestamp();
 	
-	// MYSQL을 닫은 후 요청이 완료되면 dbPConn()으로 재 연결한다.
+	// MYSQL을 닫은 후 요청이 완료되면 재 연결한다.
 	mysql_close($conn);
 	$result_data = post($g_sucom['done'], $url_param, $g_sucom['timeout_sec']);
-	$conn = dbPConn();	
+	$conn = dbConn();	
 	
 	make_action_log("user-done-sucomm", ($result_data?'Y':'N'), $arr_data['pcode'], $arr_data['adid'], null, get_timestamp() - $start_tm, $g_sucom['done'], $url_param, $result_data, $conn);
 	if (!$result_data) return array('result' => 'N', 'code' => '-1003');

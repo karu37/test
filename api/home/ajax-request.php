@@ -24,7 +24,7 @@ else
 	$conn = dbConn();
 */
 
-$conn = dbPConn();
+$conn = dbConn();
 	
 if (!$conn) return_die(false, null, '서비스 연결이 원활하지 않습니다.(20)');
 
