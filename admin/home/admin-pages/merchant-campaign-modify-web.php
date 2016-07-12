@@ -12,9 +12,9 @@
 	</style>
 	<div style='padding: 10px'>
 		<a href='#' onclick='<?=$js_page_id?>.action.on_btn_modifycampaign()' data-role='button' data-theme='b' data-inline='true' data-mini='true' >변경사항 적용하기</a>
-		<a href='?id=campaign-by-appkey-list&appkey=<?=urlencode($row['app_key'])?>' data-theme='b' data-role='button' data-mini='true' data-inline='true'>참가자</a>
+		<a href='?id=merchant-campaign-user-list&mcode=<?=$row['mcode']?>&appkey=<?=urlencode($row['app_key'])?>' data-theme='b' data-role='button' data-mini='true' data-inline='true'>참가자</a>
 		
-		<a href='?id=campaign-app-exec-view&appkey=<?=urlencode($row['app_key'])?>' data-role='button' data-theme='b' data-inline='true' data-mini='true' >일자별 수행수</a>
+		<a href='?id=merchant-campaign-exec-view&mcode=<?=$row['mcode']?>&appkey=<?=urlencode($row['app_key'])?>' data-role='button' data-theme='b' data-inline='true' data-mini='true' >일자별 수행수</a>
 	</div>	
 	<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 	<script type="text/javascript">
@@ -368,9 +368,9 @@
 	</div>
 	<div style='padding-top: 20px'>
 		<a href='#' onclick='<?=$js_page_id?>.action.on_btn_modifycampaign()' data-role='button' data-theme='b' data-inline='true' data-mini='true' >변경사항 적용하기</a>
-		<a href='?id=campaign-by-appkey-list&appkey=<?=urlencode($row['app_key'])?>' data-theme='b' data-role='button' data-mini='true' data-inline='true'>참가자</a>
+		<a href='?id=merchant-campaign-user-list&mcode=<?=$row['mcode']?>&appkey=<?=urlencode($row['app_key'])?>' data-theme='b' data-role='button' data-mini='true' data-inline='true'>참가자</a>
 		
-		<a href='?id=campaign-app-exec-view&appkey=<?=urlencode($row['app_key'])?>' data-role='button' data-theme='b' data-inline='true' data-mini='true' >일자별 수행수</a>
+		<a href='?id=merchant-campaign-exec-view&mcode=<?=$row['mcode']?>&appkey=<?=urlencode($row['app_key'])?>' data-role='button' data-theme='b' data-inline='true' data-mini='true' >일자별 수행수</a>
 	</div>
 
 </div>

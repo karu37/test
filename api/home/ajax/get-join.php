@@ -60,8 +60,6 @@
 	$db_uid = mysql_real_escape_string($uid);
 	$db_userdata = mysql_real_escape_string($userdata);
 
-	$db_lib = mysql_real_escape_string($row_app['lib']);
-	
 	$ar_time = mysql_get_time($conn);
 	
 	// $arr_param 에 시간 정보 추가
@@ -71,6 +69,9 @@
 	// ----------------------------------------------------------------------------
 	// pcode와 광고에 대한 기본 정보를 로딩하면서, 광고 참여 여부 Flag도 체크한다.
 	$row_app = get_query_publisher_app($pcode, $appkey, $ar_time, $conn);
+
+	// al_app_t에서 사용할 정보 추출
+	$db_lib = mysql_real_escape_string($row_app['lib']);
 	
 	// $arr_param['ad'] 에 al_app_t 정보를 추가한다.
 	$arr_param['ad'] = $row_app;
