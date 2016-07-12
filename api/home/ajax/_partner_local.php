@@ -137,7 +137,11 @@ function local_request_done($app_key, $arr_data, $b_forcedone, &$conn)
 			// 리턴 데이터 구성 (리턴 불필요 -- 자체 해결해야 함)
 			// 	 callback_done 결과를 al_user_app_t 에 기록하기 실패시 F 로 설정함.
 			// ----------------------------------------------------------------------
-			$db_result = mysql_real_escape_string($ar_resp['result'] == 'Y' ? 'Y' : 'N');
+			if ($ar_resp['result'] == 'Y') $callback_result = 'Y';
+			else if ($response_data === "") $callback_result = 'R';		// 아무것도 응답하지 않은 경우 ==> 실패로 보고 재시도함.
+			else $callback_result = 'N';
+			
+			$db_result = mysql_real_escape_string($callback_result);
 			$db_response_data = mysql_real_escape_string($response_data);
 			$db_callback_url = mysql_real_escape_string($req_base_url);
 			$db_callback_post = mysql_real_escape_string(json_encode($url_param));

@@ -156,13 +156,14 @@ function return_die($result, $object = null, $msg = null, $error_sql = null) {
 	die();
 }
 
-function post($url, $ar_post_param)
+function post($url, $ar_post_param, $timeout_sec = 60)
 {
 	$options = array(
 		'http' => array(
 			'header' => "Content-type: application/x-www-form-urlencoded\r\n",
 			'method' => 'POST',
 			'content' => http_build_query($ar_post_param),
+			'timeout' => $timeout_sec,
 			),
 		);
 	
