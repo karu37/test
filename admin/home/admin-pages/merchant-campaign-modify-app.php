@@ -1,3 +1,14 @@
+<?
+	// getting execution count and total count from live stat table
+	$db_appkey = mysql_real_escape_string($appkey);
+	
+	$sql = "SELECT DATE(a.exec_time) reg_day, a.exec_day_cnt cnt, a.exec_tot_cnt totcnt
+				FROM al_app_exec_stat_t a 
+				WHERE a.app_key = '{$db_appkey}' AND DATE(a.exec_time) = CURRENT_DATE";
+ 	$result = mysql_query($sql, $conn);
+ 	$row_today = @mysql_fetch_assoc(mysql_query($sql, $conn));
+
+?>
 <div>
 	<t3 style='height:40px; padding-top:20px'>광고 정보 수정</t3>
 	<hr>
@@ -166,12 +177,12 @@
 			<div style='width:100px; display: inline-block; height: 20px; padding-top: 5px; float:left'>
 				<input type="text" id="app-exec-total-cnt" name="app-exec-total-cnt"  init-value='<?=number_format($row['exec_tot_max_cnt'])?>' />
 			</div>
-			<div style='float:left; padding: 15px 10px'>회</div>
+			<div style='float:left; padding: 10px 10px'>회 <b3 style='padding-left:20px'>총 적립수 : <?=number_format($row_today['totcnt'])?> 회</b3></div>
 			<div style='clear:both'></div>
 		</div>
 		<div class='ui-block-a'>주말수행</div>
 		<div class='ui-block-b'>
-			<div class='ui-block-a' style='width:200px; padding-left: 0px; padding-top: 5px'>
+			<div class='ui-block-a' style='width:200px; padding-left: 0px; padding-top: 0px'>
 				<fieldset id="app-exec-weekend" class='td-2-item' data-role="controlgroup" data-type="horizontal" data-mini=true init-value="<?=$row['exec_weekend']?>">
 			        <input name="app-exec-weekend" id="app-exec-weekend-Y" value="Y" type="radio" />
 			        <label for="app-exec-weekend-Y">주말수행</label>
@@ -257,7 +268,7 @@
 			<div style='width:100px; display: inline-block; height: 20px; padding-top: 5px; float:left'>
 				<input type="text" id="app-exec-daily-cnt" name="app-exec-daily-cnt" data-clear-btn=true placeholder='제한 없음' init-value='<?=number_format(ifempty($row['exec_day_max_cnt'], ""))?>' />
 			</div>
-			<div style='float:left; padding: 15px 10px'>회</div>
+			<div style='float:left; padding: 10px 10px'>회 <b3 style='padding-left:20px'>금일 적립수 : <?=number_format($row_today['cnt'])?> 회</b3></div>
 			<div style='clear:both'></div>
 		</div>
 		<div class='ui-block-a'>스케쥴 설정</div>
@@ -385,6 +396,7 @@
 		<a href='?id=merchant-campaign-user-list&mcode=<?=$row['mcode']?>&appkey=<?=urlencode($row['app_key'])?>' data-theme='b' data-role='button' data-mini='true' data-inline='true'>참가자</a>
 		
 		<a href='?id=merchant-campaign-exec-view&mcode=<?=$row['mcode']?>&appkey=<?=urlencode($row['app_key'])?>' data-role='button' data-theme='b' data-inline='true' data-mini='true' >일자별 수행수</a>
+		<a href='#' onclick='goPage("dlg-upload-app-adid", null, {appkey: "<?=$row['app_key']?>"})' data-theme='b' data-role='button' data-mini='true' data-inline='true'>ADID 등록(중복방지)</a>
 	</div>
 
 </div>

@@ -6,7 +6,7 @@
 	$db_search = mysql_real_escape_string($search);
 
 	// order	
-	if (!$_REQUEST['orderby']) $order_by = "ORDER BY IF(CONCAT(app.is_mactive) = 'Y', 1, 2) ASC";
+	if (!$_REQUEST['orderby']) $order_by = "ORDER BY IF(CONCAT(app.is_mactive) = 'Y', 1, 2) ASC, app.app_exec_type ASC";
 	else $order_by = "ORDER BY " . $_REQUEST['orderby'] . " " . ifempty($_REQUEST['order'], 'DESC');
 
 	// is_mactive : Y/N/D/T
@@ -54,13 +54,8 @@
 	<style>
 		/* line hover setup using mactive flag */
 		.list tr:hover td 				{background:#eff}
-		.list tr.active-N td 			{background:#eee}
-		.list tr.mactive-N td 			{background:#ccc; color:#444}
-		.list tr.mactive-N:hover td 	{background:#ddd}
-		.list tr.mactive-D td 			{background:#aaa; color:#000}
-		.list tr.mactive-D:hover td 	{background:#bbb}
-		.list tr.mactive-T td 			{background:#aaa; color:#000}
-		.list tr.mactive-T:hover td 	{background:#bbb}
+		.list tr.app-active-N td 		{background:#eee; color:#444}
+		.list tr.app-active-N:hover td 	{background:#ddd}
 		
 		.list tr > * 	{height:25px; line-height:1em; padding: 4px 4px}
 		
@@ -195,8 +190,12 @@
 			$exec_tot_cnt = admin_number($appkey['app_exec_tot_cnt']) . '<br>' . admin_number($appkey['exec_tot_max_cnt'], "-", "0");
 			if ($appkey['exec_tot_check'] == 'N') $exec_tot_cnt = '<span style="color:red; font-weight: bold">'. $exec_tot_cnt .'</span>';
 
+			// 광고 노출여부 Flag
+			$app_active = 'Y';
+			if ( $appkey['is_active'] != 'Y' || $appkey['is_mactive'] != 'Y' || $appkey['m_is_mactive'] != 'Y')
+				$app_active = 'N';
 			?>
-			<tr style='cursor:pointer' id='line-<?=$appkey['app_key']?>' class='mactive-<?=$appkey['is_mactive']?> active-<?=$appkey['is_active']?>'>
+			<tr style='cursor:pointer' id='line-<?=$appkey['app_key']?>' class='app-active-<?=$app_active?>'>
 				<td <?=$td_onclick?>><?=$appkey['id']?></td>
 				<td <?=$td_onclick?>><?=$arr_active[$appkey['is_active']]?></td>
 				<td class='btn-td'>

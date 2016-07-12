@@ -13,7 +13,7 @@
 	$ar_time = mysql_get_time($conn);
 	$sql = get_query_app_list($pcode, $ar_time, false, ($pub_mactive == 'T'), $conn);
 	$result = mysql_query($sql, $conn);
-	
+
 ?>	
 <head>
 	<title>A-Line 테스트 페이지</title>
@@ -76,6 +76,7 @@
 						$i++;
 						// exec_tot_max_cnt 가 초과한 대상은 is_active ==> "N" 으로 변경한다.
 						// exec_edate 가 지난 경우에도 is_active ==> "N" 으로 변경
+
 						if ($row['tot_not_complished'] != 'Y' || $row['edate_not_expired'] != 'Y') {
 echo "<!-- \n";
 // var_dump($row);							
@@ -87,7 +88,7 @@ echo "\n-->";
 						// 표시 차단 대상 (위에서 필터링 안된 대상)
 						// 금액이 0 인 경우
 						if ( intval($row['publisher_fee']) <= 0 ) continue;	
-						
+
 						echo "<tr>";
 						echo "<td>{$i}</td>\n";
 						echo "<td><img src='{$row['app_iconurl']}' width=40px /></td>\n";

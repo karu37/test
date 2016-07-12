@@ -44,7 +44,7 @@
 	if ($listtype == 'A') $where .= " AND app.is_active = 'Y'";
 	else $where .= " AND (app.is_active <> 'Y')";
 	
-	$order_by = "ORDER BY IF(CONCAT(app.is_mactive) = 'Y', 1, 2) ASC, app.id DESC";
+	$order_by = "ORDER BY IF(CONCAT(app.is_mactive) = 'Y', 1, 2) ASC, app.app_exec_type ASC, app.id DESC";
 	// --------------------------------
 	// Paginavigator initialize	
 	$sql = "SELECT COUNT(*) as cnt FROM al_app_t app WHERE app.is_mactive <> 'T' {$where}";
@@ -144,21 +144,9 @@
 	$result = mysql_query($sql, $conn);
 ?>
 	<style>
-		.list .mactive-N 			{background:#999}
-		.list .mactive-N td			{color: #ddd}
-		
-		/* al_app_t.is_mactive */
-		.list .appmactive-N 			{background:#888}
-		.list .appmactive-N td			{color: #ddd}
-		.list .appmactive-N:hover td 	{background:#aaa}
-		
-		.list .appmactive-D 			{background:#999}
-		.list .appmactive-D td			{color: #ddd}
-		.list .appmactive-D:hover td 	{background:#aaa}
-		
-		.list tr:hover td 			{background:#dff}
-		.list tr.active-N td 			{background:#eee}
-		.list tr.mactive-N:hover td {background:#ddd}
+		.list tr:hover td 				{background:#dff}
+		.list tr.app-active-N td 		{background:#eee; color:#444}
+		.list tr.app-active-N:hover td 	{background:#ddd}
 		
 		.list tr > * 	{height:25px; line-height:1em; padding: 4px 4px}
 				
@@ -310,16 +298,18 @@
 			// Packageid (Optional display)
 			$app_packageid = ($row['app_packageid'] ? "<div style='text-align:left; padding: 0; color:#888; font-size:9px'>{$row['app_packageid']}</div>" : "");
 			
-			$app_status = 'Y';
+			$app_active = 'Y';
 			if ($row['is_active'] == 'N' || 
-				$row['is_mactive'] == 'N' || $row['is_mactive'] == 'D' || $row['exec_edate_check'] == 'N' || 
-				$row['p_is_mactive'] == 'N' || $row['p_is_mactive'] == 'T' ||
+				$row['is_mactive'] != 'Y' || 
+				$row['p_is_mactive'] != 'Y' ||
+				$row['m_is_mactive'] != 'Y' ||
+				$row['pa_is_mactive'] != 'Y' ||
 				$row['check_time_period'] == 'N' || 
 				$row['p_lvmode'] == 'N' || $row['p_level_active_mode'] == 'N' || $row['pa_active_time_mode'] == 'N' ||
 				$row['pa_pmode'] == 'N' || 
 				$row['check_hour_executed'] == 'N' || $row['check_day_executed'] == 'N' || $row['check_tot_executed'] == 'N' ||
 				$row['ps_check_hour_executed'] == 'N' || $row['ps_check_day_executed'] == 'N' || $row['ps_check_tot_executed'] == 'N'
-				) $app_status = 'N';
+				) $app_active = 'N';
 			
 			
 			// 오픈 시간
@@ -372,7 +362,7 @@
 			if ($row['ps_check_tot_executed'] == 'N') $ps_exec_tot_cnt = '<span style="color:red; font-weight: bold">'. $ps_exec_tot_cnt .'</span>';
 			
 			?>
-			<tr id='list-<?=$row['id']?>' class='mactive-<?=$row['pa_is_mactive']?> appmactive-<?=$app_status?> active-<?=$appkey['is_active']?>' style='cursor:pointer'>
+			<tr id='list-<?=$row['id']?>' class='app-active-<?=$app_active ?>' style='cursor:pointer'>
 				<td <?=$td_onclick?>><?=$row['id']?></td>
 				<td <?=$td_onclick?>><?=$arr_active[$row['is_active']]?></td>
 				<td>

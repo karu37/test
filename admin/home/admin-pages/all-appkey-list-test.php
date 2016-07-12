@@ -24,10 +24,12 @@
 	// publisher info
 	// ---------------------------------------
 	$sql = "SELECT app.*,
+				m.is_mactive as 'm_is_mactive',
 				IFNULL(s.exec_tot_cnt, 0) as 'app_exec_tot_cnt',
 				IF (IFNULL(app.exec_tot_max_cnt, 0) <= IFNULL(s.exec_tot_cnt, 0), 'N', 'Y')  as 'exec_tot_check'
 			FROM al_app_t app 
 				LEFT OUTER JOIN al_app_exec_stat_t s ON app.app_key = s.app_key
+				LEFT OUTER JOIN al_merchant_t m ON app.mcode = m.mcode
 			WHERE 1=1 {$where} {$order_by} {$limit}";
 	$result = mysql_query($sql, $conn);
 
@@ -35,15 +37,8 @@
 	<style>
 		/* line hover setup using mactive flag */
 		.list tr:hover td 				{background:#eff}
-		.list tr.mactive-N td 			{background:#ccc; color:#444}
-		.list tr.mactive-N:hover td 	{background:#ddd}
-		.list tr.mactive-D td 			{background:#aaa; color:#000}
-		.list tr.mactive-D:hover td 	{background:#bbb}
-		.list tr.mactive-T td 			{background:#aaa; color:#000}
-		.list tr.mactive-T:hover td 	{background:#bbb}
-		
-		.list tr.active-N td 			{background:#ccc; color:#444}
-		.list tr.active-N:hover td 		{background:#ddd}
+		.list tr.app-active-N td 		{background:#eee; color:#444}
+		.list tr.app-active-N:hover td 	{background:#ddd}
 		
 		.list tr > * 	{height:25px; line-height:1em; padding: 4px 4px}
 		
@@ -96,7 +91,8 @@
 			<th width=30px>앱<br>적립</th>
 			<th width=1px><div class='th_status'>관리<br>차단</div></th>
 			<th>아이콘</th>
-			<th width=80px>매체코드</th>
+			<th width=80px>M<br>코드</th>
+			<th width=30px>M<br>상태</th>
 			<th>환경</th>
 			<th>제목</th>
 			<th width=30px>원가</th>
@@ -114,6 +110,9 @@
 		$arr_market = array('P' => '<span style="color:blue;font-weight:bold;font-size:11px">플레이스토어</span>', 'A' => '<span style="color:red;font-weight:bold;font-size:11px">앱스토어</span>', 'W' => '<span style="color:orange;font-weight:bold;font-size:11px">수행형</span>');
 		$arr_exectype = array('I' => '<span style="color:blue;font-weight:bold">CPI</span>', 'E' => '<span style="color:green;font-weight:bold">CPE</span>', 'F' => '<span style="color:orange;font-weight:bold;font-size:11px">페북좋아요</span>');
 		$arr_gender = array('M' => '남성', 'F' => '여성');
+		
+		$arr_mp_mactive = array('Y' => '연동', 'N' => '<span style="color:red; font-weight: bold">중지</span>', 'T' => '<span style="color:red; font-weight: bold">개발</span>', 'D' => '<span style="color:red; font-weight: bold">삭제</span>');
+		
 		while ($appkey = mysql_fetch_assoc($result)) {
 			
 			$url_appkey = urlencode($appkey['app_key']);
@@ -148,8 +147,13 @@
 			$exec_tot_cnt = admin_number($appkey['app_exec_tot_cnt']) . '<br>' . admin_number($appkey['exec_tot_max_cnt'], "-", "0");
 			if ($appkey['exec_tot_check'] == 'N') $exec_tot_cnt = '<span style="color:red; font-weight: bold">'. $exec_tot_cnt .'</span>';
 
+			// 광고 노출여부 Flag
+			$app_active = 'Y';
+			if ( $appkey['is_active'] != 'Y' || $appkey['m_is_mactive'] != 'Y' )
+				$app_active = 'N';
+
 			?>
-			<tr style='cursor:pointer' id='line-<?=$appkey['app_key']?>' class='mactive-<?=$appkey['is_mactive']?> active-<?=$appkey['is_active']?>'>
+			<tr style='cursor:pointer' id='line-<?=$appkey['app_key']?>' class='app-active-<?=$app_active?>'>
 				<td <?=$td_onclick?>><?=$appkey['id']?></td>
 				<td <?=$td_onclick?>><?=$arr_active[$appkey['is_active']]?></td>
 				<td class='btn-td'>
@@ -162,6 +166,7 @@
 				</td>
 				<td <?=$td_onclick?>><img src='<?=$appkey['app_iconurl']?>' width=40px style='width:40px;height:40px;overflow:hidden;border-radius:0.5em;border:1px solid #888' /></td>
 				<td <?=$td_onclick?>><?=$appkey['mcode']?></td>
+				<td <?=$td_onclick?>><?=$arr_mp_mactive[$appkey['m_is_mactive']]?></td>
 				<td <?=$td_onclick?>><?=$arr_platform[$appkey['app_platform']]?><br><?=$arr_market[$appkey['app_market']]?><br><?=$arr_exectype[$appkey['app_exec_type']]?></td>
 				
 				<td <?=$td_onclick?>><div style='text-align:left; padding: 0 5px; color:inherit'><?=$appkey['app_title']?></div><?=$app_packageid?></td>

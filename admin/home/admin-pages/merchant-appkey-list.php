@@ -46,7 +46,7 @@
 	
 	if ($searchfor == "title" && $search) $where .= " AND app.app_title LIKE '%{$db_search}%'";
 	
-	$order_by = "ORDER BY IF(CONCAT(app.is_mactive, app.is_active) = 'YY', 1, 2) ASC, app.id DESC";
+	$order_by = "ORDER BY IF(CONCAT(app.is_mactive, app.is_active) = 'YY', 1, 2) ASC, app.app_exec_type ASC, app.id DESC";
 	// --------------------------------
 	// Paginavigator initialize	
 	$sql = "SELECT COUNT(*) as cnt FROM al_app_t app WHERE app.mcode = '{$db_mcode}' {$where}";
@@ -67,13 +67,8 @@
 ?>
 	<style>
 		.list tr:hover td 				{background:#eff}
-		.list tr.active-N td 			{background:#eee}
-		.list tr.mactive-N td 			{background:#ccc; color:#444}
-		.list tr.mactive-N:hover td 	{background:#ddd}
-		.list tr.mactive-D td 			{background:#aaa; color:#000}
-		.list tr.mactive-D:hover td 	{background:#bbb}
-		.list tr.mactive-T td 			{background:#aaa; color:#000}
-		.list tr.mactive-T:hover td 	{background:#bbb}
+		.list tr.app-active-N td 		{background:#eee; color:#444}
+		.list tr.app-active-N:hover td 	{background:#ddd}
 		
 		.list tr > * 	{height:25px; line-height:1em; padding: 4px 4px}
 				
@@ -189,8 +184,14 @@
 			$url_mcode = urlencode($mcode);
 			$url_appkey = urlencode($row['app_key']);
 			$td_onclick = "onclick=\"mvPage('merchant-campaign-modify', null, {mcode:'{$mcode}', appkey: '{$row['app_key']}'})\"";
+			
+			// 광고 노출여부 Flag
+			$app_active = 'Y';
+			if ( $row['is_active'] != 'Y' || $row['is_mactive'] != 'Y' )
+				$app_active = 'N';
+			
 			?>
-			<tr id='list-<?=$row['id']?>' class='mactive-<?=$row['is_mactive']?> active-<?=$row['is_active']?>' style='cursor:pointer'>
+			<tr id='list-<?=$row['id']?>' class='app-active-<?=$app_active ?>' style='cursor:pointer'>
 				<td <?=$td_onclick?>><?=$row['id']?></td>
 				<td <?=$td_onclick?>><?=$arr_isactive[$row['is_active']]?></td>
 				<td>
