@@ -45,6 +45,7 @@ $g_ohc['timeout_sec'] = 60;				// 시작 / 적립 요청시의 Timeout 초
 	//## pcode from db
 	$g_log['pcode'] = $arr_userapp['pcode'];
 	$g_log['adid'] = $arr_userapp['adid'];
+	$g_log['app_key'] = $arr_userapp['app_key'];
 	
 	//## 적립하기
 	$ar_reward = callback_reward($arr_userapp['pcode'], $arr_userapp['mcode'], $arr_userapp['app_key'], $arr_userapp['adid'], 
@@ -82,7 +83,7 @@ $g_ohc['timeout_sec'] = 60;				// 시작 / 적립 요청시의 Timeout 초
 		
 		$ar_resp = json_decode($response_data, true);
 
-		make_action_log("callback-pub-ohc", ifempty($ar_resp['result'], 'N'), $arr_userapp['pcode'], $arr_userapp['adid'], null, get_timestamp() - $start_tm, $req_base_url, $url_param, $response_data, $conn);
+		make_action_log("callback-pub-ohc", ifempty($ar_resp['result'], 'N'), $arr_userapp['pcode'], $arr_userapp['adid'], $arr_userapp['app_key'], null, get_timestamp() - $start_tm, $req_base_url, $url_param, $response_data, $conn);
 		
 		// ----------------------------------------------------------------------
 		// 리턴 데이터 구성 (리턴 불필요 -- 자체 해결해야 함)
@@ -126,7 +127,7 @@ function echo_response($type, $msg = null)
 	if (!$arResult) $arResult = array('resCode' => 'E85', 'msg' => "Invalid response {$add_msg}");
 
 	$result = json_encode($arResult);
-	make_action_log("callback-ohc", ($type == 'success' ? 'Y' : 'N'), $g_log['pcode'], $g_log['adid'], null, null, null, null, $result, $conn);
+	make_action_log("callback-ohc", ($type == 'success' ? 'Y' : 'N'), $g_log['pcode'], $g_log['adid'], $g_log['app_key'], null, null, null, null, $result, $conn);
 	echo $result;
 }
 

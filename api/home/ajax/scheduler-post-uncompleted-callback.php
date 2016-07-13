@@ -11,8 +11,8 @@
 		try {
 			
 			begin_trans($conn);	
-			$sql = "SELECT id, pcode, adid, callback_url, callback_post, callback_tried FROM al_user_app_t WHERE callback_tried < {$max_try_cnt} AND callback_time <= date_sub(NOW(), interval {$min_retry_minutes} minute) AND callback_done = 'R' ORDER BY callback_time ASC LIMIT 1 FOR UPDATE";
-			echo $sql . '<br>';
+			$sql = "SELECT id, pcode, adid, app_key, callback_url, callback_post, callback_tried FROM al_user_app_t WHERE callback_tried < {$max_try_cnt} AND callback_time <= date_sub(NOW(), interval {$min_retry_minutes} minute) AND callback_done = 'R' ORDER BY callback_time ASC LIMIT 1 FOR UPDATE";
+			// echo $sql . '<br>';
 			$row = mysql_fetch_assoc(mysql_query($sql, $conn));
 			if ($row && $row['id']) {
 				$ar_info = $row;
@@ -39,7 +39,7 @@
 		$ar_resp = json_decode($response_data, true);
 
 		// retry 로그 남김		
-		make_action_log("callback-pub-local-retry", ifempty($ar_resp['result'], 'N'), $ar_info['pcode'], $ar_info['adid'], null, get_timestamp() - $start_tm, $req_base_url, $url_param, $response_data, $conn);
+		make_action_log("callback-pub-local-retry", ifempty($ar_resp['result'], 'N'), $ar_info['pcode'], $ar_info['adid'], $ar_info['adid'], $ar_info['app_key'], null, get_timestamp() - $start_tm, $req_base_url, $url_param, $response_data, $conn);
 		
 		// 최종 상태 갱신
 		if ($ar_resp['result'] == 'Y') $callback_result = 'Y';
@@ -54,7 +54,7 @@
 		
 		// 결과값과 응답값을 갱신시킴
 		$sql = "UPDATE al_user_app_t SET callback_done = '{$db_result}', callback_resp = '{$db_response_data}', callback_time = NOW() WHERE id = '{$ar_info['id']}'";
-		echo $sql;
+		// echo $sql;
 		mysql_query($sql, $conn);
 			
 	} while(false);

@@ -382,7 +382,7 @@ function sucomm_request_start($app_key, &$arr_data, &$conn)
 	$result_data = @file_get_contents($campain_url, 0, $ctx);
 	$conn = dbConn();
 	
-	make_action_log("user-start-sucomm", ($result_data?'Y':'N'), $arr_data['pcode'], $arr_data['adid'], null, get_timestamp() - $start_tm, $campain_url, null, $result_data, $conn);
+	make_action_log("user-start-sucomm", ($result_data?'Y':'N'), $arr_data['pcode'], $arr_data['adid'], $app_key,  null, get_timestamp() - $start_tm, $campain_url, null, $result_data, $conn);
 	if (!$result_data) return array('result' => 'N', 'code' => '-1003');
 	
 	//전달할 결과 조합
@@ -423,7 +423,7 @@ function sucomm_request_done($app_key, $arr_data, &$conn)
 	$result_data = post($g_sucom['done'], $url_param, $g_sucom['timeout_sec']);
 	$conn = dbConn();	
 	
-	make_action_log("user-done-sucomm", ($result_data?'Y':'N'), $arr_data['pcode'], $arr_data['adid'], null, get_timestamp() - $start_tm, $g_sucom['done'], $url_param, $result_data, $conn);
+	make_action_log("user-done-sucomm", ($result_data?'Y':'N'), $arr_data['pcode'], $arr_data['adid'], $app_key, null, get_timestamp() - $start_tm, $g_sucom['done'], $url_param, $result_data, $conn);
 	if (!$result_data) return array('result' => 'N', 'code' => '-1003');
 
 	// 전달할 결과 조합

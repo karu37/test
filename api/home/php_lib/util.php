@@ -158,20 +158,20 @@ function return_die($result, $object = null, $msg = null, $error_sql = null) {
 		$sql = "INSERT INTO _error_sql_log (`type`, `sql`, errno, error, reg_date) VALUES('M', '{$db_sql}', '{$db_errno}', '{$db_error}', NOW());";
 		@mysql_query($sql, $conn);
 	}
-	make_visit_log(null, $result, null, null, null, null, null, null, $object, $conn);
+	make_visit_log(null, $result, null, null, null, null, null, null, null, $object, $conn);
 	die();
 }
 
 // make_action_log("ohc-start", 'Y', $arr_data['adid'], null, get_timestamp() - $start_tm, $campain_url, null, $result_data, $conn);
-function make_visit_log($pageid, $is_result, $pcode, $adid, $ip, $elapsed_time, $req_url, $arsz_post_param, $arsz_response, $conn) {
+function make_visit_log($pageid, $is_result, $pcode, $adid, $appkey, $ip, $elapsed_time, $req_url, $arsz_post_param, $arsz_response, $conn) {
 	
-	_make_log($pageid, $is_result, $pcode, $adid, $ip, $elapsed_time, $req_url, $arsz_post_param, $arsz_response, $conn, 'V');
+	_make_log($pageid, $is_result, $pcode, $adid, $appkey, $ip, $elapsed_time, $req_url, $arsz_post_param, $arsz_response, $conn, 'V');
 }
-function make_action_log($pageid, $is_result, $pcode, $adid, $ip, $elapsed_time, $req_url, $arsz_post_param, $arsz_response, $conn) {
-	_make_log($pageid, $is_result, $pcode, $adid, $ip, $elapsed_time, $req_url, $arsz_post_param, $arsz_response, $conn, 'A');
+function make_action_log($pageid, $is_result, $pcode, $adid, $appkey, $ip, $elapsed_time, $req_url, $arsz_post_param, $arsz_response, $conn) {
+	_make_log($pageid, $is_result, $pcode, $adid, $appkey, $ip, $elapsed_time, $req_url, $arsz_post_param, $arsz_response, $conn, 'A');
 }
 
-function _make_log($pageid, $is_result, $pcode, $adid, $ip, $elapsed_time, $req_url, $arsz_post_param, $arsz_response, $conn, $tb_target = 'V')
+function _make_log($pageid, $is_result, $pcode, $adid, $appkey, $ip, $elapsed_time, $req_url, $arsz_post_param, $arsz_response, $conn, $tb_target = 'V')
 {
 	global $dev_mode, $_start_api_tm;
 	
@@ -179,6 +179,7 @@ function _make_log($pageid, $is_result, $pcode, $adid, $ip, $elapsed_time, $req_
 	if ($elapsed_time === null) $elapsed_time = get_timestamp() - $_start_api_tm;
 	if ($pageid === null) $pageid = $_REQUEST['id'];
 	if ($adid === null) $adid = $_REQUEST['adid'];
+	if ($appkey === null) $appkey = $_REQUEST['ad'];
 	if ($ip === null) $ip = $_SERVER['REMOTE_ADDR'];
 	if ($req_url === null) $req_url = 'http://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'];
 	if ($arsz_post_param === null) $arsz_post_param = $_POST;
@@ -187,6 +188,7 @@ function _make_log($pageid, $is_result, $pcode, $adid, $ip, $elapsed_time, $req_
 	$db_result = @mysql_real_escape_string($is_result);
 	$db_pageid = @mysql_real_escape_string($pageid);
 	$db_adid = @mysql_real_escape_string($adid);
+	$db_appkey = @mysql_real_escape_string($appkey);
 	$db_req_url = @mysql_real_escape_string($req_url);
 	$db_remote_addr = @mysql_real_escape_string($ip);
 	$db_elapsed_time = @mysql_real_escape_string($elapsed_time);
@@ -217,11 +219,12 @@ function _make_log($pageid, $is_result, $pcode, $adid, $ip, $elapsed_time, $req_
 	if ($tb_target == 'A') $tbname = 'site_action_log';
 	else $tbname = 'site_visit_log';
 	
-	$sql = "INSERT INTO {$tbname} (pcode, result, pageid, adid, requrl, ip, elapsed, post, response)
+	$sql = "INSERT INTO {$tbname} (pcode, result, pageid, adid, app_key, requrl, ip, elapsed, post, response)
 			VALUES ('$db_pcode',
 					'$db_result', 
 					'$db_pageid',
 					'$db_adid',
+					'$db_appkey',
 					'$db_req_url',
 					'$db_remote_addr',
 					'$db_elapsed_time',
