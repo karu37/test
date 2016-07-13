@@ -25,12 +25,13 @@
  	$result = mysql_query($sql, $conn);
  	$row_today = @mysql_fetch_assoc(mysql_query($sql, $conn));
  	
- 	// getting statistic data from summary table
+ 	// getting statistic data from summary table (al_summary_app_exec_d_t는 직전 시간까지의 통 개수가 포함되어 있음)
 	$sql = "SELECT a.reg_day, a.cnt 
 				FROM al_summary_app_exec_d_t a 
 				WHERE a.app_key = '{$db_appkey}'
 				AND a.reg_day >= '{$start_date}' 
 				AND a.reg_day <= LAST_DAY('{$start_date}') 
+				AND a.reg_day < CURRENT_DATE
 			ORDER BY a.reg_day DESC";
  	$result = mysql_query($sql, $conn);
 	while ($row = mysql_fetch_assoc($result)) {

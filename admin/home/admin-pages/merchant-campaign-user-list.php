@@ -1,8 +1,10 @@
 <?
 	$param_type = $_REQUEST['type'];
+	$pcode = $_REQUEST['pcode'];
 	if (!$param_type) $param_type = 'A';
 	
 	$where = "";
+	if ($pcode) $where .= " AND a.pcode = '{$pcode}'";
 	if ($param_type == 'D') $where .= " AND a.status = '{$param_type}'";
 	$app_key = $_REQUEST['appkey'];
 	$db_app_key = mysql_real_escape_string($app_key);
@@ -20,8 +22,9 @@
 					a.model AS '적립기기',
 					a.imei AS 'IMEI',
 					a.ip AS 'IP',
-					a.action_dtime AS '적립일시' 
-				FROM al_user_app_t a 
+					a.action_dtime AS '적립일시',
+					b.name as '매체사'
+				FROM al_user_app_t a LEFT OUTER JOIN al_publisher_t b ON a.pcode = b.pcode
 				WHERE a.app_key = '{$db_app_key}' {$where}";
 		$result = mysql_query($sql, $conn);		
 		$fields = mysql_num_fields ( $result );
@@ -94,15 +97,15 @@
 	$sql = "SELECT mcode, app_title FROM al_app_t WHERE app_key = '{$db_app_key}'";
 	$row_app = @mysql_fetch_assoc(mysql_query($sql, $conn));
 
-	$sql = "SELECT a.*, SUBSTRING_INDEX(a.account, ',', 1) AS 'account_id' 
-			FROM al_user_app_t a
+	$sql = "SELECT a.*, SUBSTRING_INDEX(a.account, ',', 1) AS 'account_id', b.name as 'publisher_name'
+			FROM al_user_app_t a LEFT OUTER JOIN al_publisher_t b ON a.pcode = b.pcode
 			WHERE a.app_key = '{$db_app_key}' {$where} 
 			ORDER BY id DESC {$limit}";
 	$result = mysql_query($sql, $conn);
 
 ?>
 	<style>
-		.main-list tr	{line-height:12px; height: 40px}
+		.main-list tr	{line-height:1.2em; height: 40px}
 		.main-list span 	{ padding: 5px 10px }
 		
 		.main-list .type-A	{ background: #fff }
@@ -133,11 +136,11 @@
 	<thead>
 		<tr>
 	        <th align=center width=2%>Idx</th>
+	        <th align=center width=3%>매체사</th>
 	        <th align=center width=10%>ADID</th>
-	        <th align=center width=10%>계정ID</th>
 	        <th align=center width=5%>참여시간</th>
 	        <th align=center width=5%>완료시간</th>
-	        <th align=center width=2%>IMEI</th>
+	        <th align=center width=2%>계정/IMEI</th>
 	        <th align=center width=2%>제브모</th>
 			<th width=5%>상태</th>
 	        <th align=center width=2%>매출 원가</th>
@@ -155,11 +158,11 @@
 		{
 			echo "<tr class='status-{$row['status']}'>
 		        <td align=center>{$row['id']}</td>
+		        <td align=center>{$row['publisher_name']}</td>
 		        <td align=center>{$row['adid']}</td>
-		        <td align=center>{$row['account_id']}</td>
 		        <td align=center>".admin_to_datetime($row['action_atime'])."</td>
 		        <td align=center>".admin_to_datetime($row['action_dtime'])."</td>
-		        <td align=center>{$row['imei']}</td>
+		        <td align=center>{$row['account_id']}<br>{$row['imei']}</td>
 		        <td align=center>{$row['manufacturer']}<br>{$row['brand']}<br>{$row['model']}</td>
 				<td>".($row['forced_done'] == 'Y' ? '<b>강제 적립</b>' : $arr_status[$row['status']])."</td>
 		        <td align=center>{$row['merchant_fee']}</td>
