@@ -2,9 +2,9 @@
 	// getting execution count and total count from live stat table
 	$db_appkey = mysql_real_escape_string($appkey);
 	
-	$sql = "SELECT DATE(a.exec_time) reg_day, a.exec_day_cnt cnt, a.exec_tot_cnt totcnt
+	$sql = "SELECT DATE(a.exec_time) reg_day, IF(DATE(a.exec_time)=CURRENT_DATE, a.exec_day_cnt, 0) cnt, a.exec_tot_cnt totcnt
 				FROM al_app_exec_stat_t a 
-				WHERE a.app_key = '{$db_appkey}' AND DATE(a.exec_time) = CURRENT_DATE";
+				WHERE a.app_key = '{$db_appkey}'";
  	$result = mysql_query($sql, $conn);
  	$row_today = @mysql_fetch_assoc(mysql_query($sql, $conn));
 
