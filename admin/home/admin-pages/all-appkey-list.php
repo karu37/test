@@ -36,11 +36,11 @@
 				m.name as 'm_name',
 				IF(app.exec_edate < CURRENT_DATE, 'N', 'Y') as 'exec_edate_check',
 				
-				IFNULL(IF(s.exec_time = LEFT(NOW(), 12), s.exec_hour_cnt, 0), 0) as 'app_exec_hour_cnt',
-				IFNULL(IF(s.exec_time = CURRENT_DATE, s.exec_day_cnt, 0), 0) as 'app_exec_day_cnt',
+				IFNULL(IF(s.exec_time = DATE_ADD(CURRENT_DATE, INTERVAL HOUR(NOW()) HOUR), s.exec_hour_cnt, 0), 0) as 'app_exec_hour_cnt',
+				IFNULL(IF(DATE(s.exec_time) = CURRENT_DATE, s.exec_day_cnt, 0), 0) as 'app_exec_day_cnt',
 				IFNULL(s.exec_tot_cnt, 0) as 'app_exec_tot_cnt',
 
-				IF (app.exec_hour_max_cnt <= IFNULL(IF(s.exec_time = LEFT(NOW(), 12), s.exec_hour_cnt, 0), 0), 'N', 'Y') as 'exec_hour_check',
+				IF (app.exec_hour_max_cnt <= IFNULL(IF(s.exec_time = DATE_ADD(CURRENT_DATE, INTERVAL HOUR(NOW()) HOUR), s.exec_hour_cnt, 0), 0), 'N', 'Y') as 'exec_hour_check',
 				IF (app.exec_day_max_cnt <= IFNULL(IF(s.exec_time = CURRENT_DATE, s.exec_day_cnt, 0), 0), 'N', 'Y') as 'exec_day_check',
 				IF (IFNULL(app.exec_tot_max_cnt, 0) <= IFNULL(s.exec_tot_cnt, 0), 'N', 'Y')  as 'exec_tot_check'
 				

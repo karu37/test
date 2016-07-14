@@ -70,7 +70,7 @@
 				pa.publisher_disabled, 
 				pa.active_time, 
 				
-				IFNULL(IF(LEFT(s.exec_time, 13) = LEFT(NOW(), 13), s.exec_hour_cnt, 0), 0) as 'app_exec_hour_cnt',
+				IFNULL(IF(s.exec_time = DATE_ADD(CURRENT_DATE, INTERVAL HOUR(NOW()) HOUR), s.exec_hour_cnt, 0), 0) as 'app_exec_hour_cnt',
 				IFNULL(IF(DATE(s.exec_time) = CURRENT_DATE, s.exec_day_cnt, 0), 0) as 'app_exec_day_cnt',
 				IFNULL(s.exec_tot_cnt, 0) as 'app_exec_tot_cnt',
 				
@@ -78,7 +78,7 @@
 				pa.exec_day_max_cnt as 'pa_exec_day_max_cnt',
 				pa.exec_tot_max_cnt as 'pa_exec_tot_max_cnt',
 
-				IFNULL(IF(LEFT(ps.exec_time, 13) = LEFT(NOW(), 13), ps.exec_hour_cnt, 0), 0) as 'ps_exec_hour_cnt',
+				IFNULL(IF(ps.exec_time = DATE_ADD(CURRENT_DATE, INTERVAL HOUR(NOW()) HOUR), ps.exec_hour_cnt, 0), 0) as 'ps_exec_hour_cnt',
 				IFNULL(IF(DATE(ps.exec_time) = CURRENT_DATE, ps.exec_day_cnt, 0), 0) as 'ps_exec_day_cnt',
 				IFNULL(ps.exec_tot_cnt, 0) as 'ps_exec_tot_cnt',
 				
@@ -124,11 +124,11 @@
 					
 				IF(pa.active_time > NOW(), 'N', 'Y') as 'pa_active_time_mode',
 
-				IF (pa.exec_hour_max_cnt <= IF(LEFT(ps.exec_time, 13) = LEFT(NOW(), 13), ps.exec_hour_cnt, 0), 'N', 'Y') as 'ps_check_hour_executed',
+				IF (pa.exec_hour_max_cnt <= IF(ps.exec_time = DATE_ADD(CURRENT_DATE, INTERVAL HOUR(NOW()) HOUR), ps.exec_hour_cnt, 0), 'N', 'Y') as 'ps_check_hour_executed',
 				IF (pa.exec_day_max_cnt <= IF(DATE(ps.exec_time) = CURRENT_DATE, ps.exec_day_cnt, 0), 'N', 'Y') as 'ps_check_day_executed',
 				IF (pa.exec_tot_max_cnt <= IFNULL(ps.exec_tot_cnt,0), 'N', 'Y') as 'ps_check_tot_executed',
 				
-				IF (app.exec_hour_max_cnt <= IF(LEFT(s.exec_time, 13) = LEFT(NOW(), 13), s.exec_hour_cnt, 0), 'N', 'Y') as 'check_hour_executed',
+				IF (app.exec_hour_max_cnt <= IF(s.exec_time = DATE_ADD(CURRENT_DATE, INTERVAL HOUR(NOW()) HOUR), s.exec_hour_cnt, 0), 'N', 'Y') as 'check_hour_executed',
 				IF (app.exec_day_max_cnt <= IF(DATE(s.exec_time) = CURRENT_DATE, s.exec_day_cnt, 0), 'N', 'Y') as 'check_day_executed',
 				IF (app.exec_tot_max_cnt > IFNULL(s.exec_tot_cnt,0), 'Y', 'N') as 'check_tot_executed',
 
