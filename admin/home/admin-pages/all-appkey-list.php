@@ -6,7 +6,7 @@
 	$db_search = mysql_real_escape_string($search);
 
 	// order	
-	if (!$_REQUEST['orderby']) $order_by = "ORDER BY IF(CONCAT(app.is_mactive) = 'Y', 1, 2) ASC, app.app_exec_type ASC";
+	if (!$_REQUEST['orderby']) $order_by = "ORDER BY app.is_active DESC, app.is_mactive DESC, IF(app.is_active='Y',app.last_active_time, app.last_deactive_time) ASC, app.app_exec_type ASC";
 	else $order_by = "ORDER BY " . $_REQUEST['orderby'] . " " . ifempty($_REQUEST['order'], 'DESC');
 
 	// is_mactive : Y/N/D/T
