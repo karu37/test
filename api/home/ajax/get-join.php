@@ -32,6 +32,7 @@
 	$ar_acounts = explode(',', $account);
 	if (count($ar_acounts) > 0) $arr_param['first-account'] = base64_encode($ar_acounts[0]);
 	
+	$sid = $_REQUEST['sid'];			// publisher사의 Sub 매체 구별값 varchar(64)
 	$uid = $_REQUEST['uid'];			// publisher사의 사용자 구별값 varchar(64)
 	$userdata = $_REQUEST['userdata'];	// publisher사의 사용자 context text
 	
@@ -60,6 +61,7 @@
 	$db_brand = mysql_real_escape_string($brand);
 	$db_account = mysql_real_escape_string($account);
 	
+	$db_sid = mysql_real_escape_string($sid);
 	$db_uid = mysql_real_escape_string($uid);
 	$db_userdata = mysql_real_escape_string($userdata);
 
@@ -152,6 +154,7 @@
 						manufacturer = '{$db_manufacturer}',
 						brand = '{$db_brand}',
 						account = '{$db_account}',
+						sid = '{$db_sid}', 
 						uid = '{$db_uid}', 
 						userdata = '{$db_userdata}', 
 						merchant_fee = '{$row_app['app_merchant_fee']}', 
@@ -165,10 +168,10 @@
 	} else {
 		$sql = "INSERT al_user_app_t (mcode, pcode, app_key, lib,
 					ip, adid, imei, model, manufacturer, brand, account, 
-					uid, userdata, merchant_fee, tag_price, publisher_fee, action_atime, status, reg_day, reg_date)
+					sid, uid, userdata, merchant_fee, tag_price, publisher_fee, action_atime, status, reg_day, reg_date)
 				VALUES ('{$row_app['mcode']}', '{$db_pcode}', '{$db_appkey}', '{$db_lib}',
 					'{$db_ip}', '{$db_adid}', '{$db_imei}', '{$db_model}', '{$db_manufacturer}', '{$db_brand}', '{$db_account}', 
-					'{$db_uid}', '{$db_userdata}', '{$row_app['app_merchant_fee']}', '{$row_app['app_tag_price']}', '{$row_app['publisher_fee']}', '{$ar_time['now']}', 'A', '{$ar_time['day']}', '{$ar_time['now']}')";
+					'{$db_sid}', '{$db_uid}', '{$db_userdata}', '{$row_app['app_merchant_fee']}', '{$row_app['app_tag_price']}', '{$row_app['publisher_fee']}', '{$ar_time['now']}', 'A', '{$ar_time['day']}', '{$ar_time['now']}')";
 		mysql_query($sql, $conn);
 		$user_app_id = mysql_insert_id($conn);
 	}
@@ -188,6 +191,7 @@
 			mf
 			brand
 			account
+			sid
 			uid
 			userdata
 			

@@ -107,10 +107,6 @@
 	<style>
 		.main-list tr	{line-height:1.2em; height: 40px}
 		.main-list span 	{ padding: 5px 10px }
-		
-		.main-list .type-A	{ background: #fff }
-		.main-list .type-P	{ background: #ffe }
-		.main-list .type-B	{ background: #eee }
 	</style>
 	<t4 style='line-height: 40px'>[<a href='?id=merchant-campaign-modify&mcode=<?=$row_app['mcode']?>&appkey=<?=$app_key?>' target=_blank><?=$row_app['app_title']?></a>] 참여 내역</t4>
 	<hr>
@@ -149,10 +145,11 @@
 	</thead>
 	<style>
 		.status-d	{background-color: lightyellow}
+		.status-b	{background-color: #e8ffff}
 	</style>
 	<tbody>
 		<?
-		$arr_status = array('A' => '참여하기 실행', 'B' => '적립하기 실행', 'D' => '적립완료', 'F' => '적립실패');
+		$arr_status = array('A' => '참여하기 실행', 'B' => '<span style="font-weight:bold; color:darkred">적립하기 실행</span>', 'D' => '적립완료', 'F' => '적립실패');
 		
 		while ($row = mysql_fetch_assoc($result)) 
 		{
