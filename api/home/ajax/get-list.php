@@ -22,7 +22,6 @@
 	unset($arr_data);
 	$arr_data['result'] = 'Y';
 	$arr_data['code'] = '1';
-	$arr_data['msg'] = '성공';
 	
 	$arr_inactive = array();
 	while ($row = mysql_fetch_assoc($result)) {

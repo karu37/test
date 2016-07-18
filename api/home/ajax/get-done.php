@@ -191,7 +191,7 @@
 				WHERE id = '{$user_app_id}' AND status = 'B'";
 		return_die('N', $ar_result);
 	}
-	
+	$ar_result['code'] = '1';
 	return_die('Y', $ar_result);
 	
 ?>

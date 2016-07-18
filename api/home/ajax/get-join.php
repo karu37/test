@@ -242,7 +242,7 @@
 	// 광고 시작상태를 저장 (A 상태는 transaction걸지 않고 되는 데로 그때 그때 로깅한다.)
 	$sql = "UPDATE al_user_app_t SET status = 'A' WHERE id = '{$user_app_id}'";	
 	$ar_data['url'] = $arr_param['url'];
-	
+	$ar_data['code'] = '1';
 	return_die('Y', $ar_data);
 	
 ?>

@@ -74,15 +74,15 @@
 	</div>
 	
 	<div class='app-info'  style='background-color:#fff; width:600px; padding-top: 30px'>
-		<b3>콜백 호출 테스트</b3>
+		<b3>테스트 콜백 호출</b3>
 		<hr>
 		<br>
 		<table border=0 cellpadding=0 cellspacing=0 width=100%>
-			<tr><td>광고키</td><td><div style='width:200px'><input type=text id='test-ad' name='test-ad' value='' /></div></td>
-			<tr><td>제공 금액</td><td><div style='width:200px'><input type=text id='test-price' name='test-price' value='' /></div></td>
-			<tr><td>uid</td><td><div style='width:200px'><input type=text id='test-uid' name='test-uid value='' /></div></td>
- 			<tr><td>userdata</td><td width=500px><input type=text id='test-userdata' name='test-userdata value='' /></td>
- 			<tr><td>unique</td><td><div style='width:200px'><input type=text id='test-unique' name='test-unique' value='' /></div></td>
+			<tr><td>광고키</td><td><div style='width:300px'><input type=text id='test-ad' data-clear-btn='true' style='background-color:lightblue' name='test-ad' value='' /></div></td>
+			<tr><td>제공 금액</td><td><div style='width:100px'><input type=text id='test-price' data-clear-btn='true' name='test-price' value='' /></div></td>
+			<tr><td>uid</td><td><div style='width:200px'><input type=text id='test-uid' data-clear-btn='true' name='test-uid value='' /></div></td>
+ 			<tr><td>userdata</td><td width=500px><input type=text id='test-userdata' data-clear-btn='true' name='test-userdata value='' /></td>
+ 			<tr><td>unique</td><td><div style='width:300px'><input type=text id='test-unique' data-clear-btn='true' style='background-color:lightblue' name='test-unique' value='' /></div></td>
 			</tr>
 		</table>
 		
@@ -121,11 +121,11 @@ var <?=$js_page_id?> = function()
 				_$("div[data-role='popup']").on("popupbeforeposition", function(){ util.initPage($(this)); });
 
 				// restore data from localstorage				
-				_$("#test-ad").val( util.ifempty(localStorage.getItem('test-ad'), 'TEST-000000000000000000001') );
+				_$("#test-ad").val( util.ifempty(localStorage.getItem('test-ad'), 'tst00000000000000000000000000000001') );
 				_$("#test-price").val( util.ifempty(localStorage.getItem('test-price'), '250') );
 				_$("#test-uid").val( util.ifempty(localStorage.getItem('test-uid'), 'user1234') );
-				_$("#test-userdata").val( util.ifempty(localStorage.getItem('test-userdata'), 'CUSTOM-USER-DATA') );
-				_$("#test-unique").val( util.ifempty(localStorage.getItem('test-unique'), 'UNIQUE-000000000000001') );
+				_$("#test-userdata").val( util.ifempty(localStorage.getItem('test-userdata'), 'data-for-publishers') );
+				_$("#test-unique").val( util.ifempty(localStorage.getItem('test-unique'), 'tst0123456789abcdef0123456789abcdef') );
 				
 				setTimeout( function() { page.action.on_update_callbacktest_url(); page.action.on_update_callbacktest_param(); } , 100);
 			},

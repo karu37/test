@@ -139,6 +139,7 @@
 		return_die('N', $ar_data);
 	}
 	
+	$ar_data['code'] = '1';
 	return_die('Y', $ar_data);
 	
 ?>
