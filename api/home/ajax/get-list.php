@@ -24,7 +24,7 @@
 	$arr_data['code'] = '1';
 	
 	$arr_inactive = array();
-	$arr_data['count'] = '0';
+	$arr_data['count'] = 0;
 	
 	$ad_count = 0;
 	while ($row = mysql_fetch_assoc($result)) {
@@ -67,15 +67,15 @@
 		$item['icon'] = $row['app_iconurl'];
 
 		$item['reward'] = floor($row['publisher_fee'] * $reward_percent / 100);
-		$item['price'] = $row['publisher_fee'];
+		$item['price'] = intval($row['publisher_fee']);
 		
 		$item['platform'] = $row['app_platform'];
 		if ($row['app_market']) $item['market'] = $row['app_market'];
 		if ($row['app_packageid']) $item['package'] = $row['app_packageid'];
 		if ($row['app_scheme']) $item['scheme'] = $row['app_scheme'];
 		
-		if ($row['app_agefrom']) $item['age_from'] = $row['app_agefrom'];
-		if ($row['app_ageto']) $item['age_to'] = $row['app_ageto'];
+		if ($row['app_agefrom']) $item['age_from'] = intval($row['app_agefrom']);
+		if ($row['app_ageto']) $item['age_to'] = intval($row['app_ageto']);
 		if ($row['app_sex']) $item['gender'] = $row['app_sex'];
 		
 		$arr_data['items'][] = $item;

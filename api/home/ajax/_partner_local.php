@@ -54,7 +54,7 @@ function local_request_start($app_key, &$arr_data, &$conn)
 	$arr_data['url'] = $exec_url;
 	
 	// $arr_data는 파라미터로 그대로 전달됨.
-	return array('result' => 'Y');
+	return array('result' => 'Y', 'code' => '1');
 }
 
 function local_request_done($app_key, $arr_data, $b_forcedone, &$conn) 
@@ -153,6 +153,6 @@ function local_request_done($app_key, $arr_data, $b_forcedone, &$conn)
 	/////////////////////////////////////////////////////////////////////////
 	// MERCHANT CALLBACK END
 	/////////////////////////////////////////////////////////////////////////
-	return array('result' => 'Y');
+	return array('result' => 'Y', 'code' => '1');
 }
 ?>

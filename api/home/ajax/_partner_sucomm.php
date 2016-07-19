@@ -396,7 +396,7 @@ function sucomm_request_start($app_key, &$arr_data, &$conn)
 	}
 	$arr_data['result'] = 'Y';
 	$arr_data['url'] = $js_data['url'];
-	return array('result' => 'Y');
+	return array('result' => 'Y', 'code' => '1');
 }
 
 function sucomm_request_done($app_key, $arr_data, &$conn) 
@@ -435,7 +435,7 @@ function sucomm_request_done($app_key, $arr_data, &$conn)
 	if ($result_data != "0000") {
 		return sucomm_code_mapping($result_data, $result_msg);
 	}
-	return array('result' => 'Y');
+	return array('result' => 'Y', 'code' => '1');
 }
 
 function sucomm_code_mapping($code, $msg) {
