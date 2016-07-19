@@ -77,7 +77,7 @@ function local_request_done($app_key, $arr_data, $b_forcedone, &$conn)
 		$ar_reward['callback_done']	= 'N';
 		
 		// al_app_t.is_mactive 가 T인 경우에는 적립하지 않음
-		if ($row_app['is_mactive'] != 'T') 
+		if ($ar_app['is_mactive'] != 'T') 
 		{
 			// ----------------------------------------------------------------------
 			// 사용자 적립하기 (사용자 적립 및 al_user_app_t 상태 변경 모두 처리)

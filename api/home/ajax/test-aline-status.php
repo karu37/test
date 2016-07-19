@@ -26,6 +26,8 @@
 </head>
 <body>
 <?
+		echo $adid . '<br>';
+	
 		$sql = "SELECT a.mcode, a.pcode, b.app_title, a.merchant_fee, a.tag_price, a.publisher_fee, a.m_reg_date, a.p_reg_date 
 				FROM al_user_app_saving_t a
 					INNER JOIN al_app_t b ON a.app_key = b.app_key

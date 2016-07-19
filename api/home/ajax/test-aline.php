@@ -40,13 +40,26 @@
 					Publisher Code : 
 				</td>
 				<td>
-					<div style='float:left'>
+					<div style='float:left; width:300px'>
 						<input type="text" name="pcode" id="pcode" value="<?=$_REQUEST['pcode']?>" style='display: block; width: 100%' />
 					</div>
 					<a href='#' onclick='page.on_btn_set_publisher()' data-role='button' data-mini='true' data-inline='true' data-theme='b'>변경</a>
 				</td>
 			</form>
 			
+		</tr>
+		<tr>
+			<form onsubmit='return page.on_btn_set_publisher()'>
+				<td width=150px>
+					테스트 사용자 ADID : 
+				</td>
+				<td>
+					<div style='float:left; width:300px'>
+						<input type="text" name="adid" id="adid" value=""  style='display: block; width: 100%'/>
+					</div>
+					<a href='#' onclick='page.on_btn_set_adid()' data-role='button' data-mini='true' data-inline='true' data-theme='b'>변경</a>
+				</td>
+			</form>
 		</tr>
 		<tr>
 			<td colspan=2>
@@ -129,21 +142,11 @@ echo "\n-->";
 					}
 				?>	
 				</table>					
-				<br>	
-				<a class='mini-btn' href='#' onclick="page.on_btn_deleteinfo('<?=$pcode?>', $('#adid').val())" data-role='button' data-theme='b' data-mini='true' data-inline='true'>적립 기록 모두 초기화 (수행 수는 전체 초기화됨)</a>
 				
 			</td>
 		</tr>
-		<tr>
-			<td>
-				테스트 사용자 ADID : 
-			</td>
-			<td>
-				<input type="text" name="adid" id="adid" value=""  style='display: block; width: 100%'/>
-			</td>
-		</tr>
 	</table>
-	<iframe id='status' src='about:blank' style='width:100%; height:1000px' /></iframe>
+	<iframe id='status' src='about:blank' style='width:100%; height:1000px; margin-top: 10px;' /></iframe>
 <script>
 
 var basic_util = {
@@ -184,10 +187,12 @@ var page = function(){
 	var fn = {
 		init: function() {
 			if (!localStorage.getItem('adid')) localStorage.setItem('adid', '0000000000000000-0000-0000-0000-0001');
+/*			
 			$("#adid").on('change', function(){
 				localStorage.setItem('adid', $("#adid").val());
 				$("#status").attr('src', "http://api.aline-soft.kr/ajax-request.php?id=test-aline-status&pcode=<?=$pcode?>&adid=" + $("#adid").val());
 			});
+*/			
 			$("#adid").val(localStorage.getItem('adid'));
 			
 			$("#status").attr('src', "http://api.aline-soft.kr/ajax-request.php?id=test-aline-status&pcode=<?=$pcode?>&adid=" + localStorage.getItem('adid'));
@@ -289,29 +294,13 @@ var page = function(){
 					
 			});
 		},	
-		on_btn_deleteinfo: function(pcode, uadid) {
-			// http://api.aline-soft.kr/ajax-request.php?id=get-join&pcode=aline&os=A&ad=LOC2&adid=0123456789012345-6789-0123-4567-8901&ip=127.0.0.1&uid=heartman@gmail.com&userdata=USERDATA
-			var ar_param = {id: 'test-aline-reset',
-							'pcode': pcode};
-							
-			alert(var_dump(ar_param));
-			basic_util.request('http://api.aline-soft.kr/ajax-request.php?' + basic_util.json_to_urlparam(ar_param), function(sz_data) {
-				try {
-					var js_data = JSON.parse(sz_data);
-					if (js_data['result'] == 'Y') {
-						alert("요청 성공");
-					} else {
-						alert("요청 실패\n\n code : " + js_data['code'] + "\n msg : " + js_data['msg']);
-					}
-				} catch(e) {alert(sz_data);}
-
-				$("#status").attr('src', "http://api.aline-soft.kr/ajax-request.php?id=test-aline-status&pcode=<?=$pcode?>&adid=" + uadid);
-					
-			});
-		},	
 		on_btn_set_publisher: function() {
 			window.location.href="?id=test-aline&pcode=" + $("#pcode").val();
 			return false;
+		},
+		on_btn_set_adid: function() {
+			localStorage.setItem('adid', $("#adid").val());
+			$("#status").attr('src', "http://api.aline-soft.kr/ajax-request.php?id=test-aline-status&pcode=<?=$pcode?>&adid=" + $("#adid").val());
 		},
 	};
 	
