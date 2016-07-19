@@ -24,6 +24,9 @@
 	$arr_data['code'] = '1';
 	
 	$arr_inactive = array();
+	$arr_data['count'] = '0';
+	
+	$ad_count = 0;
 	while ($row = mysql_fetch_assoc($result)) {
 
 		// exec_tot_max_cnt 가 초과한 대상은 is_active ==> "N" 으로 변경한다.
@@ -77,6 +80,9 @@
 		
 		$arr_data['items'][] = $item;
 	}
+	
+	// 광고 개수
+	$arr_data['count'] = count($arr_data['items']);
 	
 	// Expire되거나, 모두 달성된 광고 is_active ==> 'N' 시키기
 	if (count($arr_inactive) > 0) {
