@@ -3,7 +3,6 @@ header("Content-Type: text/html; charset=UTF-8");
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Headers: X-Requested-With");
 
-include dirname(__FILE__)."/../.guest_ips.php";
 include dirname(__FILE__)."/php_lib/util.php";
 
 $id = $_REQUEST['id'];

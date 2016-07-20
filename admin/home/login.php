@@ -69,7 +69,7 @@
 						<form id="frm" name="frm" method="post">
 							<table width=666 height=297 cellpadding=0 cellspacing=1 bgcolor=#d5d4d4>
 								<tr>
-									<td bgcolor=#ffffff valign=top background=images/adm/login_bg3.gif style="padding-left:146px;padding-top:111px">
+									<td bgcolor=#ffffff valign=top background=images/adm/login_bg3.gif style="padding-left:146px;padding-top:117px">
 										<span style=padding-left:1px><input type="text" id="adminid" name="adminid" class=login/></span><br>
 										<img src=images/adm/blank.gif height=15px><br>
 										<span style=padding-left:1px><input type="password" id="adminpw" name="adminpw" onkeydown="javascript:enterchk();" class=login/></span><br>

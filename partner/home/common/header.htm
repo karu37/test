@@ -1,0 +1,19 @@
+<table width="100%" cellpadding=0 cellspacing=0>
+<tr>
+	<td style="border-bottom: 1px solid #ddd; background-color: #ffc; padding:10px 10px" align=right>
+		<b4 style='float:left'>ALINE 파트너</b4>
+		<p style='float:right'
+			<n4><b4><?=get_loginname() . "(" . get_session_id() . ")"?></b4>님 접속 중</n4> &nbsp;&nbsp;&nbsp;<img src=images/adm/icon_logout.gif align=bottom style='vertical-align:middle'> 
+			<a href="javascript:doLogout();"><b4 style=color:#373636>로그아웃</b4></a>
+		</p>
+		<script>
+			function doLogout(){
+				if(!confirm("로그아웃 하시겠습니까?")) return;
+				document.location.href = "logout.php";
+			}
+		</script>		
+		<div style='clear:both'>
+	</td>
+</tr>
+<tr>
+	<td>

@@ -2,7 +2,6 @@
 	session_start();
 	error_reporting(6135);
 
-	include dirname(__FILE__)."/../.guest_ips.php";
 	include dirname(__FILE__)."/php_lib/util.php";
 	include dirname(__FILE__)."/php_lib/paginator.class.php";
 
