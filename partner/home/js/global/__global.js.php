@@ -1,7 +1,15 @@
 <? session_start() ?>
 function get_ajax_url(ajax_id, param) {
 	var url = "";
-	url = "https://<?=$_SERVER['HTTP_HOST']?>/app-guest/ajax-request.php?id=" + ajax_id + '&guest_id=' + util.urlencode('<?=$_SESSION['guestid']?>') + '&umcode=' + util.urlencode('<?=$_SESSION['umcode']?>');
+	url = "http://<?=$_SERVER['HTTP_HOST']?>/ajax-request.php?id=" + ajax_id + '&partner_id=' + util.urlencode('<?=$_SESSION['partnerid']?>') + '&umcode=' + util.urlencode('<?=$_SESSION['umcode']?>');
+		
+	if (typeof param == "object") url += '&' + util.json_to_urlparam(param);
+	else if (typeof param == "string") url += '&' + param;
+	return url;
+}
+function get_popup_url(page_id, param) {
+	var url = "";
+	url = "http://<?=$_SERVER['HTTP_HOST']?>/partner_popup.php?id=" + page_id;
 		
 	if (typeof param == "object") url += '&' + util.json_to_urlparam(param);
 	else if (typeof param == "string") url += '&' + param;
@@ -22,9 +30,9 @@ function goPage(page_id, options, param, web_param)
 			{
 				var sz_webparam = '';
 				if (typeof web_param == 'object') sz_webparam = "&" + $.param( web_param, true );
-				
+// alert("<?=$_SERVER['REQUEST_SCHEME']?>://<?=$_SERVER['HTTP_HOST']?>/partner_index_ajax.php?id="+util.urlencode(page_id) + sz_webparam);				
 				// 처음 페이지 호출시
-				util.request("<?=$_SERVER['REQUEST_SCHEME']?>://<?=$_SERVER['HTTP_HOST']?>/app-guest/guest_index_ajax.php?page_id="+util.urlencode(page_id) + sz_webparam, function(sz_data) {
+				util.request("<?=$_SERVER['REQUEST_SCHEME']?>://<?=$_SERVER['HTTP_HOST']?>/partner_index_ajax.php?id="+util.urlencode(page_id) + sz_webparam, function(sz_data) {
 					try {
 						$(sz_data).appendTo($.mobile.pageContainer);
 					} catch(err) { 

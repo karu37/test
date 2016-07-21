@@ -31,7 +31,7 @@ function get_auth_partnerid($req_user_fields = "", &$ar_partner = null)
 	if (!$db_partner_id) return "";
 	
 	if ($req_user_fields == "") {
-		$sql = "select id from partner_user_t where partner_id = '{$db_partner_id}' and md5(partner_pw) = '{$db_umcode}'";
+		$sql = "select id from al_partner_t where partner_id = '{$db_partner_id}' and md5(partner_pw) = '{$db_umcode}'";
 		$result = mysql_query($sql, $conn);
 		$row = mysql_fetch_assoc($result);
 		if (!$row || !$row['id']) return "";
@@ -39,7 +39,7 @@ function get_auth_partnerid($req_user_fields = "", &$ar_partner = null)
 	}
 	
 	//  field 가 있는 경우 파랍미터 2번째 값에 값들을 리턴한다.
-	$sql = "select id, {$req_user_fields} from partner_user_t where partner_id = '{$db_partner_id}' and md5(partner_pw) = '{$db_umcode}'";
+	$sql = "select id, {$req_user_fields} from al_partner_t where partner_id = '{$db_partner_id}' and md5(partner_pw) = '{$db_umcode}'";
 	$result = mysql_query($sql, $conn);
 	$row = mysql_fetch_assoc($result);
 	if (!$row || !$row['id']) return "";

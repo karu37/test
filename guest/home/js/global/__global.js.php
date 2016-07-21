@@ -1,7 +1,7 @@
 <? session_start() ?>
 function get_ajax_url(ajax_id, param) {
 	var url = "";
-	url = "https://<?=$_SERVER['HTTP_HOST']?>/app-guest/ajax-request.php?id=" + ajax_id + '&guest_id=' + util.urlencode('<?=$_SESSION['guestid']?>') + '&umcode=' + util.urlencode('<?=$_SESSION['umcode']?>');
+	url = "http://<?=$_SERVER['HTTP_HOST']?>/app-guest/ajax-request.php?id=" + ajax_id + '&guest_id=' + util.urlencode('<?=$_SESSION['guestid']?>') + '&umcode=' + util.urlencode('<?=$_SESSION['umcode']?>');
 		
 	if (typeof param == "object") url += '&' + util.json_to_urlparam(param);
 	else if (typeof param == "string") url += '&' + param;

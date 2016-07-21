@@ -1,6 +1,6 @@
 <? 	ini_set( 'session.cookie_httponly', 1 );
 	session_start();
-	error_reporting(E_ALL & ~E_NOTIC);
+	error_reporting(E_ALL & ~E_NOTICE & ~E_DEPRECATED);
 
 	include dirname(__FILE__)."/php_lib/util.php";
 	include dirname(__FILE__)."/php_lib/paginator.class.php";
@@ -9,17 +9,20 @@
 	
 	$header_title = "ALINE 파트너";
 	
-	// default page : partner-app-lists
-	$page_id = "partner-app-lists";
-	
 	if (isset($_REQUEST['id'])) $page_id = $_REQUEST['id'];
-	if ($page_id == "") $page_id = 'home';
+	if ($page_id == "") $page_id = 'partner-app-lists';
 	$js_page_id = str_replace("-", "_", $page_id);
 	
 	$file = dirname(__FILE__) . "/partner-pages/{$page_id}.php";
 
 	$body_min_width = "1100px";
 
+	$partner_id = $_SESSION['partnerid'];
+	$db_partner_id = @mysql_real_escape_string($partner_id);
+	
+	$partner_name = $_SESSION['partnername'];
+	$db_partner_name = @mysql_real_escape_string($partner_name);
+	
 	// db 연결	
 	$conn = dbConn();
 ?>
