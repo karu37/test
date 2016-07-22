@@ -1,2 +1,834 @@
-String.prototype.repeat||(String.prototype.repeat=function(t){return t=Math.max(t||0,0),new Array(t+1).join(this.valueOf())}),String.prototype.startsWith||(String.prototype.startsWith=function(t,r){return r=Math.max(r||0,0),this.indexOf(t)==r}),String.prototype.endsWith||(String.prototype.endsWith=function(t,r){r=Math.max(r||0,0);var n=String(t),e=this.lastIndexOf(n);return e>=0&&e==this.length-n.length-r}),String.prototype.contains||(String.prototype.contains=function(t,r){return r=Math.max(r||0,0),-1!=this.indexOf(t)}),String.prototype.toArray||(String.prototype.toArray=function(){return this.split("")}),String.prototype.reverse||(String.prototype.reverse=function(){return this.split("").reverse().join("")}),String.validBrackets=function(t){if(!t)return!1;var r="''\"\"`'``",n="<>{}[]()%%||//\\\\",e="/**/<??><%%>(**)";return 2==t.length&&-1!=(r+n).indexOf(t)||4==t.length&&-1!=e.indexOf(t)},String.prototype.brace=String.prototype.bracketize=function(t){var r=this;if(!String.validBrackets(t))return r;var n=t.length/2;return t.substr(0,n)+r.toString()+t.substr(n)},String.prototype.unbrace=String.prototype.unbracketize=function(t){var r=this;if(!t)for(var n=r.length,e=2;e>=1;e--)if(t=r.substring(0,e)+r.substring(n-e),String.validBrackets(t))return r.substring(e,n-e);if(!String.validBrackets(t))return r;var i=t.length/2,e=r.indexOf(t.substr(0,i)),o=r.lastIndexOf(t.substr(i));return 0==e&&o==r.length-i&&(r=r.substring(e+i,o)),r},Number.prototype.radix=function(t,r,n){return this.toString(t).padding(-r,n)},Number.prototype.bin=function(t,r){return this.radix(2,t,r)},Number.prototype.oct=function(t,r){return this.radix(8,t,r)},Number.prototype.dec=function(t,r){return this.radix(10,t,r)},Number.prototype.hexl=function(t,r){return this.radix(16,t,r)},Number.prototype.hex=function(t,r){return this.radix(16,t,r).toUpperCase()},Number.prototype.human=function(t,r){for(var n=Math.abs(this),e=this,i="",o=arguments.callee.add(r),p=o.length-1;p>=0;p--)if(n>=o[p].d){e/=o[p].d,i=o[p].s;break}return e.toFixed(t)+i},Number.prototype.human.add=function(t,r,n){var e=t?"div2":"div10",i=Number.prototype.human[e]=Number.prototype.human[e]||[];return arguments.length<3?i:(i.push({s:r,d:Math.abs(n)}),i.sort(function(t,r){return t.d-r.d}),i)},Number.prototype.human.add(!0,"K",1024),Number.prototype.human.add(!0,"M",1<<20),Number.prototype.human.add(!0,"G",1<<30),Number.prototype.human.add(!0,"T",Math.pow(2,40)),Number.prototype.human.add(!1,"K",1e3),Number.prototype.human.add(!1,"M",1e6),Number.prototype.human.add(!1,"G",1e9),Number.prototype.human.add(!1,"T",1e12),Number.fromHuman=function(t,r){var n=String(t).match(/^([\-\+]?\d+\.?\d*)([A-Z])?$/);if(!n)return Number.NaN;if(!n[2])return+n[1];for(var e=Number.prototype.human.add(r),i=0;i<e.length;i++)if(e[i].s==n[2])return n[1]*e[i].d;return Number.NaN},String.prototype.trim||(String.prototype.trim=function(){return this.replace(/(^\s*)|(\s*$)/g,"")}),String.prototype.trimLeft||(String.prototype.trimLeft=function(){return this.replace(/(^\s*)/,"")}),String.prototype.trimRight||(String.prototype.trimRight=function(){return this.replace(/(\s*$)/g,"")}),String.prototype.dup=function(){var t=this.valueOf();return t+t},String.prototype.padding=function(t,r){var n=this.valueOf();if(Math.abs(t)<=n.length)return n;var e=Math.max(Math.abs(t)-this.length||0,0),i=Array(e+1).join(String(r||" ").charAt(0));return 0>t?i+n:n+i},String.prototype.padLeft=function(t,r){return this.padding(-Math.abs(t),r)},String.prototype.alignRight=String.prototype.padLeft,String.prototype.padRight=function(t,r){return this.padding(Math.abs(t),r)},String.prototype.format=function(){var t=arguments;return this.replace(/\{(\d+)\}/g,function(r,n){return void 0!==t[n]?t[n]:r})},String.prototype.alignLeft=String.prototype.padRight,String.prototype.sprintf=function(){var t,r,n=arguments,e=0;return this.replace(String.prototype.sprintf.re,function(){if("%%"==arguments[0])return"%";t=[];for(var i=0;i<arguments.length;i++)t[i]=arguments[i]||"";return t[3]=t[3].slice(-1)||" ",r=n[+t[1]?t[1]-1:e++],String.prototype.sprintf[t[6]](r,t)})},String.prototype.sprintf.re=/%%|%(?:(\d+)[\$#])?([+-])?('.|0| )?(\d*)(?:\.(\d+))?([bcdfosuxXhH])/g,String.prototype.sprintf.b=function(t,r){return Number(t).bin(r[2]+r[4],r[3])},String.prototype.sprintf.c=function(t,r){return String.fromCharCode(t).padding(r[2]+r[4],r[3])},String.prototype.sprintf.d=String.prototype.sprintf.u=function(t,r){return Number(t).dec(r[2]+r[4],r[3])},String.prototype.sprintf.f=function(t,r){var t=Number(t);return t=r[5]?t.toFixed(r[5]):r[4]?t.toExponential(r[4]):t.toExponential(),r[2]="-"==r[2]?"+":"-",t.padding(r[2]+r[4],r[3])},String.prototype.sprintf.o=function(t,r){return Number(t).oct(r[2]+r[4],r[3])},String.prototype.sprintf.s=function(t,r){return String(t).padding(r[2]+r[4],r[3])},String.prototype.sprintf.x=function(t,r){return Number(t).hexl(r[2]+r[4],r[3])},String.prototype.sprintf.X=function(t,r){return Number(t).hex(r[2]+r[4],r[3])},String.prototype.sprintf.h=function(t,r){var t=String.prototype.replace.call(t,/,/g,"");return r[2]="-"==r[2]?"+":"-",Number(t).human(r[5],!0).padding(r[2]+r[4],r[3])},String.prototype.sprintf.H=function(t,r){var t=String.prototype.replace.call(t,/,/g,"");return r[2]="-"==r[2]?"+":"-",Number(t).human(r[5],!1).padding(r[2]+r[4],r[3])},String.prototype.compile=function(){var t,r,n=(arguments,0),e=this.replace(/(\\|\")/g,"\\$1").replace(String.prototype.sprintf.re,function(){if("%%"==arguments[0])return"%";arguments.length=7,t=[];for(var e=0;e<arguments.length;e++)t[e]=arguments[e]||"";return t[3]=t[3].slice(-1)||" ",r=t[1]?t[1]-1:n++,'", String.prototype.sprintf.'+t[6]+"(arguments["+r+'], ["'+t.join('", "')+'"]), "'});return Function("",'return ["'+e+'"].join("")')},String.prototype.parseUrl=function(){var t=this.match(arguments.callee.re);if(!t)return null;var r={scheme:t[1]||"",subscheme:t[2]||"",user:t[3]||"",pass:t[4]||"",host:t[5],port:t[6]||"",path:t[7]||"",query:t[8]||"",fragment:t[9]||""};return r},String.prototype.parseUrl.re=/^(?:([a-z]+):(?:([a-z]*):)?\/\/)?(?:([^:@]*)(?::([^:@]*))?@)?((?:[a-z0-9_-]+\.)+[a-z]{2,}|localhost|(?:(?:[01]?\d\d?|2[0-4]\d|25[0-5])\.){3}(?:(?:[01]?\d\d?|2[0-4]\d|25[0-5])))(?::(\d+))?(?:([^:\?\#]+))?(?:\?([^\#]+))?(?:\#([^\s]+))?$/i,String.prototype.camelize=function(){return this.replace(/([^-]+)|(?:-(.)([^-]+))/gm,function(t,r,n,e){return(n||"").toUpperCase()+(e||r).toLowerCase()})},String.prototype.uncamelize=function(){return this.replace(/[A-Z]/g,function(t){return"-"+t.toLowerCase()})};
-!function(a){"use strict";function b(a,b){var c=(65535&a)+(65535&b),d=(a>>16)+(b>>16)+(c>>16);return d<<16|65535&c}function c(a,b){return a<<b|a>>>32-b}function d(a,d,e,f,g,h){return b(c(b(b(d,a),b(f,h)),g),e)}function e(a,b,c,e,f,g,h){return d(b&c|~b&e,a,b,f,g,h)}function f(a,b,c,e,f,g,h){return d(b&e|c&~e,a,b,f,g,h)}function g(a,b,c,e,f,g,h){return d(b^c^e,a,b,f,g,h)}function h(a,b,c,e,f,g,h){return d(c^(b|~e),a,b,f,g,h)}function i(a,c){a[c>>5]|=128<<c%32,a[(c+64>>>9<<4)+14]=c;var d,i,j,k,l,m=1732584193,n=-271733879,o=-1732584194,p=271733878;for(d=0;d<a.length;d+=16)i=m,j=n,k=o,l=p,m=e(m,n,o,p,a[d],7,-680876936),p=e(p,m,n,o,a[d+1],12,-389564586),o=e(o,p,m,n,a[d+2],17,606105819),n=e(n,o,p,m,a[d+3],22,-1044525330),m=e(m,n,o,p,a[d+4],7,-176418897),p=e(p,m,n,o,a[d+5],12,1200080426),o=e(o,p,m,n,a[d+6],17,-1473231341),n=e(n,o,p,m,a[d+7],22,-45705983),m=e(m,n,o,p,a[d+8],7,1770035416),p=e(p,m,n,o,a[d+9],12,-1958414417),o=e(o,p,m,n,a[d+10],17,-42063),n=e(n,o,p,m,a[d+11],22,-1990404162),m=e(m,n,o,p,a[d+12],7,1804603682),p=e(p,m,n,o,a[d+13],12,-40341101),o=e(o,p,m,n,a[d+14],17,-1502002290),n=e(n,o,p,m,a[d+15],22,1236535329),m=f(m,n,o,p,a[d+1],5,-165796510),p=f(p,m,n,o,a[d+6],9,-1069501632),o=f(o,p,m,n,a[d+11],14,643717713),n=f(n,o,p,m,a[d],20,-373897302),m=f(m,n,o,p,a[d+5],5,-701558691),p=f(p,m,n,o,a[d+10],9,38016083),o=f(o,p,m,n,a[d+15],14,-660478335),n=f(n,o,p,m,a[d+4],20,-405537848),m=f(m,n,o,p,a[d+9],5,568446438),p=f(p,m,n,o,a[d+14],9,-1019803690),o=f(o,p,m,n,a[d+3],14,-187363961),n=f(n,o,p,m,a[d+8],20,1163531501),m=f(m,n,o,p,a[d+13],5,-1444681467),p=f(p,m,n,o,a[d+2],9,-51403784),o=f(o,p,m,n,a[d+7],14,1735328473),n=f(n,o,p,m,a[d+12],20,-1926607734),m=g(m,n,o,p,a[d+5],4,-378558),p=g(p,m,n,o,a[d+8],11,-2022574463),o=g(o,p,m,n,a[d+11],16,1839030562),n=g(n,o,p,m,a[d+14],23,-35309556),m=g(m,n,o,p,a[d+1],4,-1530992060),p=g(p,m,n,o,a[d+4],11,1272893353),o=g(o,p,m,n,a[d+7],16,-155497632),n=g(n,o,p,m,a[d+10],23,-1094730640),m=g(m,n,o,p,a[d+13],4,681279174),p=g(p,m,n,o,a[d],11,-358537222),o=g(o,p,m,n,a[d+3],16,-722521979),n=g(n,o,p,m,a[d+6],23,76029189),m=g(m,n,o,p,a[d+9],4,-640364487),p=g(p,m,n,o,a[d+12],11,-421815835),o=g(o,p,m,n,a[d+15],16,530742520),n=g(n,o,p,m,a[d+2],23,-995338651),m=h(m,n,o,p,a[d],6,-198630844),p=h(p,m,n,o,a[d+7],10,1126891415),o=h(o,p,m,n,a[d+14],15,-1416354905),n=h(n,o,p,m,a[d+5],21,-57434055),m=h(m,n,o,p,a[d+12],6,1700485571),p=h(p,m,n,o,a[d+3],10,-1894986606),o=h(o,p,m,n,a[d+10],15,-1051523),n=h(n,o,p,m,a[d+1],21,-2054922799),m=h(m,n,o,p,a[d+8],6,1873313359),p=h(p,m,n,o,a[d+15],10,-30611744),o=h(o,p,m,n,a[d+6],15,-1560198380),n=h(n,o,p,m,a[d+13],21,1309151649),m=h(m,n,o,p,a[d+4],6,-145523070),p=h(p,m,n,o,a[d+11],10,-1120210379),o=h(o,p,m,n,a[d+2],15,718787259),n=h(n,o,p,m,a[d+9],21,-343485551),m=b(m,i),n=b(n,j),o=b(o,k),p=b(p,l);return[m,n,o,p]}function j(a){var b,c="";for(b=0;b<32*a.length;b+=8)c+=String.fromCharCode(a[b>>5]>>>b%32&255);return c}function k(a){var b,c=[];for(c[(a.length>>2)-1]=void 0,b=0;b<c.length;b+=1)c[b]=0;for(b=0;b<8*a.length;b+=8)c[b>>5]|=(255&a.charCodeAt(b/8))<<b%32;return c}function l(a){return j(i(k(a),8*a.length))}function m(a,b){var c,d,e=k(a),f=[],g=[];for(f[15]=g[15]=void 0,e.length>16&&(e=i(e,8*a.length)),c=0;16>c;c+=1)f[c]=909522486^e[c],g[c]=1549556828^e[c];return d=i(f.concat(k(b)),512+8*b.length),j(i(g.concat(d),640))}function n(a){var b,c,d="0123456789abcdef",e="";for(c=0;c<a.length;c+=1)b=a.charCodeAt(c),e+=d.charAt(b>>>4&15)+d.charAt(15&b);return e}function o(a){return unescape(encodeURIComponent(a))}function p(a){return l(o(a))}function q(a){return n(p(a))}function r(a,b){return m(o(a),o(b))}function s(a,b){return n(r(a,b))}function t(a,b,c){return b?c?r(b,a):s(b,a):c?p(a):q(a)}"function"==typeof define&&define.amd?define(function(){return t}):a.md5=t}(this);
+//
+// JavaScript unit
+// Add-on for the string and number manipulation
+//
+// Copyright (c) 2005, 2006, 2007, 2010, 2011 by Ildar Shaimordanov
+//
+
+/*
+
+The following code is described in ECMA drafts and 
+might be implemented in the future of ECMA
+
+*/
+
+if ( ! String.prototype.repeat ) {
+/**
+ * object.x(number)
+ * object.repeat(number)
+ * Transform the string object multiplying the string
+ *
+ * @param	number	Amount of repeating
+ * @return	string
+ * @access	public
+ * @see		http://svn.debugger.ru/repos/jslibs/BrowserExtensions/trunk/ext/string.js
+ * @see		http://wiki.ecmascript.org/doku.php?id=harmony:string_extras
+ */
+String.prototype.repeat = function(n)
+{
+	n = Math.max(n || 0, 0);
+	return new Array(n + 1).join(this.valueOf());
+};
+
+}
+
+if ( ! String.prototype.startsWith ) {
+
+/**
+ * Returns true if the sequence of characters of searchString converted 
+ * to a String match the corresponding characters of this object 
+ * (converted to a String) starting at position. Otherwise returns false.
+ *
+ * @param	string
+ * @param	integer
+ * @return	bollean
+ * @acess	public
+ */
+String.prototype.startsWith = function(searchString, position)
+{
+	position = Math.max(position || 0, 0);
+	return this.indexOf(searchString) == position;
+};
+
+}
+
+if ( ! String.prototype.endsWith ) {
+
+/**
+ * Returns true if the sequence of characters of searchString converted 
+ * to a String match the corresponding characters of this object 
+ * (converted to a String) starting at endPosition - length(this). 
+ * Otherwise returns false.
+ *
+ * @param	string
+ * @param	integer
+ * @return	bollean
+ * @acess	public
+ */
+String.prototype.endsWith = function(searchString, endPosition)
+{
+	endPosition = Math.max(endPosition || 0, 0);
+	var s = String(searchString);
+	var pos = this.lastIndexOf(s);
+	return pos >= 0 && pos == this.length - s.length - endPosition;
+};
+
+}
+
+if ( ! String.prototype.contains ) {
+
+/**
+ * If searchString appears as a substring of the result of converting 
+ * this object to a String, at one or more positions that are greater than 
+ * or equal to position, then return true; otherwise, returns false. 
+ * If position is undefined, 0 is assumed, so as to search all of the String.
+ *
+ * @param	string
+ * @param	integer
+ * @return	bollean
+ * @acess	public
+ */
+String.prototype.contains = function(searchString, position)
+{
+	position = Math.max(position || 0, 0);
+	return this.indexOf(searchString) != -1;
+};
+
+}
+
+if ( ! String.prototype.toArray ) {
+
+/**
+ * Returns an Array object with elements corresponding to 
+ * the characters of this object (converted to a String).
+ *
+ * @param	void
+ * @return	array
+ * @acess	public
+ */
+String.prototype.toArray = function()
+{
+	return this.split('');
+};
+
+}
+
+if ( ! String.prototype.reverse ) {
+
+
+/**
+ * Returns an Array object with elements corresponding to 
+ * the characters of this object (converted to a String) in reverse order.
+ *
+ * @param	void
+ * @return	string
+ * @acess	public
+ */
+String.prototype.reverse = function()
+{
+	return this.split('').reverse().join('');
+};
+
+}
+
+/*
+
+The following ode is not described in ECMA specs or drafts.
+
+*/
+
+/**
+ * String.validBrackets(string)
+ * Checks string to be valid brackets. Valid brackets are:
+ *	quotes	- '' "" `' ``
+ *	single	- <> {} [] () %% || // \\
+ *	double	- miltiline comments
+ *		  /** / C/C++ like (without whitespace)
+ *		  <??> PHP like
+ *		  <%%> ASP like
+ *		  (**) Pascal like
+ *
+ * @param	string	Brackets (left and right)
+ * @return	boolean	Result of validity of brackets
+ * @access	static
+ */
+String.validBrackets = function(br)
+{
+	if ( ! br ) {
+		return false;
+	}
+	var quot = "''\"\"`'``";
+	var sgl = "<>{}[]()%%||//\\\\";
+	var dbl = "/**/<??><%%>(**)";
+	return (br.length == 2 && (quot + sgl).indexOf(br) != -1)
+		|| (br.length == 4 && dbl.indexOf(br) != -1);
+};
+
+/**
+ * object.bracketize(string)
+ * Transform the string object by setting in frame of valid brackets
+ *
+ * @param	string	Brackets
+ * @return	string	Bracketized string
+ * @access	public
+ */
+String.prototype.brace = 
+String.prototype.bracketize = function(br)
+{
+	var string = this;
+	if ( ! String.validBrackets(br) ) {
+		return string;
+	}
+	var midPos = br.length / 2;
+	return br.substr(0, midPos) + string.toString() + br.substr(midPos);
+};
+
+/**
+ * object.unbracketize(string)
+ * Transform the string object removing the leading and trailing brackets
+ * If the parameter is not defined the method will try to remove existing valid brackets
+ *
+ * @param	string	Brackets
+ * @return	string	Unbracketized string
+ * @access	public
+ */
+String.prototype.unbrace = 
+String.prototype.unbracketize = function(br)
+{
+	var string = this;
+	if ( ! br ) {
+		var len = string.length;
+		for (var i = 2; i >= 1; i--) {
+			br = string.substring(0, i) + string.substring(len - i);
+			if ( String.validBrackets(br) ) {
+				return string.substring(i, len - i);
+			}
+		}
+	}
+	if ( ! String.validBrackets(br) ) {
+		return string;
+	}
+	var midPos = br.length / 2;
+	var i = string.indexOf(br.substr(0, midPos));
+	var j = string.lastIndexOf(br.substr(midPos));
+	if (i == 0 && j == string.length - midPos) {
+		string = string.substring(i + midPos, j);
+	}
+	return string;
+};
+
+/**
+ * object.radix(number, number, string)
+ * Transform the number object to string in accordance with a scale of notation
+ * If it is necessary the numeric string will aligned to right and filled by '0' character, by default
+ *
+ * @param	number	Radix of scale of notation (it have to be greater or equal 2 and below or equal 36)
+ * @param	number	Width of numeric string
+ * @param	string	Padding chacracter (by default, '0')
+ * @return	string	Numeric string
+ * @access	public
+ */
+Number.prototype.radix = function(r, n, c)
+{
+	return this.toString(r).padding(-n, c);
+//	return this.toString(r).padding(-Math.abs(n), c);
+};
+
+/**
+ * object.bin(number, string)
+ * Transform the number object to string of binary presentation
+ *
+ * @param	number	Width of numeric string
+ * @param	string	Padding chacracter (by default, '0')
+ * @return	string	Numeric string
+ * @access	public
+ */
+Number.prototype.bin = function(n, c)
+{
+	return this.radix(0x02, n, c);
+//	return this.radix(0x02, (n) ? n : 16, c);
+};
+
+/**
+ * object.oct(number, string)
+ * Transform the number object to string of octal presentation
+ *
+ * @param	number	Width of numeric string
+ * @param	string	Padding chacracter (by default, '0')
+ * @return	string	Numeric string
+ * @access	public
+ */
+Number.prototype.oct = function(n, c)
+{
+	return this.radix(0x08, n, c);
+//	return this.radix(0x08, (n) ? n : 6, c);
+};
+
+/**
+ * object.dec(number, string)
+ * Transform the number object to string of decimal presentation
+ *
+ * @param	number	Width of numeric string
+ * @param	string	Padding chacracter (by default, '0')
+ * @return	string	Numeric string
+ * @access	public
+ */
+Number.prototype.dec = function(n, c)
+{
+	return this.radix(0x0A, n, c);
+};
+
+/**
+ * object.hexl(number, string)
+ * Transform the number object to string of hexadecimal presentation in lower-case of major characters (0-9 and a-f)
+ *
+ * @param	number	Width of numeric string
+ * @param	string	Padding chacracter (by default, '0')
+ * @return	string	Numeric string
+ * @access	public
+ */
+Number.prototype.hexl = function(n, c)
+{
+	return this.radix(0x10, n, c);
+//	return this.radix(0x10, (n) ? n : 4, c);
+};
+
+/**
+ * object.hex(number, string)
+ * Transform the number object to string of the hexadecimal presentation 
+ * in upper-case of major characters (0-9 and A-F)
+ *
+ * @param	number	Width of numeric string
+ * @param	string	Padding chacracter (by default, '0')
+ * @return	string	Numeric string
+ * @access	public
+ */
+Number.prototype.hex = function(n, c)
+{
+	return this.radix(0x10, n, c).toUpperCase();
+};
+
+/**
+ * object.human([digits[, true]])
+ * Transform the number object to string in human-readable format (e.h., 1k, 234M, 5G)
+ *
+ * @example
+ * var n = 1001;
+ *
+ * // will output 1.001K
+ * var h = n.human(3);
+ *
+ * // will output 1001.000
+ * var H = n.human(3, true);
+ *
+ * @param	integer	Optional. Number of digits after the decimal point. Must be in the range 0-20, inclusive. 
+ * @param	boolean	Optional. If true then use powers of 1024 not 1000
+ * @return	string	Human-readable string
+ * @access	public
+ */
+Number.prototype.human = function(digits, binary)
+{
+	var n = Math.abs(this);
+	var p = this;
+	var s = '';
+	var divs = arguments.callee.add(binary);
+	for (var i = divs.length - 1; i >= 0; i--) {
+		if ( n >= divs[i].d ) {
+			p /= divs[i].d;
+			s = divs[i].s;
+			break;
+		}
+	}
+	return p.toFixed(digits) + s;
+};
+
+/**
+ * Subsidiary method. 
+ * Stores suffixes and divisors to use in Number.prototype.human. 
+ *
+ * @param	boolean
+ * @param	string
+ * @param	divisor
+ * @return	array
+ * @access	static
+ */
+Number.prototype.human.add = function(binary, suffix, divisor)
+{
+	var name = binary ? 'div2' : 'div10';
+	var divs = Number.prototype.human[name] = Number.prototype.human[name] || [];
+
+	if ( arguments.length < 3 ) {
+		return divs;
+	}
+
+	divs.push({s: suffix, d: Math.abs(divisor)});
+	divs.sort(function(a, b)
+	{
+		return a.d - b.d;
+	});
+
+	return divs;
+};
+
+// Binary prefixes
+Number.prototype.human.add(true,  'K', 1 << 10);
+Number.prototype.human.add(true,  'M', 1 << 20);
+Number.prototype.human.add(true,  'G', 1 << 30);
+Number.prototype.human.add(true,  'T', Math.pow(2, 40));
+
+// Decimal prefixes
+Number.prototype.human.add(false, 'K', 1e3);
+Number.prototype.human.add(false, 'M', 1e6);
+Number.prototype.human.add(false, 'G', 1e9);
+Number.prototype.human.add(false, 'T', 1e12);
+
+/**
+ * object.fromHuman([digits[, binary]])
+ * Transform the human-friendly string to the valid numeriv value
+ *
+ * @example
+ * var n = 1001;
+ *
+ * // will output 1.001K
+ * var h = n.human(3);
+ *
+ * // will output 1001
+ * var m = h.fromHuman(h);
+ *
+ * @param	boolean	Optional. If true then use powers of 1024 not 1000
+ * @return	number
+ * @access	public
+ */
+Number.fromHuman = function(value, binary)
+{
+	var m = String(value).match(/^([\-\+]?\d+\.?\d*)([A-Z])?$/);
+	if ( ! m ) {
+		return Number.NaN;
+	}
+	if ( ! m[2] ) {
+		return +m[1];
+	}
+	var divs = Number.prototype.human.add(binary);
+	for (var i = 0; i < divs.length; i++) {
+		if ( divs[i].s == m[2] ) {
+			return m[1] * divs[i].d;
+		}
+	}
+	return Number.NaN;
+};
+
+if ( ! String.prototype.trim ) {
+
+/**
+ * object.trim()
+ * Transform the string object removing leading and trailing whitespaces
+ *
+ * @return	string
+ * @access	public
+ */
+String.prototype.trim = function()
+{
+	return this.replace(/(^\s*)|(\s*$)/g, "");
+};
+
+}
+
+if ( ! String.prototype.trimLeft ) {
+
+/**
+ * object.trimLeft()
+ * Transform the string object removing leading whitespaces
+ *
+ * @return	string
+ * @access	public
+ */
+String.prototype.trimLeft = function()
+{
+	return this.replace(/(^\s*)/, "");
+};
+
+}
+
+if ( ! String.prototype.trimRight ) {
+
+/**
+ * object.trimRight()
+ * Transform the string object removing trailing whitespaces
+ *
+ * @return	string
+ * @access	public
+ */
+String.prototype.trimRight = function()
+{
+	return this.replace(/(\s*$)/g, "");
+};
+
+}
+
+/**
+ * object.dup()
+ * Transform the string object duplicating the string
+ *
+ * @return	string
+ * @access	public
+ */
+String.prototype.dup = function()
+{
+	var val = this.valueOf();
+	return val + val;
+};
+
+/**
+ * object.padding(number, string)
+ * Transform the string object to string of the actual width filling by the padding character (by default ' ')
+ * Negative value of width means left padding, and positive value means right one
+ *
+ * @param	number	Width of string
+ * @param	string	Padding chacracter (by default, ' ')
+ * @return	string
+ * @access	public
+ */
+String.prototype.padding = function(n, c)
+{
+	var val = this.valueOf();
+	if ( Math.abs(n) <= val.length ) {
+		return val;
+	}
+	var m = Math.max((Math.abs(n) - this.length) || 0, 0);
+	var pad = Array(m + 1).join(String(c || ' ').charAt(0));
+//	var pad = String(c || ' ').charAt(0).repeat(Math.abs(n) - this.length);
+	return (n < 0) ? pad + val : val + pad;
+//	return (n < 0) ? val + pad : pad + val;
+};
+
+/**
+ * object.padLeft(number, string)
+ * Wrapper for object.padding
+ * Transform the string object to string of the actual width adding the leading padding character (by default ' ')
+ *
+ * @param	number	Width of string
+ * @param	string	Padding chacracter
+ * @return	string
+ * @access	public
+ */
+String.prototype.padLeft = function(n, c)
+{
+	return this.padding(-Math.abs(n), c);
+};
+
+/**
+ * object.alignRight(number, string)
+ * Wrapper for object.padding
+ * Synonym for object.padLeft
+ *
+ * @param	number	Width of string
+ * @param	string	Padding chacracter
+ * @return	string
+ * @access	public
+ */
+String.prototype.alignRight = String.prototype.padLeft;
+
+/**
+ * object.padRight(number, string)
+ * Wrapper for object.padding
+ * Transform the string object to string of the actual width adding the trailing padding character (by default ' ')
+ *
+ * @param	number	Width of string
+ * @param	string	Padding chacracter
+ * @return	string
+ * @access	public
+ */
+String.prototype.padRight = function(n, c)
+{
+	return this.padding(Math.abs(n), c);
+};
+
+/**
+ * Formats arguments accordingly the formatting string. 
+ * Each occurence of the "{\d+}" substring refers to 
+ * the appropriate argument. 
+ *
+ * @example
+ * '{0}is not {1} + {2}'.format('JavaScript', 'Java', 'Script');
+ *
+ * @param	mixed
+ * @return	string
+ * @access	public
+ */
+String.prototype.format = function()
+{
+	var args = arguments;
+	return this.replace(/\{(\d+)\}/g, function($0, $1)
+	{
+		return args[$1] !== void 0 ? args[$1] : $0;
+	});
+};
+
+/**
+ * object.alignLeft(number, string)
+ * Wrapper for object.padding
+ * Synonym for object.padRight
+ *
+ * @param	number	Width of string
+ * @param	string	Padding chacracter
+ * @return	string
+ * @access	public
+ */
+String.prototype.alignLeft = String.prototype.padRight;
+
+/**
+ * sprintf(format, argument_list)
+ *
+ * The string function like one in C/C++, PHP, Perl
+ * Each conversion specification is defined as below:
+ *
+ * %[index][alignment][padding][width][precision]type
+ *
+ * index	An optional index specifier that changes the order of the 
+ *		arguments in the list to be displayed.
+ * alignment	An optional alignment specifier that says if the result should be 
+ *		left-justified or right-justified. The default is 
+ *		right-justified; a "-" character here will make it left-justified.
+ * padding	An optional padding specifier that says what character will be 
+ *		used for padding the results to the right string size. This may 
+ *		be a space character or a "0" (zero character). The default is to 
+ *		pad with spaces. An alternate padding character can be specified 
+ *		by prefixing it with a single quote ('). See the examples below.
+ * width	An optional number, a width specifier that says how many 
+ *		characters (minimum) this conversion should result in.
+ * precision	An optional precision specifier that says how many decimal digits 
+ *		should be displayed for floating-point numbers. This option has 
+ *		no effect for other types than float.
+ * type		A type specifier that says what type the argument data should be 
+ *		treated as. Possible types:
+ *
+ * % - a literal percent character. No argument is required.  
+ * b - the argument is treated as an integer, and presented as a binary number.
+ * c - the argument is treated as an integer, and presented as the character 
+ *	with that ASCII value.
+ * d - the argument is treated as an integer, and presented as a decimal number.
+ * u - the same as "d".
+ * f - the argument is treated as a float, and presented as a floating-point.
+ * o - the argument is treated as an integer, and presented as an octal number.
+ * s - the argument is treated as and presented as a string.
+ * x - the argument is treated as an integer and presented as a hexadecimal 
+ *	 number (with lowercase letters).
+ * X - the argument is treated as an integer and presented as a hexadecimal 
+ *	 number (with uppercase letters).
+ * h - the argument is treated as an integer and presented in human-readable format 
+ *	 using powers of 1024.
+ * H - the argument is treated as an integer and presented in human-readable format 
+ *	 using powers of 1000.
+ */
+String.prototype.sprintf = function()
+{
+	var args = arguments;
+	var index = 0;
+
+	var x;
+	var ins;
+	var fn;
+
+	/*
+	 * The callback function accepts the following properties
+	 *	x.index contains the substring position found at the origin string
+	 *	x[0] contains the found substring
+	 *	x[1] contains the index specifier (as \d+\$ or \d+#)
+	 *	x[2] contains the alignment specifier ("+" or "-" or empty)
+	 *	x[3] contains the padding specifier (space char, "0" or defined as '.)
+	 *	x[4] contains the width specifier (as \d*)
+	 *	x[5] contains the floating-point precision specifier (as \.\d*)
+	 *	x[6] contains the type specifier (as [bcdfosuxX])
+	 */
+	return this.replace(String.prototype.sprintf.re, function()
+	{
+		if ( arguments[0] == "%%" ) {
+			return "%";
+		}
+
+		x = [];
+		for (var i = 0; i < arguments.length; i++) {
+			x[i] = arguments[i] || '';
+		}
+		x[3] = x[3].slice(-1) || ' ';
+
+		ins = args[+x[1] ? x[1] - 1 : index++];
+//		index++;
+
+		return String.prototype.sprintf[x[6]](ins, x);
+	});
+};
+
+String.prototype.sprintf.re = /%%|%(?:(\d+)[\$#])?([+-])?('.|0| )?(\d*)(?:\.(\d+))?([bcdfosuxXhH])/g;
+
+String.prototype.sprintf.b = function(ins, x)
+{
+	return Number(ins).bin(x[2] + x[4], x[3]);
+};
+String.prototype.sprintf.c = function(ins, x)
+{
+	return String.fromCharCode(ins).padding(x[2] + x[4], x[3]);
+};
+String.prototype.sprintf.d = 
+String.prototype.sprintf.u = function(ins, x)
+{
+	return Number(ins).dec(x[2] + x[4], x[3]);
+};
+String.prototype.sprintf.f = function(ins, x)
+{
+	var ins = Number(ins);
+//	var fn = String.prototype.padding;
+	if (x[5]) {
+		ins = ins.toFixed(x[5]);
+	} else if (x[4]) {
+		ins = ins.toExponential(x[4]);
+	} else {
+		ins = ins.toExponential();
+	}
+	// Invert sign because this is not number but string
+	x[2] = x[2] == "-" ? "+" : "-";
+	return ins.padding(x[2] + x[4], x[3]);
+//	return fn.call(ins, x[2] + x[4], x[3]);
+};
+String.prototype.sprintf.o = function(ins, x)
+{
+	return Number(ins).oct(x[2] + x[4], x[3]);
+};
+String.prototype.sprintf.s = function(ins, x)
+{
+	return String(ins).padding(x[2] + x[4], x[3]);
+};
+String.prototype.sprintf.x = function(ins, x)
+{
+	return Number(ins).hexl(x[2] + x[4], x[3]);
+};
+String.prototype.sprintf.X = function(ins, x)
+{
+	return Number(ins).hex(x[2] + x[4], x[3]);
+};
+String.prototype.sprintf.h = function(ins, x)
+{
+	var ins = String.prototype.replace.call(ins, /,/g, '');
+	// Invert sign because this is not number but string
+	x[2] = x[2] == "-" ? "+" : "-";
+	return Number(ins).human(x[5], true).padding(x[2] + x[4], x[3]);
+};
+String.prototype.sprintf.H = function(ins, x)
+{
+	var ins = String.prototype.replace.call(ins, /,/g, '');
+	// Invert sign because this is not number but string
+	x[2] = x[2] == "-" ? "+" : "-";
+	return Number(ins).human(x[5], false).padding(x[2] + x[4], x[3]);
+};
+
+/**
+ * compile()
+ *
+ * This string function compiles the formatting string to the internal function 
+ * to acelerate an execution a formatting within loops. 
+ *
+ * @example
+ * // Standard usage of the sprintf method
+ * var s = '';
+ * for (var p in obj) {
+ *     s += '%s = %s'.sprintf(p, obj[p]);
+ * }
+ *
+ * // The more speed usage of the sprintf method
+ * var sprintf = '%s = %s'.compile();
+ * var s = '';
+ * for (var p in obj) {
+ *     s += sprintf(p, obj[p]);
+ * }
+ *
+ * @see		String.prototype.sprintf()
+ */
+String.prototype.compile = function()
+{
+	var args = arguments;
+	var index = 0;
+
+	var x;
+	var ins;
+	var fn;
+
+	/*
+	 * The callback function accepts the following properties
+	 *	x.index contains the substring position found at the origin string
+	 *	x[0] contains the found substring
+	 *	x[1] contains the index specifier (as \d+\$ or \d+#)
+	 *	x[2] contains the alignment specifier ("+" or "-" or empty)
+	 *	x[3] contains the padding specifier (space char, "0" or defined as '.)
+	 *	x[4] contains the width specifier (as \d*)
+	 *	x[5] contains the floating-point precision specifier (as \.\d*)
+	 *	x[6] contains the type specifier (as [bcdfosuxX])
+	 */
+	var result = this.replace(/(\\|")/g, '\\$1').replace(String.prototype.sprintf.re, function()
+	{
+		if ( arguments[0] == "%%" ) {
+			return "%";
+		}
+
+		arguments.length = 7;
+		x = [];
+		for (var i = 0; i < arguments.length; i++) {
+			x[i] = arguments[i] || '';
+		}
+		x[3] = x[3].slice(-1) || ' ';
+
+		ins = x[1] ? x[1] - 1 : index++;
+//		index++;
+
+		return '", String.prototype.sprintf.' + x[6] + '(arguments[' + ins + '], ["' + x.join('", "') + '"]), "';
+	});
+
+	return Function('', 'return ["' + result + '"].join("")');
+};
+
+/**
+ * Considers the string object as URL and returns it's parts separately
+ *
+ * @param	void
+ * @return	Object
+ * @access	public
+ */
+String.prototype.parseUrl = function()
+{
+	var matches = this.match(arguments.callee.re);
+
+	if ( ! matches ) {
+		return null;
+	}
+
+	var result = {
+		'scheme': matches[1] || '',
+		'subscheme': matches[2] || '',
+		'user': matches[3] || '',
+		'pass': matches[4] || '',
+		'host': matches[5],
+		'port': matches[6] || '',
+		'path': matches[7] || '',
+		'query': matches[8] || '',
+		'fragment': matches[9] || ''};
+
+	return result;
+};
+
+String.prototype.parseUrl.re = /^(?:([a-z]+):(?:([a-z]*):)?\/\/)?(?:([^:@]*)(?::([^:@]*))?@)?((?:[a-z0-9_-]+\.)+[a-z]{2,}|localhost|(?:(?:[01]?\d\d?|2[0-4]\d|25[0-5])\.){3}(?:(?:[01]?\d\d?|2[0-4]\d|25[0-5])))(?::(\d+))?(?:([^:\?\#]+))?(?:\?([^\#]+))?(?:\#([^\s]+))?$/i;
+
+String.prototype.camelize = function()
+{
+	return this.replace(/([^-]+)|(?:-(.)([^-]+))/mg, function($0, $1, $2, $3)
+	{
+		return ($2 || '').toUpperCase() + ($3 || $1).toLowerCase();
+	});
+};
+
+String.prototype.uncamelize = function()
+{
+	return this
+		.replace(/[A-Z]/g, function($0)
+		{
+			return '-' + $0.toLowerCase();
+		});
+};

@@ -15,9 +15,9 @@
 	<hr>
 	<div style='line-height:20px; color: blue'>
 	* 아래 내용 Copy해서 전달
-<textarea>
-실시간 정보 접속 정보
-웹 URL : http://guest.autoring.kr
+<textarea readonly>
+광고주 실시간 정보 접속 정보
+웹 URL : http://guest.aline-soft.co.kr
 로그인 ID : <?=$row_info['guest_id'] . "\n" ?>비밀번호 : <?=$row_info['guest_pw']?>
 </textarea>
 	</div>
@@ -81,7 +81,7 @@
 	</table>
 	<div style='padding-top: 20px'>
 		<a href='#' onclick='<?=$js_page_id?>.action.on_btn_modifyguest()' data-role='button' data-theme='b' data-inline='true' data-mini='true' >정보 수정하기</a>
-		<a href='#' onclick="goPage('dlg-select-appkey', null, {caller:'<?=$js_page_id?>', caller_ok: <?=$js_page_id?>.action.on_select_appkey})" data-role='button' data-theme='b' data-inline='true' data-mini='true' >광고주 광고 추가</a>
+		<a href='#' onclick="goPage('dlg-select-appkey', null, {caller_onselect: <?=$js_page_id?>.action.on_select_appkey})" data-role='button' data-theme='b' data-inline='true' data-mini='true' >광고주 광고 추가</a>
 	</div>
 	<hr>
 

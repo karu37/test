@@ -26,7 +26,7 @@
 			<div style='width: 200px'>
 				<input type="text" id="guest-pw" name="guest-pw" />
 			</div>
-			영문/숫자와 일부 특수문자 "()_~!@#$^&*" 만 가능<br>
+			영문/숫자와 밑줄("_") 만 가능<br>
 			<span style='color:red; font-weight: bold'>한글은 절대 사용 불가</span>
 		</td>
 	</tr>
@@ -48,7 +48,7 @@
 						<input type="text" id="guest-apptitle" name="guest-apptitle" readonly style='background-color:#eff' />
 						<input type="hidden" id="guest-appkey" name="guest-appkey" />
 					</div>
-					<div class='ui-block-b' style='width:30%'><a href="#" onclick="goPage('dlg-select-appkey', null, {caller:'<?=$js_page_id?>'})" data-role='button' data-mini='true' data-theme='b'>앱 선택</a></div>
+					<div class='ui-block-b' style='width:30%'><a href="#" onclick="goPage('dlg-select-appkey', null, {caller_onselect: <?=$js_page_id?>.action.on_select_appkey})" data-role='button' data-mini='true' data-theme='b'>앱 선택</a></div>
 				</div>
 			</div>
 			(2개 이상은 먼저 등록한 후 수정에서 등록)
@@ -99,6 +99,11 @@ var <?=$js_page_id?> = function()
 				util.initPage($('#page'));
 				_$("div[data-role='popup']").on("popupbeforeposition", function(){ util.initPage($(this)); });
 			},
+			on_select_appkey: function(appkey, apptitle)
+			{
+				_$("#guest-appkey").val(appkey);
+				_$("#guest-apptitle").val(apptitle);
+			},			
 			on_btn_addguest: function()
 			{
 

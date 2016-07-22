@@ -64,6 +64,15 @@ function _changePage(page_selector, option, b_call_triggercreate) {
 	if (b_call_triggercreate) $(page_selector).trigger('pagecreate');
 }
 
+function refreshPage(page_id) {
+	$("#" + page_id).trigger('pagecreate');
+}
+
+function mvPage(page_id, options, web_param) {
+	web_param['ref'] = window.location.href;
+	window.location.href = util.url_add_json_params("?id=" + page_id, web_param);
+}
+
 function set_dialog_ready(page_id) {
     $('#' + page_id + '[data-role="dialog"]').on('pagebeforeshow', function(e, ui) {
 		ui.prevPage.addClass("ui-dialog-background ");

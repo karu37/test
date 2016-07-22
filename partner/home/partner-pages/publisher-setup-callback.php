@@ -143,7 +143,7 @@ var <?=$js_page_id?> = function()
 					return;	
 				}
 								
-				util.post(get_ajax_url('admin-publisher-set-callback'), ar_param, function(sz_data) {
+				util.post(get_ajax_url('partner-publisher-set-callback'), ar_param, function(sz_data) {
 					var js_data = util.to_json(sz_data);
 					if (js_data['result']) {
 						util.Alert('알림', '등록되었습니다.', function() {

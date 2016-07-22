@@ -32,8 +32,7 @@ var <?=$js_page_id?> = function()
 	var _$ = function(selector) { if (!selector) return $("#<?=$page_id?>"); return $("#<?=$page_id?>").find(selector); };
 	var param = {};
 	
-	var caller_id = "";
-	var caller_ok = null;
+	var caller_onselect = null;
 	var page = { 
 		page_common_init: function(){
 			util.initPage(_$()); 
@@ -41,8 +40,7 @@ var <?=$js_page_id?> = function()
 		},
 		page_event: {
 			on_create: function() {
-				caller_id = param['caller'];
-				caller_ok = param['caller_ok'];
+				caller_onselect = param['caller_onselect'];
 				_$("#sub_frame").attr('src', get_popup_url("iframe-search-app-lists"));
 			}	
 		},
@@ -56,13 +54,9 @@ var <?=$js_page_id?> = function()
 				var msg = e.data;
 				if (msg.cmd == "onselect") {
 					
-					// input이 있다면 input입력
-					$("#"+caller_id+" #guest-appkey").val(msg.app_key);
-					$("#"+caller_id+" #guest-apptitle").val(msg.app_title);
-					
 					// 함수가 있다면 함수 호출
-					if (typeof caller_ok == 'function') {
-						caller_ok(msg.app_key, msg.app_title);
+					if (typeof caller_onselect == 'function') {
+						caller_onselect(msg.app_key, msg.app_title);
 					}
 					
 					$.mobile.back();

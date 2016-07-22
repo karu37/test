@@ -17,7 +17,6 @@
 	// --------------------------------
 	// Paginavigator initialize	
 	$sql = "SELECT COUNT(*) as cnt FROM guest_user_t a WHERE a.partner_id = '{$db_partner_id}' {$where}";
-echo $sql;	
 	$row = mysql_fetch_assoc(mysql_query($sql, $conn));
 	$pages = new Paginator($row['cnt']);
 	$limit = "LIMIT " . $pages->limit_start . "," . $pages->limit_end;
@@ -40,7 +39,7 @@ echo $sql;
 		#ctl-main-list .deleted-Y .btn-delete	{display: none}
 		
 	</style>
-	<t4 style='line-height: 40px'>광고주 목록</t4>
+	<t4 style='line-height: 40px'>광고주 계정 목록</t4>
 	<hr>
 	<form onsubmit='return <?=$js_page_id?>.action.on_btn_search()'>
 		<table border=0 cellpadding=0 cellspacing=0 width=100%>
@@ -112,7 +111,7 @@ echo $sql;
 				<td><?=admin_to_date($row['reg_date'])?></td>
 				<td>
 					<a href='?id=guest-modify&guestid=<?=$row['guest_id']?>' style='padding: 5px 4px' data-theme='b' data-role='button' data-mini='true' data-inline='true'>정보 수정</a>
-					<a href='http://guest.autoring.kr/login.php?guestid=<?=urlencode($row['guest_id'])?>&guestpw=<?=urlencode($row['guest_pw'])?>' target=_blank style='padding: 5px 4px' data-theme='b' data-role='button' data-mini='true' data-inline='true'>광고주 로그인</a>
+					<a href='http://guest.aline-soft.co.kr/login.php?guestid=<?=urlencode($row['guest_id'])?>&guestpw=<?=urlencode($row['guest_pw'])?>' target=_blank style='padding: 5px 4px' data-theme='b' data-role='button' data-mini='true' data-inline='true'>광고주 로그인</a>
 				</td>
 				
 			</tr>

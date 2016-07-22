@@ -227,7 +227,9 @@ var util = {
 	from_money: function(sz_money) {
 		if (!sz_money) return "";
 		sz_money = sz_money.replace(/,/g, '');
-		return parseInt(sz_money);
+		var ret = parseInt(sz_money);
+		if (isNaN(ret)) return 0;
+		return ret;
 	},
 	to_displaytime: function(sz_date){	// 7.13(월) 12:20
 		var js_date =new Date(sz_date.replace(/-/g, '/'));
@@ -256,16 +258,31 @@ var util = {
 		if (!txt) return false;
 		return txt.match(/^[a-z0-9_+.-]+@([a-z0-9-]+\.)+[a-z0-9]{2,4}$/i);
 	},
-	intval: function(str_num) {
-		if (!str_num) return 0;
-		str_num = str_num.replace(/,/g, '');
-		return parseInt(str_num);
+	is_empty: function(txt) {
+		return (typeof txt == 'undefined' || txt === null || txt === "");
 	},
-	number_format: function(num){
-		if (typeof num == 'undefined' || num === null) num = 0;
-		else if (typeof num == 'string') num = util.intval(num);
-		
-		return (num).toFixed(0).replace(/(\d)(?=(\d{3})+$)/g, "$1,");
+	ifempty: function(txt,val) {
+		if (util.is_empty(txt)) return val;
+		return txt;
+	},
+	intval: function(str_num, empty_string) {
+		if (typeof empty_string == 'undefined') empty_string = 0;
+		if (util.is_empty(str_num)) return empty_string;
+		str_num = str_num.replace(/,/g, '');
+		var ret = parseInt(str_num);
+		if (isNaN(ret)) return "";
+		return ret;
+	},
+	number_format: function(num, emptyzero_string, zero_string){
+		if (typeof emptyzero_string == 'undefined') emptyzero_string = 0;
+		if (typeof zero_string == 'undefined') zero_string = emptyzero_string;
+		if (util.is_empty(num)) return emptyzero_string;
+		else if (typeof num == 'string') {
+			num = util.intval(num);
+			if (num == 0) return zero_string;
+			num = (num).toFixed(0).replace(/(\d)(?=(\d{3})+$)/g, "$1,");
+		}
+		return num;
 	},
 	trim: function(txt) {
     	return txt.replace(/(^\s*)|(\s*$)/gi, "");
@@ -288,13 +305,18 @@ var util = {
 	  }
 	  return false;
 	},
-	set_event_for_input_number: function(sp_element) {
+	set_event_for_input_number: function(sp_element, empty_string) {
 		$(sp_element).attr('type', 'tel');
 		$(sp_element).off('focusout').off('focusin');
-		$(sp_element).val( util.number_format($(sp_element).val()) );
+		$(sp_element).val( util.number_format($(sp_element).val(), empty_string) );
 		
-		$(sp_element).on('focusout', function(){ $(sp_element).val( util.number_format($(sp_element).val())); });
-		$(sp_element).on('focusin', function(){ $(sp_element).val( $(sp_element).val().replace(/,/gi,'') ); });
+		$(sp_element).on('focusout', function(){ $(sp_element).val( util.number_format($(sp_element).val(), empty_string)); });
+		$(sp_element).on('focusin', function(){ 
+			if (typeof empty_string != 'undefined' && empty_string == $(sp_element).val())
+				$(sp_element).val("");
+			else
+				$(sp_element).val($(sp_element).val().replace(/,/gi,'')); 
+		});
 	},
 	set_event_for_input_money: function(sp_element) {
 		$(sp_element).attr('type', 'tel');	// 원을 사용하기 위해 tel타입으로 변경
@@ -313,13 +335,19 @@ var util = {
 	},
 	url_add_param: function(url, param_key, param_value) {
 		var regex = new RegExp("([?;&])" + param_key + "=[^&;]*");
-		if (url.match(regex)) return url.replace(regex, "$1" + param_key + '=' + param_value);
-		if (url.indexOf('?') > 0) return url + '&' + param_key + '=' + param_value;
-		return url + '?' + param_key + '=' + param_value;
+		if (url.match(regex)) return url.replace(regex, "$1" + param_key + '=' + encodeURIComponent(param_value));
+		if (url.indexOf('?') >= 0) return url + '&' + param_key + '=' + encodeURIComponent(param_value);
+		return url + '?' + param_key + '=' + encodeURIComponent(param_value);
 	},
 	url_add_params: function(url, ar_data) {
 		for (var i = 0 ; i < ar_data.length / 2; i++) {
 			url = util.url_add_param(url, ar_data[i*2], ar_data[i*2+1]);			
+		}
+		return url;
+	},
+	url_add_json_params: function(url, ar_data) {
+		for (var i in ar_data) {
+			url = util.url_add_param(url, i, ar_data[i]);			
 		}
 		return url;
 	},
@@ -481,3 +509,5 @@ var util = {
     	document.location.reload();
     },
 };
+
+window.var_dump = util.var_dump;
