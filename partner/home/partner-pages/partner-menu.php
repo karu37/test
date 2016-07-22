@@ -4,9 +4,6 @@
 <ul style="min-height: 600px; padding: 10px; line-height:22px">
 	
 	<? $idx = 1; ?>
-	<li><b><?=$idx++?>. 매출 현황</b><li>
-		<li style='padding-left:15px'>└ <a data-ajax="false" href='?id='>월별 실적 조회</a></li>
-		<li style='padding-left:15px'>└ <a data-ajax="false" href='?id='>일별 실적 조회</a></li>
 	<li><b><?=$idx++?>. Merchant 메뉴</b><li>
 		<li style='padding-left:15px'>└ <a data-ajax="false" href='?id=partner-merchant-list'>Merchant 목록</a></li>
 		<li style='padding-left:25px' class='menu_desc'>&middot; Merchant별 실적 조회</li>
