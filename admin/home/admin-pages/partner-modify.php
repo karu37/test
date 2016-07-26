@@ -33,7 +33,9 @@
 	<tr class='should'>
 		<th>업체 아이디</th>
 		<td>
-			<input style='width:200px' type="text" id="partner-id" name="partner-id" value="<?=$row_info['partner_id']?>"/>
+			<div style='width: 200px'>
+				<input style='background: #ffe' type="text" id="partner-id" name="partner-id" value="<?=$row_info['partner_id']?>" readonly/>
+			</div>
 		</td>
 		<td></td>
 	</tr>
