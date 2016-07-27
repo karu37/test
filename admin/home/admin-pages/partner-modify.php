@@ -13,7 +13,7 @@
 	* 아래 내용 Copy해서 전달
 <textarea>
 업체 접속 정보
-웹 URL : http://partner.aline-soft.kr
+웹 URL : http://partner.aline-soft.co.kr
 로그인 ID : <?=$row_info['partner_id'] . "\n" ?>비밀번호 : <?=$row_info['partner_pw']?>
 </textarea>
 	</div>

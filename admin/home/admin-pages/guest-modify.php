@@ -15,7 +15,7 @@
 	* 아래 내용 Copy해서 전달
 <textarea>
 실시간 정보 접속 정보
-웹 URL : http://guest.aline-soft.kr
+웹 URL : http://guest.aline-soft.co.kr
 로그인 ID : <?=$row_info['guest_id'] . "\n" ?>비밀번호 : <?=$row_info['guest_pw']?>
 </textarea>
 	</div>
