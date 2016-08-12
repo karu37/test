@@ -1,6 +1,20 @@
 <?
 	// $partner_id, $partner_name 
 	// $db_partner_id, $db_partner_name
+
+	// ---------------------------------------	
+	// During-Month (Daily) Navigation
+	// ---------------------------------------	
+	$date = $_REQUEST['date'];
+	if (!$date) $date = date("Y-m-d");
+
+	$year = date("Y", strtotime($date));
+	$month = date("m", strtotime($date));
+	
+	// 해당월의 마지막 일을 얻어옴
+	$sql = "SELECT DAY(LAST_DAY('{$year}-{$month}-01')) as 'last_day'";
+	$row = mysql_fetch_assoc(mysql_query($sql, $conn));
+	$last_day = intval($row['last_day']);
 	
 	// --------------------------------
 	$searchfor = $_REQUEST['searchfor'];
@@ -9,7 +23,7 @@
 	$db_search = mysql_real_escape_string($search);
 
 	$where = "";
-	$where .= "AND a.is_mactive " . (ifempty($_REQUEST['listtype'], 'A') == 'A' ? " <> 'N'" : " = 'N'");
+	// $where .= "AND a.is_mactive " . (ifempty($_REQUEST['listtype'], 'A') == 'A' ? " <> 'N'" : " = 'N'");
 	if ($searchfor == "name" && $search) $where .= " AND a.name LIKE '%{$db_search}%'";
 	if ($searchfor == "code" && $search) $where .= " AND a.mcode LIKE '%{$db_search}%'";
 	
@@ -24,9 +38,29 @@
 	$limit = "LIMIT " . $pages->limit_start . "," . $pages->limit_end;
 
 	// ---------------------------------------
+	// Total merchant_cnt, fee
+	// ---------------------------------------
+	$sql = "SELECT SUM(c.merchant_cnt) as 'merchant_cnt', SUM(c.merchant_fee) as 'merchant_fee'
+			FROM al_merchant_t a 
+				INNER JOIN al_partner_mpcode_t mp ON a.mcode = mp.mcode AND mp.type = 'M' 
+				LEFT OUTER JOIN al_summary_sales_m_t c ON a.mcode = c.mcode AND c.reg_day = '{$year}-{$month}-01'
+			WHERE mp.partner_id = '{$db_partner_id}' {$where}";
+	$result = mysql_query($sql, $conn);
+	$row = mysql_fetch_assoc(mysql_query($sql, $conn));
+	$total_merchant_cnt = $row['merchant_cnt'];
+	$total_merchant_fee = $row['merchant_fee'];
+
+	// ---------------------------------------
 	// publisher info
 	// ---------------------------------------
-	$sql = "SELECT a.*, count(distinct b.app_key) as 'appkey_cnt' FROM al_merchant_t a INNER JOIN al_partner_mpcode_t mp ON a.mcode = mp.mcode AND mp.type = 'M' LEFT OUTER JOIN al_app_t b ON a.mcode = b.mcode WHERE mp.partner_id = '{$db_partner_id}' {$where} GROUP BY a.mcode {$order_by} {$limit}";
+	$sql = "SELECT a.*, count(distinct b.app_key) as 'appkey_cnt', c.merchant_cnt, c.merchant_fee
+			FROM al_merchant_t a 
+				INNER JOIN al_partner_mpcode_t mp ON a.mcode = mp.mcode AND mp.type = 'M' 
+				LEFT OUTER JOIN al_app_t b ON a.mcode = b.mcode
+				LEFT OUTER JOIN al_summary_sales_m_t c ON a.mcode = c.mcode AND c.reg_day = '{$year}-{$month}-01'
+			WHERE mp.partner_id = '{$db_partner_id}' {$where} 
+			GROUP BY a.mcode 
+			{$order_by} {$limit}";
 	$result = mysql_query($sql, $conn);
 ?>
 	<style>
@@ -38,25 +72,36 @@
 		.list tr.mactive-T:hover td 	{background:#f80}
 		
 		.list tr > * 		{height:40px; line-height:1em; padding: 4px 4px}
+		.list tr.sum > * 	{font-weight: bold; background-color:#efefff; color: blue}
 
 		.list .btn-td									{padding-left: 0px padding-right: 0px}
 		.list .th_status, .list .btn-td .btn-wrapper	{width: 66px}
 		.list .btn-td a									{padding:7px 4px; font-size: 10px; letter-spacing:0px; margin: 2px -2px 2px -1px; box-shadow:none;}
 	</style>
 <div style='width:800px'>
-	<t4 style='line-height: 40px'>전체 Merchant 목록</t4>
+	<t4 style='line-height: 40px'>Merchant 매출</t4>
+	<hr>
+
 	<hr>
 	<form onsubmit='return <?=$js_page_id?>.action.on_btn_search()'>
 		<table border=0 cellpadding=0 cellspacing=0 width=100%>
 		<tr><td id='btns-group' valign=top>
-
-			<fieldset id="list-type" data-theme='c' class='td-2-item' data-role="controlgroup" data-type="horizontal" data-mini=true init-value="<?=ifempty($_REQUEST['listtype'],'A')?>" >
-		        <input name="list-type" id="list-type-normal" value="A" type="radio" onclick="window.location.href=window.location.href.set_url_param('listtype', 'A').del_url_param('page')" />
-		        <label for="list-type-normal">정상 목록</label>
-		        <input name="list-type" id="list-type-deleted" value="B" type="radio" onclick="window.location.href=window.location.href.set_url_param('listtype', 'B').del_url_param('page')" />
-		        <label for="list-type-deleted">중지 목록</label>
-		    </fieldset>			
 			
+			<div style="display:inline-block">
+				<div class='ui-grid-a'>
+					<!-- 년도 선택 -->
+					<div class='ui-block-a' style='width:120px; padding-top:5px'>
+						<input type="text" data-role='text' id='param-date' data-clear-btn='true' value="<?=$year . '-' . $month?>" />
+					</div>
+					<div class='ui-block-b' style='width:300px; padding-left:5px'>
+						<a href='#' onclick="$('#param-date').val('<?=date("Y-m", strtotime("$year-$month-01". " -1 month"))?>').trigger('change'); return false;" data-role='button' data-mini='true' data-inline='true'><<</a>
+						<a href='#' onclick="$('#param-date').val('<?=date("Y-m")?>').trigger('change'); return false;" data-role='button' data-mini='true' data-inline='true'>이번달</a>
+						<a href='#' onclick="$('#param-date').val('<?=date("Y-m", strtotime("$year-$month-01". " 1 month"))?>').trigger('change'); return false;" data-role='button' data-mini='true' data-inline='true'>>></a>
+					</div>
+				</div>
+				<script>$('#param-date').change(function(){ if ($(this).val() != '<?=$year.'-'.$month?>') window.location.href=location.href.del_url_param("page").set_url_param("date", $(this).val()); });</script>
+			</div>			
+
 		</td><td valign=top align=right style='border-left: 1px solid #ddd'>
 			
 			<div style='width:300px; padding-top:10px; text-align: left'>
@@ -75,7 +120,9 @@
 		</td></tr></table>
 	</form>
 	<hr>
-	<div style="display:block; padding-top:20px; padding-left: 10px; font-size:22px; color: blue; font-weight: bold">총 : <?=number_format($pages->total_items)?> 건</div>
+	<div style="float:left; display:block; padding-top:20px; padding-left: 10px; font-size:22px; color: blue; font-weight: bold">총 : <?=number_format($pages->total_items)?> 건</div>
+	<div style="float:right; display:block; padding-top:20px; padding-right: 10px; font-size:22px; color: black; font-weight: bold"><?="{$year}년 {$month}월"?></div>
+	<div style='clear:both'></div>
 	<div class='ui-grid-a' style='padding:5px 10px; <?=$pages->num_pages <= 1 ? "display:none" : ""?>'>
 		<div class='ui-block-a' style='width:70%; padding-top:5px'><?=$pages->display_pages()?></div>
 		<div class='ui-block-b' style='width:30%; text-align:right'><?=$pages->display_jump_menu() . $pages->display_items_per_page()?></div>
@@ -89,11 +136,18 @@
 			<th width=1px><div class='th_status'>상태</div></th>
 			<th width=70px>등록일</th>
 			<th>이름</th>
-			<th>코드</th>
+			<th>mcode</th>
 			<th width=40px>광고수</th>
+			<th>적립 건수</th>
+			<th>적립 실적</th>
 		</tr>
 	</thead>
 	<tbody>
+		<tr class='sum'>
+			<td colspan=6 style='text-align:left; padding-left:10px'>전체 합</td>
+			<td><?=admin_number($total_merchant_cnt)?></td>
+			<td><?=admin_number($total_merchant_fee)?></td>
+		</tr>
 	<?
 		$idx = 0;
 		$arr_status = array('Y' => '정상', 'T' => '<span style="color:blue; font-weight:bold">개발</span>', 'N' => '<span style="color:red; font-weight:bold">중지</span>');
@@ -110,6 +164,8 @@
 				<td <?=$td_onclick?>><?=$merchant['name']?></td>
 				<td <?=$td_onclick?>><?=$merchant['mcode']?></td>
 				<td <?=$td_onclick?>><?=admin_number($merchant['appkey_cnt'])?></td>
+				<td <?=$td_onclick?>><b><?=admin_number($merchant['merchant_cnt'])?></b></td>
+				<td <?=$td_onclick?>><b><?=admin_number($merchant['merchant_fee'])?></b></td>
 			</tr>
 			<?
 		}
@@ -172,6 +228,7 @@ var <?=$js_page_id?> = function()
 	
 	function setEvents() {
 		$(document).on("pageinit", function(){page.action.initialize();} );
+		$('input#param-date').monthpicker();
 	}		
 
 	setEvents(); // Event Attaching		
