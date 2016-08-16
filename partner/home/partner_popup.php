@@ -13,16 +13,17 @@
 	if ($page_id == "") $page_id = 'home';
 	$js_page_id = str_replace("-", "_", $page_id);
 
-	$file = dirname(__FILE__) . "/partner-pages/{$page_id}.php";
+	// db 연결	
+	$conn = dbConn();
 	
+	$file = dirname(__FILE__) . "/partner-pages/{$page_id}.php";
+
 	$partner_id = $_SESSION['partnerid'];
 	$db_partner_id = @mysql_real_escape_string($partner_id);
 	
 	$partner_name = $_SESSION['partnername'];
 	$db_partner_name = @mysql_real_escape_string($partner_name);
 
-	// db 연결	
-	$conn = dbConn();
 ?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Trans	itional//EN">
 <html>

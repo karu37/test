@@ -10,12 +10,12 @@
 	
 	if ($page_id == "") $page_id = 'home';
 	$js_page_id = str_replace("-", "_", $page_id);
-	
-	$file = dirname(__FILE__) . "/partner-pages/{$page_id}.php";
 
 	// db 연결	
 	$conn = dbConn();
 	
+	$file = dirname(__FILE__) . "/partner-pages/{$page_id}.php";
+
 	if (file_exists($file)) {
 		
 		ini_set("display_errors", "1");
