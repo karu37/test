@@ -90,7 +90,7 @@
 				<div class='ui-grid-a'>
 					<!-- 년도 선택 -->
 					<div class='ui-block-a' style='width:120px; padding-top:5px'>
-						<input type="text" data-role='text' id='param-date' data-clear-btn='true' value="<?=$year . '-' . $month?>" />
+						<input type="text" data-role='text' id='param-date' style='text-align: center' value="<?=$year . '-' . $month?>" />
 					</div>
 					<div class='ui-block-b' style='width:200px; padding-left:5px'>
 						<a href='#' onclick="$('#param-date').val('<?=date("Y-m", strtotime("$year-$month-01". " -1 month"))?>').trigger('change'); return false;" data-role='button' data-mini='true' data-inline='true'><<</a>

@@ -11,7 +11,7 @@
 	$row = mysql_fetch_assoc(mysql_query($sql, $conn));
 ?>
 <div>
-	<t3 style='height:40px; padding-top:20px'>연동 설정</t3>
+	<t3 style='height:40px; padding-top:20px'>콜백 연동 설정</t3>
 	<hr>
 	<table class='app-info' cellpadding=0 cellspacing=0>
 	<style>
@@ -24,7 +24,7 @@
 	<col width=100px valign=top></col>
 	<col width=500px valign=top align=left></col>
 	<tr class='should'>
-		<th>업체 아이디</th>
+		<th>매체코드</th>
 		<td>
 			<p3><?=$row['name']?></p3>
 		</td>
@@ -39,7 +39,8 @@
 				%
 			</div>
 			<div style='clear:both'></div>
-			* <b>50</b>% 이면, <b>price</b>(매체가격)이 <b>250</b>일 때, <b>reward</b>(사용자 보상 금액) <b>125</b>으로 제공됨
+			* <b>50</b>% 이면, <b>price</b>(매체가격)이 <b>250</b>일 때, <br>
+			  &nbsp; 광고목록, 적립콜백의 <b>reward</b>(사용자 보상 금액) 값이 <b>125</b>으로 제공됨
 		</td>
 	</tr>
 	<tr style='display:none'>
@@ -77,7 +78,7 @@
 	<div style='padding-top: 10px;'>
 		<a href='#' onclick='<?=$js_page_id?>.action.on_btn_set_callbackinfo()' data-role='button' data-theme='b' data-inline='true' data-mini='true' >등록하기</a>
 	</div>
-	
+<!--	
 	<div class='app-info'  style='background-color:#fff; width:600px; padding-top: 30px'>
 		<b3>테스트 콜백 호출</b3>
 		<hr>
@@ -107,7 +108,7 @@
 	 		</div>
 	 	</div>
 	</div>
-	
+-->	
 
 </div>
 			
@@ -210,12 +211,13 @@ var <?=$js_page_id?> = function()
 		
 		$("#txt-callback-url").on('change', page.action.on_update_callbacktest_url);
 		$("#txt-reward-percent").on('change', page.action.on_update_callbacktest_param);
-		
+/*		
 		$("#test-ad").on('change', page.action.on_update_callbacktest_param);
 		$("#test-price").on('change', page.action.on_update_callbacktest_param);
 		$("#test-uid").on('change', page.action.on_update_callbacktest_param);
 		$("#test-userdata").on('change', page.action.on_update_callbacktest_param);
 		$("#test-unique").on('change', page.action.on_update_callbacktest_param);
+*/		
 	}		
 
 	setEvents(); // Event Attaching		

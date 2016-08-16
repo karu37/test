@@ -66,7 +66,7 @@
 			<div class='ui-grid-a'>
 				<!-- 년도 선택 -->
 				<!--; -->
-				<div class='ui-block-a' style='width:100px; padding-top:5px'><input type="text" data-role='text' id='param-date' data-clear-btn='true' value="<?=$year . '-' . $month?>" /></div>
+				<div class='ui-block-a' style='width:100px; padding-top:5px'><input type="text" data-role='text' id='param-date' value="<?=$year . '-' . $month?>" /></div>
 				<div class='ui-block-b' style='width:300px; padding-left:5px'>
 					<a href='#' onclick="$('#param-date').val('<?=date("Y-m", strtotime("$year-$month-01". " -1 month"))?>').trigger('change'); return false;" data-role='button' data-mini='true' data-inline='true'><<</a>
 					<a href='#' onclick="$('#param-date').val('<?=date("Y-m")?>').trigger('change'); return false;" data-role='button' data-mini='true' data-inline='true'>이번달</a>

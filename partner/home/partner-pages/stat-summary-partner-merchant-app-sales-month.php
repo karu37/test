@@ -69,7 +69,7 @@
 				<div class='ui-grid-a'>
 					<!-- 년도 선택 -->
 					<!--; -->
-					<div class='ui-block-a' style='width:120px; padding-top:5px'><input type="text" data-role='date' id='param-date' data-clear-btn='true' value="<?=$date?>" /></div>
+					<div class='ui-block-a' style='width:120px; padding-top:5px'><input type="text" data-role='date' id='param-date' value="<?=$date?>" /></div>
 					<div class='ui-block-b' style='width:300px; padding-left:5px'>
 						<a href='#' onclick="$('#param-date').val('<?=date("Y-m-d", strtotime("{$date} -1 day"))?>').trigger('change'); return false;" data-role='button' data-mini='true' data-inline='true'><<</a>
 						<a href='#' onclick="$('#param-date').val('<?=date("Y-m-d")?>').trigger('change'); return false;" data-role='button' data-mini='true' data-inline='true'>오늘</a>
