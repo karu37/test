@@ -15,6 +15,9 @@
 	
 	$file = dirname(__FILE__) . "/partner-pages/{$page_id}.php";
 
+	// db 연결	
+	$conn = dbConn();
+
 	$body_min_width = "1100px";
 	$post_script = "";
 
@@ -24,8 +27,6 @@
 	$partner_name = $_SESSION['partnername'];
 	$db_partner_name = @mysql_real_escape_string($partner_name);
 	
-	// db 연결	
-	$conn = dbConn();
 ?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
 <html>
