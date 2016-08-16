@@ -3,9 +3,9 @@
 // $site_define 로딩하기
 // ---------------------------------------
 
-	$default_file = dirname(__FILE__).'/../../../site-definition-default.php';
-	$site_file = dirname(__FILE__).'/../../../site-definition.php';
-	if (file_exists($site_file)) $file = $site_file; else $file = $default_file;
+	$site_global_file = dirname(__FILE__).'/../../../site-definition-global.php';
+	$site_local_file = dirname(__FILE__).'/../../../site-definition-local.php';
+	if (file_exists($site_local_file)) $file = $site_local_file; else $file = $site_global_file;
 	
 	$txt = file_get_contents($file);
 	if (preg_match('/\/\*(.*)\*\//usim', $txt, $matched)) {
