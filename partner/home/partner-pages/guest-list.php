@@ -43,24 +43,22 @@
 	<hr>
 	<form onsubmit='return <?=$js_page_id?>.action.on_btn_search()'>
 		<table border=0 cellpadding=0 cellspacing=0 width=100%>
-		<tr><td id='btns-group' valign=top>
 		</td><td valign=top align=right style='border-left: 1px solid #ddd'>
-			
-			<div style='width:300px; padding-top:10px; text-align: left'>
-				<fieldset id="search-for" class='td-2-item' data-role="controlgroup" data-type="horizontal" style='margin-top: 3px;' data-mini=true init-value="<?=$searchfor?>" >
-			        <input name="search-for" id="search-for-appkey" value="appkey" type="radio" />
-			        <label for="search-for-appkey">광고키</label>
-			        <input name="search-for" id="search-for-company" value="company" type="radio" />
-			        <label for="search-for-company">회사명</label>
-			        <input name="search-for" id="search-for-telno" value="telno" type="radio" />
-			        <label for="search-for-telno">전화번호</label>
-			    </fieldset>	
-			    <div class='ui-grid-a' style='padding:2px 0px; width: 300px; margin: 0 0 0 auto'>
-			    	<div class='ui-block-a' style='width:200px'><input type=text name=search id=search data-clear-btn='true' value="<?=$_REQUEST['search']?>"  style='line-height: 25px;'/></div>
-					<div class='ui-block-b' style='width:100px'><a href='#' onclick='<?=$js_page_id?>.action.on_btn_search()' data-role='button' data-mini='true'>검색</a></div>
+			    <div class='ui-grid-b' style='padding:2px 0px; width: 430px;'>
+			    	<div class='ui-block-a' style='width:230px; text-align: left'>
+						<fieldset id="search-for" class='td-2-item' data-role="controlgroup" data-type="horizontal" style='margin-top: 3px;' data-mini=true init-value="<?=$searchfor?>" >
+					        <input name="search-for" id="search-for-appkey" value="appkey" type="radio" />
+					        <label for="search-for-appkey">광고키</label>
+					        <input name="search-for" id="search-for-company" value="company" type="radio" />
+					        <label for="search-for-company">회사명</label>
+					        <input name="search-for" id="search-for-telno" value="telno" type="radio" />
+					        <label for="search-for-telno">전화번호</label>
+					    </fieldset>	
+			    	</div>
+			    	<div class='ui-block-b' style='width:120px'><input type=text name=search id=search data-clear-btn='true' value="<?=$_REQUEST['search']?>"  style='line-height: 25px;'/></div>
+					<div class='ui-block-c' style='width:80px; padding-top: 1px'><a href='#' onclick='<?=$js_page_id?>.action.on_btn_search()' data-role='button' data-mini='true'>검색</a></div>
 				</div>
 			</div>
-			
 		</td></tr></table>
 	</form>
 	<hr>

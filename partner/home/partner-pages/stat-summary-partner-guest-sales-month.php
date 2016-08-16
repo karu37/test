@@ -58,38 +58,31 @@
 		google.charts.load('current', {packages:["corechart"]});
 	</script>
 	
-	<t4 style='line-height: 40px'>월간 매출 현황</t4>
+	<t4 style='line-height: 40px'>월간 실적 현황</t4>
 	<hr>
-	<div class='ui-grid-a'>
-		<div class='ui-block-a'>
-			<div style='display:inline-block; width:70px; vertical-align:top; padding-top:12px; padding-left: 20px;'>날짜 선택 : </div>
-			<div style="display:inline-block">
-				<div class='ui-grid-a'>
-					<!-- 년도 선택 -->
-					<!--; -->
-					<div class='ui-block-a' style='width:120px; padding-top:5px'><input type="text" data-role='text' id='param-date' data-clear-btn='true' value="<?=$year . '-' . $month?>" /></div>
-					<div class='ui-block-b' style='width:300px; padding-left:5px'>
-						<a href='#' onclick="$('#param-date').val('<?=date("Y-m", strtotime("$year-$month-01". " -1 month"))?>').trigger('change'); return false;" data-role='button' data-mini='true' data-inline='true'><<</a>
-						<a href='#' onclick="$('#param-date').val('<?=date("Y-m")?>').trigger('change'); return false;" data-role='button' data-mini='true' data-inline='true'>이번달</a>
-						<a href='#' onclick="$('#param-date').val('<?=date("Y-m", strtotime("$year-$month-01". " 1 month"))?>').trigger('change'); return false;" data-role='button' data-mini='true' data-inline='true'>>></a>
-					</div>
+	<div>
+		<div style='display:inline-block; width:70px; vertical-align:top; padding-top:12px; padding-left: 20px;'>날짜 : </div>
+		<div style="display:inline-block">
+			<div class='ui-grid-a'>
+				<!-- 년도 선택 -->
+				<!--; -->
+				<div class='ui-block-a' style='width:100px; padding-top:5px'><input type="text" data-role='text' id='param-date' data-clear-btn='true' value="<?=$year . '-' . $month?>" /></div>
+				<div class='ui-block-b' style='width:300px; padding-left:5px'>
+					<a href='#' onclick="$('#param-date').val('<?=date("Y-m", strtotime("$year-$month-01". " -1 month"))?>').trigger('change'); return false;" data-role='button' data-mini='true' data-inline='true'><<</a>
+					<a href='#' onclick="$('#param-date').val('<?=date("Y-m")?>').trigger('change'); return false;" data-role='button' data-mini='true' data-inline='true'>이번달</a>
+					<a href='#' onclick="$('#param-date').val('<?=date("Y-m", strtotime("$year-$month-01". " 1 month"))?>').trigger('change'); return false;" data-role='button' data-mini='true' data-inline='true'>>></a>
 				</div>
-				<script> 
-					$('input#param-date').monthpicker();
-					$('#param-date').change(function(){ if ($(this).val() != '<?=$year.'-'.$month?>') window.location.href=location.href.del_url_param("page").set_url_param("date", $(this).val()); });
-				</script>
 			</div>
-		</div>
-		<div class='ui-block-b' style='text-align:right'>
-			<a href='?id=stat-summary-m-sales-year&date=<?=$date?>' data-role='button' data-inline='true' data-mini='true'>연간 매출</a>
-			<a href='?id=stat-summary-m-sales-month&date=<?=$date?>' data-role='button' data-inline='true' data-mini='true'>월간 매출</a>
-			<a href='?id=stat-summary-m-sales-day&date=<?=$date?>' data-role='button' data-inline='true' data-mini='true'>일간 매출</a>
+			<script> 
+				$('input#param-date').monthpicker();
+				$('#param-date').change(function(){ if ($(this).val() != '<?=$year.'-'.$month?>') window.location.href=location.href.del_url_param("page").set_url_param("date", $(this).val()); });
+			</script>
 		</div>
 	</div>
 	<hr>
 	<br>
 	<div>
-		<t3><?=$year?>년 <?=$month?>월 매출 현황</t3>
+		<t3><?=$year?>년 <?=$month?>월 실적 현황</t3>
 	</div>	
 	
 	<br>

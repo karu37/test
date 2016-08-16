@@ -9,7 +9,6 @@
 	$db_search = mysql_real_escape_string($search);
 
 	$where = "";
-	$where .= "AND a.is_mactive " . (ifempty($_REQUEST['listtype'], 'A') == 'A' ? " <> 'N'" : " = 'N'");
 	if ($searchfor == "name" && $search) $where .= " AND a.name LIKE '%{$db_search}%'";
 	if ($searchfor == "code" && $search) $where .= " AND a.pcode LIKE '%{$db_search}%'";
 	
@@ -37,7 +36,7 @@
 		.list tr.mactive-T td 			{background:#f90; color:#000}
 		.list tr.mactive-T:hover td 	{background:#f80}
 				
-		.list tr > * 		{height:25px; line-height:1em; padding: 4px 4px}
+		.list tr > * 		{height:40px; line-height:1em; padding: 4px 4px}
 		
 		.list .btn-td									{padding-left: 0px padding-right: 0px}
 		.list .th_status, .list .btn-td .btn-wrapper	{width: 66px}
@@ -48,27 +47,20 @@
 	<hr>
 	<form onsubmit='return <?=$js_page_id?>.action.on_btn_search()'>
 		<table border=0 cellpadding=0 cellspacing=0 width=100%>
-		<tr><td id='btns-group' valign=top>
+		<tr><td valign=top align=right style='border-left: 1px solid #ddd; border-right: 1px solid #ddd'>
 			
-			<fieldset id="list-type" data-theme='c' class='td-2-item' data-role="controlgroup" data-type="horizontal" data-mini=true init-value="<?=ifempty($_REQUEST['listtype'],'A')?>" >
-		        <input name="list-type" id="list-type-normal" value="A" type="radio" onclick="window.location.href=window.location.href.set_url_param('listtype', 'A').del_url_param('page')" />
-		        <label for="list-type-normal">정상 목록</label>
-		        <input name="list-type" id="list-type-deleted" value="B" type="radio" onclick="window.location.href=window.location.href.set_url_param('listtype', 'B').del_url_param('page')" />
-		        <label for="list-type-deleted">중지 목록</label>
-		    </fieldset>			
-			
-		</td><td valign=top align=right style='border-left: 1px solid #ddd'>
-			
-			<div style='width:300px; padding-top:10px; text-align: left'>
-				<fieldset id="search-for" class='td-2-item' data-role="controlgroup" data-type="horizontal" style='margin-top: 3px;' data-mini=true init-value="<?=$searchfor?>" >
-			        <input name="search-for" id="search-for-name" value="name" type="radio" />
-			        <label for="search-for-name">이름</label>
-			        <input name="search-for" id="search-for-code" value="code" type="radio" />
-			        <label for="search-for-code">코드</label>
-			    </fieldset>	
-			    <div class='ui-grid-a' style='padding:2px 0px; width: 300px; margin: 0 0 0 auto'>
-			    	<div class='ui-block-a' style='width:200px'><input type=text name=search id=search data-clear-btn='true' value="<?=$_REQUEST['search']?>"  style='line-height: 25px;'/></div>
-					<div class='ui-block-b' style='width:100px'><a href='#' onclick='<?=$js_page_id?>.action.on_btn_search()' data-role='button' data-mini='true'>검색</a></div>
+			<div style='width:550px; padding-top:10px; text-align: left'>
+			    <div class='ui-grid-b' style='padding:2px 0px; width: 380px; margin: 0 0 0 auto'>
+			    	<div class='ui-block-a' style='width:120px'>
+						<fieldset id="search-for" class='td-2-item' data-role="controlgroup" data-type="horizontal" style='margin-top: 2px;' data-mini=true init-value="<?=$searchfor?>" >
+					        <input name="search-for" id="search-for-name" value="name" type="radio" />
+					        <label for="search-for-name">이름</label>
+					        <input name="search-for" id="search-for-code" value="code" type="radio" />
+					        <label for="search-for-code">코드</label>
+					    </fieldset>	
+			    	</div>
+			    	<div class='ui-block-b' style='width:150px'><input type=text name=search id=search data-clear-btn='true' value="<?=$_REQUEST['search']?>"  style='line-height: 24px;'/></div>
+					<div class='ui-block-c' style='width:80px'><a href='#' onclick='<?=$js_page_id?>.action.on_btn_search()' data-role='button' data-mini='true'>검색</a></div>
 				</div>
 			</div>
 			
@@ -90,7 +82,6 @@
 			<th width=70px>등록일</th>
 			<th>이름</th>
 			<th>코드</th>
-			<th width=1px></th>
 		</tr>
 	</thead>
 	<tbody>
@@ -110,13 +101,12 @@
 			else if ($publisher['is_mactive'] == 'N') $ar_btn_theme = array('a','a','b');
 
 			?>
-			<tr style='cursor:pointer' id='line-p-<?=$publisher['pcode']?>' class="mactive-<?=$publisher['is_mactive']?>">
+			<tr style='cursor:pointer' id='line-p-<?=$publisher['pcode']?>' class="mactive-<?=$publisher['is_mactive']?>" onclick='mvPage("publisher-setup-callback", null, {pcode:"<?=$publisher['pcode']?>"})'>
 				<td <?=$td_onclick?>><?=$pages->limit_start + $idx?></td>
 				<td <?=$td_onclick?>><?=$arr_status[$publisher['is_mactive']]?></td>
 				<td <?=$td_onclick?>><?=admin_to_date($publisher['reg_date'])?></td>
 				<td <?=$td_onclick?>><?=$publisher['name']?></td>
 				<td <?=$td_onclick?>><?=$publisher['pcode']?></td>
-				<td><a href='#' onclick='mvPage("publisher-setup-callback", null, {pcode:"<?=$publisher['pcode']?>"})' data-theme='e' data-role='button' data-mini='true' data-inline='true'>콜백<br>설정</a></td>
 			</tr>
 			<?
 		}
@@ -124,11 +114,6 @@
 	?>
 	</tbody>
 	</table>
-	<div style='padding: 5px; color:#888; background: #eef; font-size:11px; border-radius:0.6em; border: 1px solid #88f'>	
-	* 연동 상태: Publisher에게 광고 노출 + 적립 가능<br>
-	* 개발 상태: Publisher에게 테스트로 등록된 광고만 노출<br>
-	* 중지 상태: Publisher에게 광고 숨김 + 적립 불가
-	</div>	
 	<hr>
 	<div style='padding:10px' class='ui-grid-a'>
 		<div class='ui-block-a' style='width:70%; padding-top:20px'><?=$pages->display_pages()?></div>

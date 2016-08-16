@@ -16,6 +16,7 @@
 	$file = dirname(__FILE__) . "/partner-pages/{$page_id}.php";
 
 	$body_min_width = "1100px";
+	$post_script = "";
 
 	$partner_id = $_SESSION['partnerid'];
 	$db_partner_id = @mysql_real_escape_string($partner_id);
@@ -75,7 +76,7 @@
 	<? include "common/footer.htm"; ?>
 	</div>
 <script type=text/javascript>	
-	<?=$post_script?>
+	<? if ($post_script) echo $post_script; ?>
 </script>	
 </div>	
 </body>

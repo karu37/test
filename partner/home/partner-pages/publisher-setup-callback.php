@@ -1,8 +1,13 @@
 <?
+	// $partner_id, $partner_name 
+	// $db_partner_id, $db_partner_name
+
 	$pcode = $_REQUEST['pcode'];
 	$db_pcode = mysql_real_escape_string($pcode);
 	
-	$sql = "SELECT * FROM al_publisher_t WHERE pcode = '{$db_pcode}'";
+	$sql = "SELECT a.* FROM al_publisher_t a
+				INNER JOIN al_partner_mpcode_t b ON a.pcode = b.pcode AND b.type = 'P'
+			WHERE b.partner_id = '{$db_partner_id}' AND a.pcode = '{$db_pcode}'";
 	$row = mysql_fetch_assoc(mysql_query($sql, $conn));
 ?>
 <div>
