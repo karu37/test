@@ -1,6 +1,8 @@
 <?
 	// $partner_id, $partner_name 
 	// $db_partner_id, $db_partner_name
+	
+	echo $partner_id;
 
 	// ---------------------------------------	
 	// During-Month (Daily) Navigation
