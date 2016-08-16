@@ -61,6 +61,7 @@
 			WHERE mp.partner_id = '{$db_partner_id}' {$where} 
 			GROUP BY a.mcode 
 			{$order_by} {$limit}";
+echo $sql;			
 	$result = mysql_query($sql, $conn);
 ?>
 	<style>
