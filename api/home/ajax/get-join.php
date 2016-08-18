@@ -44,7 +44,6 @@
 		if (!$appkey) $omit .= "ad,";
 		if (!$ip) $omit .= "ip,";
 		if (!$adid) $omit .= "adid,";
-		if (!$imei) $omit .= "imei,";
 		if (!$model) $omit .= "model,";
 		if (!$uid) $omit .= "uid,";
 		$omit = trim($omit, ",");
