@@ -38,13 +38,12 @@
 	
 	
 	// $imei를 필수에서 선택으로 함.
-	if (!$pcode || !$appkey || !$ip || !$adid || !$model || !$uid) {
+	if (!$pcode || !$appkey || !$ip || !$adid || !$uid) {
 		$omit = "";
 		if (!$pcode) $omit .= "pcode,";
 		if (!$appkey) $omit .= "ad,";
 		if (!$ip) $omit .= "ip,";
 		if (!$adid) $omit .= "adid,";
-		if (!$model) $omit .= "model,";
 		if (!$uid) $omit .= "uid,";
 		$omit = trim($omit, ",");
 		return_die('N', array('code'=>'-101'), "파라미터 오류입니다. (파라미터 없음:{$omit})");
