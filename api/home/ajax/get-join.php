@@ -37,7 +37,8 @@
 	$userdata = $_REQUEST['userdata'];	// publisher사의 사용자 context text
 	
 	
-	if (!$pcode || !$appkey || !$ip || !$adid || !$imei || !$model || !$uid) {
+	// $imei를 필수에서 선택으로 함.
+	if (!$pcode || !$appkey || !$ip || !$adid || !$model || !$uid) {
 		$omit = "";
 		if (!$pcode) $omit .= "pcode,";
 		if (!$appkey) $omit .= "ad,";
