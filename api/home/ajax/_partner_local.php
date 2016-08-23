@@ -50,6 +50,35 @@ function local_request_start($app_key, &$arr_data, &$conn)
 			return array('result' => 'N', 'code' => '-1003', 'msg' => "no-exec-url");
 	}
 	
+	// =====================================================	
+	// $exec_url [ADID] 등의 값 Replace 처리하기
+	// =====================================================	
+	$ar_replace_data['ADID'] = $arr_data['adid'];
+	$ar_replace_data['IMEI'] = $arr_data['imei'];
+	$ar_replace_data['MAC'] = $arr_data['mac'];
+	$ar_replace_data['IP'] = $arr_data['ip'];
+	$ar_replace_data['USERDATA'] = base64_encode(json_encode(array('aid' => $userapp_id)));
+	
+	$exec_url = preg_replace_callback('/\[(.*?)\]/usim', function($match_group) use ($ar_replace_data) {
+		
+			preg_match('/^[A-Z0-9]+/usim', $match_group[1], $matched);
+			$value = $ar_replace_data[ $matched[0] ];
+			if (!$value) return $match_group[0];
+			
+			preg_match_all('/\.([A-Z0-9]+)/usim', $match_group[1], $matched);
+			$ar_encodes = $matched[1];
+			for ($i = 0; $i < count($ar_encodes); $i++) {
+				switch($ar_encodes[$i]) {
+					case 'B64': $value = base64_encode($value); break;
+					case 'MD5': $value = md5($value); break;
+					case 'URL': $value = urlencode($value); break;
+				}
+			}
+			return $value;
+			
+		}, $exec_url);
+	// =====================================================	
+	
 	$arr_data['result'] = 'Y';
 	$arr_data['url'] = $exec_url;
 	

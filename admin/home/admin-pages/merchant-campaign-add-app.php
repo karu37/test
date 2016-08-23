@@ -22,7 +22,7 @@
 		        <input name="app-platform" id="app-platform-android" value="A" type="radio" />
 		        <label for="app-platform-android">Android APP 형</label>
 		        <input name="app-platform" id="app-platform-web" value="W" onclick='mvPage("merchant-campaign-add-web", null, {mcode:"<?=$mcode?>"})' type="radio" />
-		        <label for="app-platform-web">WEB 형</label>
+		        <label for="app-platform-web">기타</label>
 		    </fieldset>									
 		</div>
 		<div class='ui-block-a' style='height:50px'>실행 타입</div>
@@ -38,7 +38,7 @@
 		<div class='ui-block-a app-search-wrapper'>마켓 검색</div>
 		<div class='ui-block-b app-search-wrapper' style='padding-top:3px'>
 			<form onsubmit="return <?=$js_page_id?>.action.on_btn_searchmarket()">
-			<div style='width:230px; display: inline-block; height: 20px'>
+			<div style='width:330px; display: inline-block; height: 20px'>
 				<input type="text" id="txt-searchmarket" name="txt-searchmarket" />
 			</div>
 			<input type=submit data-role="button" data-theme='c' data-theme="b" data-inline='true' data-mini='true' style="margin-top: 15px; margin:0px 5px" value="검색" />
@@ -46,26 +46,26 @@
 		</div>
 		<div class='ui-block-a'>앱 이름</div>
 		<div class='ui-block-b'>
-			<div style='width:300px; display: inline-block; height: 20px; padding-top: 5px'>
+			<div style='width:400px; display: inline-block; height: 20px; padding-top: 5px'>
 				<input type="text" id="app-title" name="app-title" />
 			</div>
 		</div>
 		<div class='ui-block-a'>Package ID</div>
 		<div class='ui-block-b'>
-			<div style='width:300px; display: inline-block; height: 20px; padding-top: 5px'>
+			<div style='width:400px; display: inline-block; height: 20px; padding-top: 5px'>
 				<input type="text" id="app-packageid" name="app-packageid" />
 			</div>
 		</div>
 		<div class='ui-block-a app-keyword-wrapper' style='height: 55px'>검색 키워드</div>
 		<div class='ui-block-b app-keyword-wrapper' style='height: 55px'>
-			<div style='width:300px; display: inline-block; padding-top: 5px'>
+			<div style='width:400px; display: inline-block; padding-top: 5px'>
 				<input type="text" id="app-keyword" name="app-keyword" />
 			</div>
 			<br>
 		</div>		
-		<div class='ui-block-a' style='height: 55px'>마켓 링크</div>
-		<div class='ui-block-b' style='height: 55px'>
-			<div style='width:300px; display: block; height: 20px; padding-top: 5px'>
+		<div class='ui-block-a' style='height: 65px'>마켓 링크</div>
+		<div class='ui-block-b' style='height: 65px'>
+			<div style='width:400px; display: block; height: 20px; padding-top: 5px'>
 				<input type="text" id="app-execurl" name="app-execurl" />
 			</div>
 			<br>
@@ -97,7 +97,6 @@
 		<div class='ui-block-b' style='height:200px' id='app-exec-desc-wrapper'>
 			<div style='width:400px; display: inline-block; padding-top: 5px'>
 				<textarea id="app-exec-desc" name="app-exec-desc">
-
 
 [참여안내]
 1. 시작하기를 클릭하여 광고에 참여한다.

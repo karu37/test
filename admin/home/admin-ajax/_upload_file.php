@@ -71,18 +71,14 @@
 	$imagefile = file_get_contents($filename);
 	$db_imagefile = mysql_real_escape_string($imagefile);
 	
-	$sql = "INSERT image_data_t (data) VALUES ('{$db_imagefile}')";
+	$sql = "INSERT al_image_data_t (data) VALUES ('{$db_imagefile}')";
 	mysql_execute($sql, $conn);
 	$id = mysql_insert_id();
 	
 	// delete uploaded temporary file
 	unlink($filename);
 	
-	$url = "https://app.autoring.kr/home/ajax/image.php?file=" . $id;
-	
-	$db_url = mysql_real_escape_string($url);
-	$sql = "UPDATE image_data_t SET url = '{$db_url}'";
-	mysql_execute($sql, $conn);
+	$url = "http://image.aline-soft.kr/image.php?file=" . $id;
 	
 	$ar_data['id'] = $id;
 	$ar_data['url'] = $url;

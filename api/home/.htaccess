@@ -1,5 +1,6 @@
 RewriteEngine On
 
-RewriteRule ^list\.json$		/ajax-request.php?id=get-list	[QSA]
-RewriteRule ^join\.json$		/ajax-request.php?id=get-join	[QSA]
-RewriteRule ^installed\.json$	/ajax-request.php?id=get-done	[QSA]
+RewriteRule ^list\.json$			/ajax-request.php?id=get-list	[QSA]
+RewriteRule ^join\.json$			/ajax-request.php?id=get-join	[QSA]
+RewriteRule ^installed\.json$		/ajax-request.php?id=get-done	[QSA]
+RewriteRule ^([a-z0-9]+)\/([a-z0-9]+)\/result\.json$	/ajax-request.php?id=_partner_local_cb&pkey=$1&type=$2	[QSA]

@@ -20,39 +20,51 @@
 		        <input name="app-platform" id="app-platform-android" value="A" onclick='mvPage("merchant-campaign-add-app", null, {mcode:"<?=$mcode?>"})' type="radio" />
 		        <label for="app-platform-android">Android APP 형</label>
 		        <input name="app-platform" id="app-platform-web" value="W" type="radio" />
-		        <label for="app-platform-web">WEB 형</label>
-		    </fieldset>									
+		        <label for="app-platform-web">기타</label>
+		    </fieldset>
 		</div>
 		<div class='ui-block-a' style='height:50px'>실행 타입</div>
 		<div class='ui-block-b' style='height:50px; padding-top:3px'>
         	<div data-role="fieldcontain" style='padding: 0px 0px; border: 0; margin: 0'>
 				<select name="app-type" id="app-type" onchange="<?=$js_page_id?>.action.on_change_app_type()" data-inline='true' data-mini='true' data-native-menu="true" data-theme='c'>
-					<option value="F">페이스북 좋아요</option>
+					<option value="W">CPA (가입/신청 수행형)</option>
 				</select>
         	</div>
 		</div>
-		<div class='ui-block-a'>홈 URL</div>
-		<div class='ui-block-b'>
-			<div style='width:300px; display: block; height: 20px; padding-top: 5px'>
+		<div class='ui-block-a' style='height:65px'>홈 URL</div>
+		<div class='ui-block-b' style='height:65px'>
+			<div style='width:500px; display: block; height: 20px; padding-top: 5px'>
 				<form onsubmit="return <?=$js_page_id?>.action.on_btn_search_info()">
-				<div style='width:230px; display: inline-block; height: 20px'>
+				<div style='width:330px; display: inline-block; height: 20px'>
 					<input type="text" id="app-homeurl" name="app-homeurl" value='https://m.facebook.com/samsung'/>
 				</div>
 				<input type=submit data-role="button" data-theme='c' data-theme="b" data-inline='true' data-mini='true' style="margin-top: 15px; margin:0px 5px" value="검색" />
 				</form>
-				
+				<div style='color:#aaa'>안드로이드 마켓, 페이스북, 카카오스토리, 인스타그램의 지정 페이지만 검색 가능함.</div>
 			</div>
-		</div>		
+		</div>
+		<div class='ui-block-a'>Package ID</div>
+		<div class='ui-block-b'>
+			<div style='width:400px; display: inline-block; height: 20px; padding-top: 5px'>
+				<input type="text" id="app-packageid" name="app-packageid" />
+			</div>
+		</div>
 		<div class='ui-block-a'>실행 URL</div>
 		<div class='ui-block-b'>
-			<div style='width:300px; display: block; height: 20px; padding-top: 5px'>
+			<div style='width:400px; display: block; height: 20px; padding-top: 5px'>
 				<input type="text" id="app-execurl" name="app-execurl" />
+			</div>
+		</div>		
+		<div class='ui-block-a'>적립URL 메모</div>
+		<div class='ui-block-b'>
+			<div style='width:400px; display: block; height: 20px; padding-top: 5px'>
+				<input type="text" id="app-etc" name="app-etc" />
 			</div>
 		</div>		
 		
 		<div class='ui-block-a'>제목</div>
 		<div class='ui-block-b'>
-			<div style='width:300px; display: inline-block; height: 20px; padding-top: 5px'>
+			<div style='width:400px; display: inline-block; height: 20px; padding-top: 5px'>
 				<input type="text" id="app-title" name="app-title" />
 			</div>
 		</div>
@@ -83,11 +95,8 @@
 			<div style='width:400px; display: inline-block; padding-top: 5px'>
 				<textarea id="app-exec-desc" name="app-exec-desc">
 
-
 [참여안내]
-1. 시작하기를 클릭하여 광고에 참여
-2. 페이스북 로그인 > 좋아요 클릭
-3. 적립하기
+1. 시작하기를 클릭하여 광고에 참여 후 미션 수행
 				</textarea>
 			</div>
 		</div>
@@ -315,6 +324,41 @@
 	<div style='padding-top: 20px'>
 		<a href='#' onclick='<?=$js_page_id?>.action.on_btn_addcampaign()' data-role='button' data-theme='b' data-inline='true' data-mini='true' >등록하기</a>
 	</div>
+	
+<div style='border: 1px solid gray; padding: 0 5px; margin-top: 10px'>
+<pre><b>A. 실행 URL에 데이터 파라미터 추가하기</b>
+	
+	<b>1. 값 종류 및 표기</b>
+		[IMEI] : IMEI 값
+		[ADID] : ADID 값
+		[MAC] : MAC 주소 값
+		[IP] : IP 주소 값
+		[USERDATA] : UserData 값
+		
+	<b>2. 값을 Encoding하기 (PostFix )</b>
+		.B64 : Bas64 Encoding. ex) [ADID.B64] : ADID Base64 Encoding 한 값
+		.URL : URL Encoding. ex) [ADID.URL] : ADID를 URL Encoding 한 값
+		.MD5 : MD5 Encoding. ex) [ADID.MD5] : ADID를 MD5 Encoding 한 값
+		
+		* 복합
+			[ADID.B64.URL] : ADID를 B64한 후 URL Encoding 한 값
+			[USERDATA.URL.URL] : USERDATA를 2번 URL Encoding 한 값
+		
+	<b>3. 실행 URL 예제</b>
+		http://adfree.gmnc.net/elink/ready.php?gid=c1d44a5296482f7c3dbe901b3c14e4b6<span style='color:red;font-weight: bold'>&userdata=[USERDATA.URL]</span>
+		market://details?id=com.kt.android.showtouch&referrer=ns_chid%3D3025%26nsw_media_id<span style='color:red;font-weight: bold'>%26userdata%3D[USERDATA.URL.URL]</span>
+		http://w2.ohpoint.co.kr/ohpoint/controll.do?path=304&c_id=hanamembers&m_id=marshsoft&referrer=ohc.hanamembers.marshsoft<span style='color:red;font-weight: bold'>&adid=[ADID]&userdata=[USERDATA.URL]</span>
+		
+<b>B. 실적 호출 주소 규칙</b>
+	
+	리턴주는 주소 규칙이 http://www.도메인.co.kr/result.asp 를 등록하면
+	실제 호출이 ==> http://www.도메인.co.kr/result.asp?<span style='color:red;font-weight: bold'>adkey</span>=??? 인 경우
+	
+	http://cb.aline-soft.kr/<span style='color:red;font-weight: bold'>adkey</span>/result.json 을 등록함
+	실제 호출 http://cb.aline-soft.kr/<span style='color:red;font-weight: bold'>adkey</span>/result.json?<span style='color:red;font-weight: bold'>adkey</span>=??? 로 리턴됨
+		
+</pre>
+</div>	
 		
 <script type="text/javascript"> 
 
@@ -344,19 +388,55 @@ var <?=$js_page_id?> = function()
 			{
 				var url =  _$("#app-homeurl").val();
 				if (!url) {
-					alert('홈 URL을 입력하세요.');
-					return false;
-				}
-				
-				if (url.indexOf('https://m.facebook.com') != 0) {
-					alert('모바일용 홈 URL을 넣으세요. https://m.facebook.com/ ... ');
+					alert('홈 URL을 입력하세요.\n\n[형식]\n안드로이드마켓 : https://play.google.com/store/apps/details?id=a.b.c\n페이스북 : https://m.facebook.com/samsung\n카카오스토리 : https://story.kakao.com/ch/kbs\n인스타그램 : https://www.instagram.com/ceo');
 					return false;
 				}
 				
 				$.mobile.loading('show');
-				// facebook인 경우 홈에서 제목/아이콘/참여설명을 가져온다.
-				// https://m.facebook.com/samsung
 				
+				// 1. 구글 마켓인 경우 처리
+				if (url.indexOf('https://play.google.com') == 0) {
+					var ar_info = url.match(/[?&]id\=([^&]*)/i);
+					if (ar_info.length < 2) {
+						$.mobile.loading('hide');
+						alert('URL형식을 확인하세요');	
+						return;
+					}
+					var url = "http://heartoffice.iptime.org:12680/google-store/detail.php?id=" + ar_info[1];
+					util.request(url, function(sz_data) {
+						var js_data = util.to_json(sz_data);
+						
+						var profilePic = 'https:' + js_data['image'];
+						var title = js_data['title'];
+						var description = '';;
+
+						// -----------------------------------------------------------------
+						// image to base64 text							
+						// -----------------------------------------------------------------
+						var ar_param = {url: profilePic};
+						util.request(get_ajax_url('get-base64-img', ar_param), function(sz_data) {
+							var js_data = util.to_json(sz_data);
+							if (js_data['result']) {
+								_$("#img-app-icon").data('type', 'base64');
+								_$("#img-app-icon").attr('src', 'data:image/png;base64,' + js_data['base64']);
+								_$("#app-image-url").val(js_data['base64']);			
+							}
+						});
+						
+						_$("#app-packageid").val(ar_info[1]);
+						_$("#app-title").val(title);
+						_$("#app-content").val(description + _$("#app-content").val()).blur();
+						_$("#home-page").attr('src', 'about:blank');						
+						
+						// 홈 URL (빈 경우에만)
+						if (!_$("#app-execurl").val()) _$("#app-execurl").val(_$("#app-homeurl").val());
+						$.mobile.loading('hide');
+						
+					});
+				
+					return false;				
+				}
+				// 2. 웹 페이지의 경우 처리
 				var ar_param = {'url': url};
 				var request_url = get_ajax_url('get-url', ar_param);
 				_$("#home-page").attr('src', request_url);
@@ -377,34 +457,36 @@ var <?=$js_page_id?> = function()
 							clearInterval(timer);
 							
 							// 홈 URL (빈 경우에만)
-							if (!_$("#app-execurl").val()) _$("#app-execurl").val(_$("#app-homeurl").val());
+							// if (!_$("#app-execurl").val()) _$("#app-execurl").val(_$("#app-homeurl").val());
 
-							// 프로필 이미지 가져오기							
-							var profilePic = $(".profilePicContainer .profilePic", frames[0].window.document).attr('style').match(/url\(\"(.*)\"\)/i)[1];
+							if (url.indexOf('https://m.facebook.com') == 0) {
+								var profilePic = $(".profilePicContainer .profilePic", frames[0].window.document).attr('style').match(/url\(\"(.*)\"\)/i)[1];
+								// var profilePic = $("img[alt*='프로필 사진']", frames[0].window.document).attr('src');
+								var title = $("head title", frames[0].window.document).text();
+								var description = $('meta[name="description"]', frames[0].window.document).attr('content');
+							} else if (url.indexOf('https://story.kakao.com') == 0) {
+								var profilePic = $('meta[property="og:image"]', frames[0].window.document).attr('content');
+								var title = $('meta[property="og:title"]', frames[0].window.document).attr('content');
+								var description = '';
+							} else if (url.indexOf('https://www.instagram.com') == 0) {
+								var profilePic = $('meta[property="og:image"]', frames[0].window.document).attr('content');
+								var title = $('meta[property="og:title"]', frames[0].window.document).attr('content');
+								var description = $('meta[property="og:description"]', frames[0].window.document).attr('content');
+							}
+
+							// image to base64 text							
 							var ar_param = {url: profilePic};
 							util.request(get_ajax_url('get-base64-img', ar_param), function(sz_data) {
 								var js_data = util.to_json(sz_data);
 								if (js_data['result']) {
-									_$("#img-app-icon").data('type', 'base64');		// base64 데이터형식인지, URL인지 구별
+									_$("#img-app-icon").data('type', 'base64');
 									_$("#img-app-icon").attr('src', 'data:image/png;base64,' + js_data['base64']);
 									_$("#app-image-url").val(js_data['base64']);			
 								}
 							});
 							
-							// 제목
-							var title = $("head title", frames[0].window.document).text();
 							_$("#app-title").val(title);
-							
-							// 사이트 인사말
-							var description = '';
-								var desc_html = $(".decelerateChildren", frames[0].window.document).html();
-								desc_html = desc_html.replace(/<\div/gi, '<br><div');
-								var desc_text = g_admin_util.strip_tags(desc_html.replace(/<\/span\>/gi, '</span><br>'), '<br>');
-								var arr_find = desc_text.match(/^정보(.*?)(다른 사람들이|좋아요|https?\:\/\/)/); 
-								if (arr_find) description = arr_find[1];
-								
-							_$("#app-content").val(description + _$("#app-content").val()).blur();
-							
+							_$("#app-content").val(ifempty(description,'') + _$("#app-content").val()).blur();
 							_$("#home-page").attr('src', 'about:blank');
 						}
 					}
@@ -422,7 +504,9 @@ var <?=$js_page_id?> = function()
 					'appplatform' : util.get_item_value(_$("#app-platform")),
 					'apptype' : _$("#app-type").val(),
 					'apphomeurl' : _$("#app-homeurl").val(),
+					'apppackageid' : _$("#app-packageid").val(),
 					'appexecurl' : _$("#app-execurl").val(),
+					'appetc' : _$("#app-etc").val(),
 					'apptitle' : _$("#app-title").val(),
 					'appimageurl' : _$("#app-image-url").val(),
 					'appimagetype' : _$("#img-app-icon").data('type'),		// base64 데이터형식인지, URL인지 구별
@@ -459,15 +543,6 @@ var <?=$js_page_id?> = function()
 					return;					
 				}
 				
-				if (ar_param.apphomeurl.indexOf('https://m.facebook.com') != 0) {
-					alert('모바일용 홈 URL을 넣으세요. https://m.facebook.com/ ... ');
-					return false;
-				}
-				if (ar_param.appexecurl.indexOf('https://www.facebook.com') == 0) {
-					alert('모바일용 홈 URL을 넣으세요. https://m.facebook.com/ ... ');
-					return false;
-				}
-
 				util.post(get_ajax_url('admin-campaign-app-add'), ar_param, function(sz_data) {
 					var js_data = util.to_json(sz_data);
 					if (js_data['result']) {

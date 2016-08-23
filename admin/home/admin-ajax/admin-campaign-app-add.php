@@ -6,6 +6,7 @@
 	$app_keyword           = $_REQUEST['appkeyword'];
 	$app_homeurl           = $_REQUEST['apphomeurl'];
 	$app_execurl           = $_REQUEST['appexecurl'];
+	$app_etc           	   = $_REQUEST['appetc'];
 	$app_title             = $_REQUEST['apptitle'];
 	$app_image_type        = $_REQUEST['appimagetype'];
 	$app_image_url         = $_REQUEST['appimageurl'];
@@ -47,6 +48,7 @@
 	$db_app_keyword           = mysql_real_escape_string($app_keyword);
 	$db_app_homeurl           = mysql_real_escape_string($app_homeurl);
 	$db_app_execurl           = mysql_real_escape_string($app_execurl);
+	$db_app_etc           	= mysql_real_escape_string($app_etc);
 	$db_app_title             = mysql_real_escape_string($app_title);
 	$db_app_image_url         = mysql_real_escape_string($app_image_url);
 	$db_app_exec_desc         = mysql_real_escape_string($app_exec_desc);
@@ -108,6 +110,7 @@
 		app_keyword,
 		app_homeurl,
 		app_execurl, 
+		app_etc,
 
 		app_platform,
 		app_gender, 
@@ -146,6 +149,7 @@
 		IF('$db_app_keyword' <> '', '$db_app_keyword', NULL),
 		IF('$db_app_homeurl' <> '', '$db_app_homeurl', NULL),
 		IF('$db_app_execurl' <> '', '$db_app_execurl', NULL),
+		IF('$db_app_etc' <> '', '$db_app_etc', NULL),
 
 		'$db_app_platform',
 		IF('$db_app_gender' <> 'A', '$db_app_gender', NULL),

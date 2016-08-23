@@ -205,11 +205,11 @@ var page = function(){
 							'ad': ad,
 							'ip': '202.136.149.31',
 							'adid': uadid,
-							'imei': base64_encode('352905053745661'),
-							'model': base64_encode('SHV-E210S'),
-							'mf': base64_encode('samsung'),
-							'brand': base64_encode('samsung'),
-							'account': base64_encode('heartman@gmail.com'),
+//							'imei': base64_encode('352905053745661'),
+//							'model': base64_encode('SHV-E210S'),
+//							'mf': base64_encode('samsung'),
+//							'brand': base64_encode('samsung'),
+//							'account': base64_encode('heartman@gmail.com'),
 							'uid' : uid,
 							'userdata': userdata};
 
