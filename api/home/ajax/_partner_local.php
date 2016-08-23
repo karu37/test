@@ -57,7 +57,7 @@ function local_request_start($app_key, &$arr_data, &$conn)
 	$ar_replace_data['IMEI'] = $arr_data['imei'];
 	$ar_replace_data['MAC'] = $arr_data['mac'];
 	$ar_replace_data['IP'] = $arr_data['ip'];
-	$ar_replace_data['USERDATA'] = base64_encode(json_encode(array('aid' => $userapp_id)));
+	$ar_replace_data['USERDATA'] = base64_encode(json_encode(array('aid' => strval($userapp_id))));
 	
 	$exec_url = preg_replace_callback('/\[(.*?)\]/usim', function($match_group) use ($ar_replace_data) {
 		
