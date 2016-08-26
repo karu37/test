@@ -66,7 +66,7 @@
 						include $file;
 						
 					} else {
-						echo "Invalid - Request";		
+						echo "";		
 					}
 				?>	
 				</div>
