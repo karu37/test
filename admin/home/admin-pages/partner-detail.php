@@ -77,6 +77,7 @@
 					<th width=20%px>전환율(%)</th>
 					<th width=1px></th>
 					<th width=1px></th>
+					<th width=1px></th>
 				</tr>
 			</thead>
 			<tbody>
@@ -106,6 +107,7 @@
 						<td <?=$td_onclick?>><?=$merchant['name']?></td>
 						<td <?=$td_onclick?>><?=$merchant['exchange_fee_rate']?></td>
 						<td><a href='#' onclick='goPage("dlg-merchant-modify", null, {merchant_code:"<?=$merchant['mcode']?>"})' data-theme='b' data-role='button' data-mini='true' data-inline='true'>정보<br>변경</a></td>
+						<td><a href='#' onclick='mvPage("dlgpage-merchant-publisher-config", null, {mcode: "<?=$merchant['mcode']?>"})' data-theme='b' data-role='button' data-mini='true' data-inline='true'>Publisher별<br>공급 설정</a></div>
 						<td><a href='#' onclick='<?=$js_page_id?>.action.on_btn_delete_partner_merchant_code("<?=$partner_id?>", "<?=$merchant['mcode']?>")' data-theme='a' data-role='button' data-mini='true' data-inline='true'>목록<br>삭제</a></td>
 					</tr>
 					<?

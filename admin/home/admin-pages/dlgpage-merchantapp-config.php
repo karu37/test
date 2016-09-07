@@ -19,7 +19,7 @@
 
 	// --------------------------------
 	// Paginavigator initialize	
-	$sql = "SELECT COUNT(*) as cnt FROM al_publisher_t p WHERE p.is_mactive = 'Y' {$where}";
+	$sql = "SELECT COUNT(*) as cnt FROM al_publisher_t p WHERE p.is_mactive <> 'D' {$where}";
 	$row = mysql_fetch_assoc(mysql_query($sql, $conn));
 	$pages = new Paginator($row['cnt']);
 	$limit = "LIMIT " . $pages->limit_start . "," . $pages->limit_end;
@@ -30,7 +30,7 @@
 	$sql = "SELECT p.*, pa.merchant_disabled, pa.merchant_enabled, IFNULL(IF('$is_public_mode' = 'Y', pa.merchant_disabled, pa.merchant_enabled), 'N') as 'checked'
 			FROM al_publisher_t p
 				LEFT OUTER JOIN al_publisher_app_t pa ON p.pcode = pa.pcode AND pa.app_key = '{$db_appkey}' 
-			WHERE p.is_mactive = 'Y' {$where}
+			WHERE p.is_mactive <> 'D' {$where}
 			ORDER BY checked DESC {$limit}";
 			
 	$result = mysql_query($sql, $conn);

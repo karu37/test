@@ -39,4 +39,18 @@ function admindb_publisher_app_clear($publisher_code, $appkey, $conn)
 	mysql_execute($sql, $conn);
 }
 
+// al_merchant_publisher_t 에 관련 정보가 Y 인 경우 ==> 해당 필드 삭제
+function admindb_merchant_publisher_clear($mcode, $pcode, $conn)
+{
+	$db_mcode = mysql_real_escape_string($mcode);
+	$db_pcode = mysql_real_escape_string($pcode);
+	
+	if (!$mcode || !$pcode) return;
+	
+	$sql = "DELETE FROM al_merchant_publisher_t 
+			WHERE mcode = '{$db_mcode}' 
+					AND pcode = '{$db_pcode}' 
+					AND is_mactive = 'Y'";
+	mysql_execute($sql, $conn);
+}
 ?>

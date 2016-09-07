@@ -3,8 +3,16 @@
 	$day = $_REQUEST['day'];
 	if (!$day) $day = date("Y-m-d");
 	
+	$pcode = $_REQUEST['pcode'];
+	$db_pcode = mysql_real_escape_string($pcode);
+	if ($pcode) $where .= " AND a.pcode = '{$db_pcode}'";
+	
+	$mcode = $_REQUEST['mcode'];
+	$db_mcode = mysql_real_escape_string($mcode);
+	if ($mcode) $where .= " AND a.mcode = '{$db_mcode}'";
+	
 	$db_date = mysql_real_escape_string($day);
-	if ($day) $where = " AND a.m_reg_day = '{$db_date}'";
+	if ($day) $where .= " AND a.m_reg_day = '{$db_date}'";
 	
 	// --------------------------------
 	// Paginavigator initialize	

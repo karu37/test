@@ -210,7 +210,7 @@
 				<td <?=$td_onclick?>><?=admin_to_datetime($row['last_active_time'])?></td>
 				<td <?=$td_onclick?>><?=admin_to_datetime($row['last_deactive_time'])?></td>
 				<td>
-					<a href='#' onclick='mvPage("dlgpage-merchantapp-config", null, {partnerid: "<?=$partner_id?>", mcode: "<?=$row_merchant['mcode']?>", appkey:"<?=$row['app_key']?>"})' data-theme='b' data-role='button' data-mini='true' data-inline='true'>Publisher별 설정</a>
+					<a href='#' onclick='mvPage("dlgpage-merchantapp-config", null, {partnerid: "<?=$partner_id?>", mcode: "<?=$row_merchant['mcode']?>", appkey:"<?=$row['app_key']?>"})' data-theme='b' data-role='button' data-mini='true' data-inline='true'>Publisher별 광고 설정</a>
 				</td>
 			</tr>
 			<?

@@ -65,6 +65,8 @@ ALine - 광고 공급되는 조건
 	8번 al_app_t.is_public_mode					: [Merchant]의 public 모드 설정
 			al_publisher_app_t.merchant_disabled: is_public_mode = Y인 경우 참고함 'N'이면 차단
 			al_publisher_app_t.merchant_enabled	: is_public_mode = N인 경우 참고함 'Y'이면 차단
+			
+	9번 al_merchant_publisher_t.is_mactive		: [관리자]가 지정 Merchant의 광고에 대해 Publisher 제공을 허용/차단
 
 	-- 광고 자체 오픈 시간 조정 (아래조건은 모두 AND)
 

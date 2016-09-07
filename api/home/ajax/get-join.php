@@ -87,6 +87,7 @@
 		($pub_mactive == 'Y' && $row_app['is_mactive'] != 'Y') || 
 		$row_app['m_mactive'] != 'Y' || 
 		($pub_mactive == 'Y' && $row_app['p_mactive'] != 'Y') || 
+		$row_app['mp2_mactive'] != 'Y' || 
 		$row_app['pa_mactive'] != 'Y' || 
 		$row_app['pa_disabled'] != 'Y' || 
 		$row_app['p_level_block'] != 'Y' || 
@@ -97,7 +98,7 @@
 		$row_app['check_tot_executed'] != 'Y' || 
 		$row_app['check_ps_tot_executed'] != 'Y') 
 	{
-		$log = $row_app['is_active'] . $row_app['is_mactive'] . $row_app['m_mactive'] . $row_app['p_mactive'] . $row_app['pa_mactive'] . $row_app['pa_disabled'] .
+		$log = $row_app['is_active'] . $row_app['is_mactive'] . $row_app['m_mactive'] . $row_app['p_mactive'] . $row_app['mp2_mactive'] . $row_app['pa_mactive'] . $row_app['pa_disabled'] .
 				$row_app['p_level_block'] . $row_app['pa_merchant_disabled'] . $row_app['p_level_active_date'] . $row_app['check_open_time'] . $row_app['check_edate'] . $row_app['check_tot_executed'];
 		return_die('N', array('code'=>'-103'), '광고가 없거나 참여할 수 없는 상태입니다.' . $log);
 	}

@@ -92,6 +92,8 @@
 				m.name AS 'merchant_name', m.is_mactive as 'm_is_mactive',
 				p.is_mactive as 'p_is_mactive',
 				
+				IFNULL(mp2.is_mactive, 'Y') as 'mp2_is_mactive',
+				
 				IF(app.exec_edate < CURRENT_DATE, 'N', 'Y') as 'exec_edate_check',
 
 				IF(app.publisher_level IS NULL OR p.level <= app.publisher_level, 'Y', 'N') as 'p_lvmode',
@@ -137,6 +139,7 @@
 				LEFT OUTER JOIN al_publisher_app_t pa ON app.app_key = pa.app_key AND pcode = '{$db_pcode}' 
 				INNER JOIN al_merchant_t m ON app.mcode = m.mcode 
 				INNER JOIN al_publisher_t p ON p.pcode = '{$db_pcode}' 
+				LEFT OUTER JOIN al_merchant_publisher_t mp2 ON mp2.mcode = app.mcode AND p.pcode = '{$db_pcode}' 
 				LEFT OUTER JOIN al_app_exec_stat_t s ON app.app_key = s.app_key
 				LEFT OUTER JOIN al_app_exec_pub_stat_t ps ON app.app_key = ps.app_key AND ps.pcode = '{$db_pcode}'
 				LEFT OUTER JOIN string_t t ON t.type = 'app_exec_type' AND app.app_exec_type = t.code 
@@ -261,9 +264,10 @@
 			<th width=70px>AD<br>레벨<br>오픈</th>
 			<th width=70px>AD<br>기간<br>종료</th>
 			
-			<th width=30px>M<br>상태</th>
+			<th width=30px>M<br>연동<br>상태</th>
+			<th width=30px>M<br>광고<br>제공</th>
 			<th width=30px>M<br>공개<br>모드</th>
-			<th width=30px>P<br>상태</th>
+			<th width=30px>P<br>연동<br>상태</th>
 			<th width=30px>P<br>레벨<br>제한</th>
 			
 			<th>PUB<br>지정가</th>
@@ -284,6 +288,7 @@
 		<?
 		$arr_active = array('Y' => '가능', 'N' => '<span style="color:blue;font-weight:bold">불가</span>');
 		$arr_mp_mactive = array('Y' => '연동', 'N' => '<span style="color:red; font-weight: bold">중지</span>', 'T' => '<span style="color:red; font-weight: bold">개발</span>', 'D' => '<span style="color:red; font-weight: bold">삭제</span>');
+		$arr_mp2_mactive = array('Y' => '허용', 'N' => '<span style="color:red; font-weight: bold">차단</span>');
 		$arr_block_mode = array('Y' => '허용', 'N' => '<span style="color:red; font-weight: bold">차단</span>', 'D' => '<span style="color:red; font-weight: bold">삭제</span>');
 		while ($row = mysql_fetch_assoc($result)) {
 			$id = $row['id'];
@@ -303,6 +308,7 @@
 				$row['is_mactive'] != 'Y' || 
 				$row['p_is_mactive'] != 'Y' ||
 				$row['m_is_mactive'] != 'Y' ||
+				$row['mp2_is_mactive'] != 'Y' ||
 				$row['pa_is_mactive'] != 'Y' ||
 				$row['check_time_period'] == 'N' || 
 				$row['p_lvmode'] == 'N' || $row['p_level_active_mode'] == 'N' || $row['pa_active_time_mode'] == 'N' ||
@@ -386,6 +392,7 @@
 				<td <?=$td_onclick?>><?=$exec_edate?></td>
 				
 				<td <?=$td_onclick?>><?=$arr_mp_mactive[$row['m_is_mactive']]?></td>
+				<td <?=$td_onclick?>><?=$arr_mp2_mactive[$row['mp2_is_mactive']]?></td>
 				<td <?=$td_onclick?>><?=$arr_block_mode[$row['pa_pmode']]?></td>
 				<td <?=$td_onclick?>><?=$arr_mp_mactive[$row['p_is_mactive']]?></td>
 				<td <?=$td_onclick?>><?=admin_number($row['publisher_level'])?><br><?=$arr_block_mode[$row['p_lvmode']]?></td>
@@ -424,8 +431,8 @@
 	* P 수신거부 	: Publisher에서 특정 광고의 수신 거부 설정 (Y/N)
 	* 앱 적립 		: 광고 적립 가능/불가 여부 (Y/N)
 	* 앱 관리차단 	: 관리자가 해당 광고 허용/차단 (Y/N)
-	* M 상태		: Merchant의 광고 연동 상태 연동/개발/차단 (Y/T/N)
-	* P 상태		: Publisher의 광고 연동 상태 연동/개발/차단  (Y/T/N)
+	* M 연동상태	: Merchant의 광고 연동 상태 연동/개발/차단 (Y/T/N)
+	* P 연동상태	: Publisher의 광고 연동 상태 연동/개발/차단  (Y/T/N)
 	* M 레벨차단	: 앱에 지정된 공급레벨과 Publisher 레벨에 의한 차단 (Y/T/N)
 	* M 공개모드	: Merchant가 광고에 대해 자동 공개/비공개 여부 : 설정된 대상만 차단/허용
 	* 지정 오픈일	

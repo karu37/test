@@ -65,6 +65,7 @@
 		($pub_mactive == 'Y' && $row_app['is_mactive'] != 'Y') || 
 		$row_app['m_mactive'] != 'Y' || 
 		($pub_mactive == 'Y' && $row_app['p_mactive'] != 'Y') || 
+		$row_app['mp2_mactive'] != 'Y' || 
 		$row_app['pa_mactive'] != 'Y' || 
 		$row_app['pa_disabled'] != 'Y' || 
 		$row_app['p_level_block'] != 'Y' || 

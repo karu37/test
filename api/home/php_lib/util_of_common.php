@@ -20,6 +20,8 @@
 	8번 al_app_t.is_public_mode					: [Merchant]의 public 모드 설정
 			al_publisher_app_t.merchant_disabled: is_public_mode = Y인 경우 참고함 'N'이면 차단
 			al_publisher_app_t.merchant_enabled	: is_public_mode = N인 경우 참고함 'Y'이면 차단
+			
+	9번 al_merchant_publisher_t.is_mactive		: [관리자]가 지정 Merchant의 광고에 대해 Publisher 제공을 허용/차단
 
 	-- 광고 자체 오픈 시간 조정 (아래조건은 모두 AND)
 
@@ -86,6 +88,7 @@ function get_query_app_list($pcode, $ar_time, $b_hide_exhauseted, $b_test_publis
 			FROM al_app_t app
 				INNER JOIN al_merchant_t m ON app.mcode = m.mcode 
 				INNER JOIN al_publisher_t p ON p.pcode = '{$db_pcode}' 
+				LEFT OUTER JOIN al_merchant_publisher_t mp2 ON mp2.mcode = m.mcode AND mp2.pcode = '{$db_pcode}'
 				LEFT OUTER JOIN al_publisher_app_t pa ON app.app_key = pa.app_key AND pa.pcode = '{$db_pcode}' 
 				LEFT OUTER JOIN al_app_exec_stat_t s ON app.app_key = s.app_key
 				LEFT OUTER JOIN al_app_exec_pub_stat_t ps ON app.app_key = ps.app_key AND ps.pcode = '{$db_pcode}' 
@@ -98,6 +101,8 @@ function get_query_app_list($pcode, $ar_time, $b_hide_exhauseted, $b_test_publis
 				
 				AND IFNULL(pa.is_mactive, 'Y') = 'Y'
 				AND IFNULL(pa.publisher_disabled, 'N') = 'N'
+
+				AND IFNULL(mp2.is_mactive, 'Y') = 'Y'
 				
 				AND (app.publisher_level IS NULL OR p.level <= app.publisher_level)
 				
@@ -156,6 +161,8 @@ function get_query_publisher_app($pcode, $appkey, $ar_time, $conn)
 				IFNULL(pa.is_mactive, 'Y') as 'pa_mactive',
 				IF(IFNULL(pa.publisher_disabled, 'N') = 'N', 'Y', 'N') AS 'pa_disabled',
 
+				IFNULL(mp2.is_mactive, 'Y') as 'mp2_mactive',
+
 				IF (app.publisher_level IS NULL OR p.level <= app.publisher_level, 'Y', 'N') as 'p_level_block',
 
 				IF (app.is_public_mode = 'Y', 
@@ -190,6 +197,7 @@ function get_query_publisher_app($pcode, $appkey, $ar_time, $conn)
 			FROM al_app_t app
 				INNER JOIN al_merchant_t m ON app.mcode = m.mcode 
 				INNER JOIN al_publisher_t p ON p.pcode = '{$db_pcode}' 
+				LEFT OUTER JOIN al_merchant_publisher_t mp2 ON mp2.mcode = m.mcode AND mp2.pcode = '{$db_pcode}'
 				LEFT OUTER JOIN al_publisher_app_t pa ON app.app_key = pa.app_key AND pa.pcode = '{$db_pcode}' 
 				LEFT OUTER JOIN al_app_exec_stat_t s ON app.app_key = s.app_key
 				LEFT OUTER JOIN al_app_exec_pub_stat_t ps ON app.app_key = ps.app_key AND ps.pcode = '{$db_pcode}' 
