@@ -114,7 +114,7 @@
 				<td><?=admin_to_date($row['reg_date'])?></td>
 				<td>
 					<a href='?id=guest-modify&guestid=<?=$row['guest_id']?>' style='padding: 5px 4px' data-theme='b' data-role='button' data-mini='true' data-inline='true'>정보 수정</a>
-					<a href='http://guest.aline-soft.kr/login.php?guestid=<?=urlencode($row['guest_id'])?>&guestpw=<?=urlencode($row['guest_pw'])?>' target=_blank style='padding: 5px 4px' data-theme='b' data-role='button' data-mini='true' data-inline='true'>고객사 로그인</a>
+					<a href='http://guest.aline-soft.co.kr/login.php?guestid=<?=urlencode($row['guest_id'])?>&guestpw=<?=urlencode($row['guest_pw'])?>' target=_blank style='padding: 5px 4px' data-theme='b' data-role='button' data-mini='true' data-inline='true'>고객사 로그인</a>
 				</td>
 				
 			</tr>
