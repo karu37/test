@@ -139,7 +139,7 @@
 				LEFT OUTER JOIN al_publisher_app_t pa ON app.app_key = pa.app_key AND pcode = '{$db_pcode}' 
 				INNER JOIN al_merchant_t m ON app.mcode = m.mcode 
 				INNER JOIN al_publisher_t p ON p.pcode = '{$db_pcode}' 
-				LEFT OUTER JOIN al_merchant_publisher_t mp2 ON mp2.mcode = app.mcode AND p.pcode = '{$db_pcode}' 
+				LEFT OUTER JOIN al_merchant_publisher_t mp2 ON mp2.mcode = app.mcode AND mp2.pcode = '{$db_pcode}' 
 				LEFT OUTER JOIN al_app_exec_stat_t s ON app.app_key = s.app_key
 				LEFT OUTER JOIN al_app_exec_pub_stat_t ps ON app.app_key = ps.app_key AND ps.pcode = '{$db_pcode}'
 				LEFT OUTER JOIN string_t t ON t.type = 'app_exec_type' AND app.app_exec_type = t.code 

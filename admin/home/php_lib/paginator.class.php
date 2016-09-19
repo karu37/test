@@ -22,7 +22,7 @@ class Paginator{
 	protected $return;
 	protected $get_ipp;
 
-	public function __construct($total=0,$mid_range=7,$ipp_array=array(50,100,200,500,1000,"All")) {
+	public function __construct($total=0,$mid_range=7,$ipp_array=array(200,500,1000,"All")) {
 		$this->total_items = (int) $total;
 		if($this->total_items <= 0) return;
 		$this->mid_range = (int) $mid_range; // midrange must be an odd int >= 1
