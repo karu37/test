@@ -51,9 +51,19 @@ var <?=$js_page_id?> = function()
 					});	
 				}	
 				g_partner_id = param['partnerid'];
+				
+				// generate mpcode for 16 text length
+				_$("#txt_merchant_code").val(page.action.gen_mpcode());
 			}	
 		},
 		action: {
+			gen_mpcode: function() {
+				// generate mpcode for 16 text length
+				var mpcode = "";
+				for (var i = 0; i < 10 && mpcode.length < 16; i++)
+					mpcode = (parseInt(Math.random()*900000000000000000).toString(17) + parseInt(Math.random()*900000000000000000).toString(17)).substring(0, 16);
+				return mpcode;
+			},
 			on_btn_addmerchant: function() {
 				var ar_param = { 
 					partnerid: g_partner_id,
@@ -84,7 +94,8 @@ var <?=$js_page_id?> = function()
 							if (js_data['result']) {
 								window.location.reload();
 							} else {
-								util.Alert('오류', js_data['msg']);						
+								util.Alert('오류', js_data['msg']);
+								_$("#txt_merchant_code").val(page.action.gen_mpcode());	// 실패하는 경우 갱신함.
 							}
 						});
 						

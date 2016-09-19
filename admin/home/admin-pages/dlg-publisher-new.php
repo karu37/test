@@ -67,9 +67,19 @@ var <?=$js_page_id?> = function()
 					});	
 				}	
 				g_partner_id = param['partnerid'];
+				
+				_$("#txt_publisher_code").val(page.action.gen_mpcode());
+				
 			}	
 		},
 		action: {
+			gen_mpcode: function() {
+				// generate mpcode for 16 text length
+				var mpcode = "";
+				for (var i = 0; i < 10 && mpcode.length < 16; i++)
+					mpcode = (parseInt(Math.random()*900000000000000000).toString(15) + parseInt(Math.random()*900000000000000000).toString(15)).substring(0, 16);
+				return mpcode;
+			},
 			on_btn_addpublisher: function() {
 				var ar_param = { 
 					partnerid: g_partner_id,
@@ -98,6 +108,7 @@ var <?=$js_page_id?> = function()
 								window.location.reload();
 							} else {
 								util.Alert('오류', js_data['msg']);						
+								_$("#txt_publisher_code").val(page.action.gen_mpcode());
 							}
 						});
 						
