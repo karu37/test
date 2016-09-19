@@ -9,7 +9,7 @@
 	        	
 	        	<t5>Merchant Code<n7> &nbsp; (<span style='color:darkred'>생성 후 변경 불가</span> - API 연동 코드로 사용됨)</n7></t5>
 	        	<input type=text id="txt_merchant_code" init-value="" />
-				(영문 소문자와 "_" 만 사용, 띄워쓰기 불가, 4 ~ 16자 이내)
+				(숫자/영문소문자와 "_" 만 사용, 띄워쓰기 불가, 4 ~ 16자 이내)
 	        	<br>
 	        	<br>
 	        	<t5>Merchant 명</t5>
@@ -71,8 +71,8 @@ var <?=$js_page_id?> = function()
 					return;
 				}
 				
-				if (!ar_param.mcode.match(/^[a-z_]{4,16}/g)) {
-					alert('Merchant Code는 영문 소문자와 "_" 으로\n띄어쓰기 없이 6 ~ 16자 이내여야 합니다.');
+				if (!ar_param.mcode.match(/^[0-9a-z_]{4,16}/g)) {
+					alert('Merchant Code는 영문 소문자와 "_" 으로\n띄어쓰기 없이 4 ~ 16자 이내여야 합니다.');
 					return;
 				}
 				
