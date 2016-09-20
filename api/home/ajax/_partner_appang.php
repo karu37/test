@@ -497,7 +497,7 @@ function appang_request_done($app_key, $arr_data, &$conn)
 	$result_msg = "";
 	
 	// error-handling
-	if (!$result_data) {
+	if (intval($result_data) != 0) {
 		return appang_code_mapping($result_data, $result_msg);
 	}
 	return array('result' => 'Y', 'code' => '1');
