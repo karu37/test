@@ -416,7 +416,7 @@ function appang_request_start($app_key, &$arr_data, &$conn)
 		return array('result' => false, 'error' => 'NEP', 'error_msg' => '시작요청 정보가 부족합니다');
 	}
 	
-	$url_param['ua'] = $ar_app['adid'];
+	$url_param['ua'] = $arr_data['adid'];
 	$url_param['ud'] = base64_encode(json_encode(array('aid' => $userapp_id)));
 	$url_param['ajip'] = $arr_data['ip'];
 
@@ -473,7 +473,7 @@ function appang_request_done($app_key, $arr_data, &$conn)
 		return array('result' => false, 'error' => 'NEP', 'error_msg' => '시작요청 정보가 부족합니다');
 	}
 	
-	$url_param['ua'] = $ar_app['adid'];
+	$url_param['ua'] = $arr_data['adid'];
 	$url_param['ajip'] = $arr_data['ip'];
 	$campain_url = concat_url($g_appang['done'], http_build_query($url_param));
 
