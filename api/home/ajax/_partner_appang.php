@@ -436,12 +436,12 @@ function appang_request_start($app_key, &$arr_data, &$conn)
 	
 	// 전달할 결과 조합
 	$js_data = json_decode($result_data, true);
-	$result_data = $js_data['result'];		// APPANG은 result 가 0 이 아니면 오류임
+	$result_code = $js_data['result'];		// APPANG은 result 가 0 이 아니면 오류임
 	$result_msg = "";
 
 	// error-handling
-	if (intval($result_data) != 0) {
-		return appang_code_mapping($result_data, $result_msg);
+	if (intval($result_code) != 0) {
+		return appang_code_mapping($result_code, $result_msg);
 	}
 	$arr_data['result'] = 'Y';
 	$arr_data['url'] = $js_data['url'];
@@ -517,12 +517,12 @@ function appang_request_done($app_key, $arr_data, &$conn)
 
 	// 전달할 결과 조합
 	$js_data = json_decode($result_data, true);
-	$result_data = $js_data['result'];
+	$result_code = $js_data['result'];
 	$result_msg = "";
 	
 	// error-handling
-	if (intval($result_data) != 0) {
-		return appang_code_mapping($result_data, $result_msg);
+	if (intval($result_code) != 0) {
+		return appang_code_mapping($result_code, $result_msg);
 	}
 	return array('result' => 'Y', 'code' => '1');
 }
