@@ -119,7 +119,7 @@ function echo_response($type, $msg = null)
 	if (!$arResult) $arResult = array('result' => false, 'resCode' => 'E85', 'msg' => "Invalid response {$add_msg}");
 
 	$result = json_encode($arResult);
-	make_action_log("callback-apang", ($type == 'success' ? 'Y' : 'N'), $g_log['pcode'], $g_log['adid'], $g_log['app_key'], null, null, null, null, $result, $conn);
+	make_action_log("callback-appang", ($type == 'success' ? 'Y' : 'N'), $g_log['pcode'], $g_log['adid'], $g_log['app_key'], null, null, null, null, $result, $conn);
 	echo $result;
 }
 

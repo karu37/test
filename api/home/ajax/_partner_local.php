@@ -15,7 +15,28 @@ $g_local['callback'] = "";
 		 
 	 // http://app.autoring.kr/home/ajax/request.php?id=_lib-partner-local
 */
-
+/*
+	$arr_data (array object) 키
+		now			// 요청 수행 초기에 받아놓은 NOW() 값
+		day			// 요청 수행 초기에 받아놓은 DATE() 값
+		
+		sid			// publisher사의 Sub 매체 구별값 varchar(64)
+		uid			// publisher사의 사용자 구별값 varchar(64)
+		userdata	// publisher사의 사용자 context text
+		user_app_id	// al_user_app_t 의 id 값
+		
+		pcode
+		ad
+		ip
+		adid
+		imei
+		model
+		mf			// manufacturer
+		brand
+		account (not encoded)
+		
+		[ad] (array object) 	// al_app_t 테이블 정보
+*/
 function local_request_start($app_key, &$arr_data, &$conn) 
 {
 	global $g_local;
@@ -86,13 +107,38 @@ function local_request_start($app_key, &$arr_data, &$conn)
 	return array('result' => 'Y', 'code' => '1');
 }
 
+/*
+	$arr_data (array object) 키
+		now			// 요청 수행 초기에 받아놓은 NOW() 값
+		day			// 요청 수행 초기에 받아놓은 DATE() 값
+		
+		user_app_id	// al_user_app_t 의 id 값
+		
+		pcode
+		ad
+		adid
+		
+		[ad] (array object) 		// al_app_t 테이블 정보
+		
+		[userapp] (array object)	// al_user_app_t 테이블 정보
+			sid			// publisher사의 Sub 매체 구별값 varchar(64)
+			uid			// publisher사의 사용자 구별값 varchar(64)
+			userdata	// publisher사의 사용자 context text
+			
+			ip
+			imei
+			model
+			mf			// manufacturer
+			brand
+			account (not encoded)
+*/
 function local_request_done($app_key, $arr_data, $b_forcedone, &$conn) 
 {
 	global $g_local, $dev_mode;
 
 	$ar_app = $arr_data['ad'];
-	$ar_userapp = $arr_data['userapp'];
 	$userapp_id = $arr_data['user_app_id'];
+	$ar_userapp = $arr_data['userapp'];
 	
 	// al_user_app_t 테이블의 성공 레크드의 값을 unique_key로 사용한다.
 	$unique_key = "ALI".md5('local'.$userapp_id);

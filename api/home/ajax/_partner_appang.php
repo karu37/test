@@ -380,6 +380,7 @@ function update_appang_app($force_reload, $conn)
 		sid			// publisher사의 Sub 매체 구별값 varchar(64)
 		uid			// publisher사의 사용자 구별값 varchar(64)
 		userdata	// publisher사의 사용자 context text
+		user_app_id	// al_user_app_t 의 id 값
 		
 		pcode
 		ad
@@ -391,10 +392,7 @@ function update_appang_app($force_reload, $conn)
 		brand
 		account (not encoded)
 		
-		user_app_id			// al_user_app_t 의 id 값
-		ad (array object) 	// al_app_t 테이블 정보
-			
-
+		[ad] (array object) 	// al_app_t 테이블 정보
 */
 function appang_request_start($app_key, &$arr_data, &$conn) 
 {
@@ -450,12 +448,38 @@ function appang_request_start($app_key, &$arr_data, &$conn)
 	return array('result' => 'Y', 'code' => '1');
 }
 
+/*
+	$arr_data (array object) 키
+		now			// 요청 수행 초기에 받아놓은 NOW() 값
+		day			// 요청 수행 초기에 받아놓은 DATE() 값
+		
+		user_app_id	// al_user_app_t 의 id 값
+		
+		pcode
+		ad
+		adid
+		
+		[ad] (array object) 		// al_app_t 테이블 정보
+		
+		[userapp] (array object)	// al_user_app_t 테이블 정보
+			sid			// publisher사의 Sub 매체 구별값 varchar(64)
+			uid			// publisher사의 사용자 구별값 varchar(64)
+			userdata	// publisher사의 사용자 context text
+			
+			ip
+			imei
+			model
+			mf			// manufacturer
+			brand
+			account (not encoded)
+*/
 function appang_request_done($app_key, $arr_data, &$conn) 
 {
 	global $g_appang;
 
 	$ar_app = $arr_data['ad'];
 	$userapp_id = $arr_data['user_app_id'];
+	$ar_userapp = $arr_data['userapp'];
 
 	// 설치형 이외에는 완료요청을 할 필요가 없음 ==> 무조건 성공으로 전달
 	if ($ar_app['app_exec_type'] && $ar_app['app_exec_type'] != 'I') return array('result' => 'N', 'code' => '-109');
@@ -466,15 +490,15 @@ function appang_request_done($app_key, $arr_data, &$conn)
 	$url_param['ap'] = $g_appang['aline-code'];
 	$url_param['a'] = $ar_app['mkey'];
 	
-	if ($arr_data['imei']) {
-		$url_param['u'] = md5($arr_data['imei']);
-		$url_param['u2'] = base64_encode($arr_data['imei']);
+	if ($ar_userapp['imei']) {
+		$url_param['u'] = md5($ar_userapp['imei']);
+		$url_param['u2'] = base64_encode($ar_userapp['imei']);
 	} else {
 		return array('result' => false, 'error' => 'NEP', 'error_msg' => '시작요청 정보가 부족합니다');
 	}
 	
 	$url_param['ua'] = $arr_data['adid'];
-	$url_param['ajip'] = $arr_data['ip'];
+	$url_param['ajip'] = $ar_userapp['ip'];
 	$campain_url = concat_url($g_appang['done'], http_build_query($url_param));
 
 	// 광고 적립 요청 보내기

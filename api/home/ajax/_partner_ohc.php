@@ -332,6 +332,28 @@ function update_ohc_app($force_reload, $conn)
 	return true;
 }
 
+/*
+	$arr_data (array object) 키
+		now			// 요청 수행 초기에 받아놓은 NOW() 값
+		day			// 요청 수행 초기에 받아놓은 DATE() 값
+		
+		sid			// publisher사의 Sub 매체 구별값 varchar(64)
+		uid			// publisher사의 사용자 구별값 varchar(64)
+		userdata	// publisher사의 사용자 context text
+		user_app_id	// al_user_app_t 의 id 값
+		
+		pcode
+		ad
+		ip
+		adid
+		imei
+		model
+		mf			// manufacturer
+		brand
+		account (not encoded)
+		
+		[ad] (array object) 	// al_app_t 테이블 정보
+*/
 function ohc_request_start($app_key, &$arr_data, &$conn) 
 {
 	global $g_ohc;
@@ -374,12 +396,38 @@ function ohc_request_start($app_key, &$arr_data, &$conn)
 	return array('result' => 'Y', 'code' => '1');
 }
 
+/*
+	$arr_data (array object) 키
+		now			// 요청 수행 초기에 받아놓은 NOW() 값
+		day			// 요청 수행 초기에 받아놓은 DATE() 값
+		
+		user_app_id	// al_user_app_t 의 id 값
+		
+		pcode
+		ad
+		adid
+		
+		[ad] (array object) 		// al_app_t 테이블 정보
+		
+		[userapp] (array object)	// al_user_app_t 테이블 정보
+			sid			// publisher사의 Sub 매체 구별값 varchar(64)
+			uid			// publisher사의 사용자 구별값 varchar(64)
+			userdata	// publisher사의 사용자 context text
+			
+			ip
+			imei
+			model
+			mf			// manufacturer
+			brand
+			account (not encoded)
+*/
 function ohc_request_done($app_key, $arr_data, &$conn) 
 {
 	global $g_ohc;
 
 	$ar_app = $arr_data['ad'];
 	$userapp_id = $arr_data['user_app_id'];
+	$ar_userapp = $arr_data['userapp'];
 
 	// 설치형 이외에는 완료요청을 할 필요가 없음 ==> 무조건 성공으로 전달
 	if ($ar_app['app_exec_type'] && $ar_app['app_exec_type'] != 'I') return array('result' => 'N', 'code' => '-109');
@@ -389,7 +437,7 @@ function ohc_request_done($app_key, $arr_data, &$conn)
 	$url_param['mId'] = $g_ohc['aline-code'];
 	$url_param['eId'] = $ar_app['mkey'];
 	$url_param['adId'] = $arr_data['adid'];
-	$url_param['user_ip'] = $arr_data['ip'];
+	$url_param['user_ip'] = $ar_userapp['ip'];
 
 	// 광고 적립 요청 보내기
 	$start_tm = get_timestamp();
