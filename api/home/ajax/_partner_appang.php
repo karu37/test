@@ -165,8 +165,12 @@ function update_appang_app($force_reload, $conn)
 
 		//## app_exec_type		
 		$arr_exec_type = array(11 => 'I', 12 => 'E');
-		if ($arr_exec_type[ $item['type'] ]) 
+		if ($arr_exec_type[ $item['type'] ]) {
 			$app_exec_type = $arr_exec_type[ $item['type'] ];
+			
+			// packageid 에 . 이 없으면 수행형으로 변경함.
+			if ($app_packageid && strpos($app_packageid, '.') === false) $app_exec_type = 'W';
+		}
 		else
 			$app_exec_type = 'W';		// 설치 / 실행형 외는 모두 참여형
 

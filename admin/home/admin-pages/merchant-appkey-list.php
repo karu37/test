@@ -143,6 +143,10 @@
 	<hr>
 	<div style='text-align:left; padding-top:10px'>
 		<a href='#' onclick='<?=$js_page_id?>.action.on_btn_new_app_campaign()' data-role='button' data-theme='b' data-transition="none" data-inline='true' data-mini='true'>새 광고 등록</a>
+		
+		<a href='#' onclick='<?=$js_page_id?>.action.on_btn_set_merchantapp_all_active("<?=$row_merchant['mcode']?>", "Y")' data-theme='a' data-role='button' data-mini='true' data-inline='true'>전체[정상]</a>
+		<a href='#' onclick='<?=$js_page_id?>.action.on_btn_set_merchantapp_all_active("<?=$row_merchant['mcode']?>", "N")' data-theme='a' data-role='button' data-mini='true' data-inline='true'>전체[중지]</a>
+		<a href='#' onclick='<?=$js_page_id?>.action.on_btn_set_merchantapp_all_active("<?=$row_merchant['mcode']?>", "D")' data-theme='a' data-role='button' data-mini='true' data-inline='true'>전체[삭제]</a>
 	</div>
 	<div style="display:block; padding-top:20px; padding-left: 10px; font-size:22px; color: blue; font-weight: bold"><?=$row_merchant['name']?> - 총 : <?=number_format($pages->total_items)?> 건</div>
 	<div class='ui-grid-a' style='padding:5px 10px; <?=$pages->num_pages <= 1 ? "display:none" : ""?>'>
@@ -234,7 +238,12 @@
 
 	<div style='text-align:left; padding-top:10px'>
 		<a href='#' onclick='<?=$js_page_id?>.action.on_btn_new_app_campaign()' data-role='button' data-theme='b' data-transition="none" data-inline='true' data-mini='true'>새 광고 등록</a>
+		
+		<a href='#' onclick='<?=$js_page_id?>.action.on_btn_set_merchantapp_all_active("<?=$row_merchant['mcode']?>", "Y")' data-theme='a' data-role='button' data-mini='true' data-inline='true'>전체[정상]</a>
+		<a href='#' onclick='<?=$js_page_id?>.action.on_btn_set_merchantapp_all_active("<?=$row_merchant['mcode']?>", "N")' data-theme='a' data-role='button' data-mini='true' data-inline='true'>전체[중지]</a>
+		<a href='#' onclick='<?=$js_page_id?>.action.on_btn_set_merchantapp_all_active("<?=$row_merchant['mcode']?>", "D")' data-theme='a' data-role='button' data-mini='true' data-inline='true'>전체[삭제]</a>
 	</div>
+	&nbsp; (전체 상태 변경은 개발대상은 변경하지 않음)
 	
 
 <script type="text/javascript"> 
@@ -288,6 +297,17 @@ var <?=$js_page_id?> = function()
 					} else util.Alert(js_data['msg']);
 				});
 				
+			},
+			on_btn_set_merchantapp_all_active: function(mcode, active) {
+				// 개발은 제외됨.
+				var ar_param = {mcode: '<?=$mcode?>', isactive: active};
+				util.request(get_ajax_url('admin-merchantapp-set-mactive-all', ar_param), function(sz_data) {
+					var js_data = util.to_json(sz_data);
+					if (js_data['result']) {
+						alert('변경되었습니다.');
+						document.location.reload();
+					} else util.Alert(js_data['msg']);
+				});
 			},
 			on_btn_new_app_campaign: function() {
 				mvPage('merchant-campaign-add-app', null, {mcode: '<?=$mcode?>'});
