@@ -1,7 +1,7 @@
 <?	
 $g_ohc['lib'] = 'OHC';					// 해당 광고에 대한 처리 routine 명 (이 파일)
-$g_ohc['mcode'] = 'ohc_m';				// 가져온 광고를 해당 mcode 밑으로 연결
-$g_ohc['aline-code'] = "aline";		// ohc 연동 매체 코드
+$g_ohc['mcode'] = 'ohc_m';				// ALINE의 mcode 값
+$g_ohc['aline-code'] = "aline";			// Merchant의 매체 연동 코드
 $g_ohc['appkey_prefix'] = "ohc";		// 앱키 시작 문자열 ( + md5한 mkey 결과 뒤에 붙임 )
 
 $g_ohc['unique_prefix'] = "ohc";		// 적립 결과에 Unique 키
@@ -44,7 +44,7 @@ function update_ohc_app($force_reload, $conn)
 		try {
 			// 1 분 주기로 갱신 대상 및 권한 가져오기
 			begin_trans($conn);
-			$sql = "SELECT id, IF(up_date is null OR up_date < date_sub(NOW(), interval 10 minute), 'Y', 'N') as 'flag_update' FROM merchant_update_t WHERE mcode = '{$db_mcode}' FOR UDPATE;";
+			$sql = "SELECT id, IF(up_date is null OR up_date < date_sub(NOW(), interval 10 minute), 'Y', 'N') as 'flag_update' FROM al_merchant_update_t WHERE mcode = '{$db_mcode}' FOR UDPATE;";
 			$result = mysql_query($sql, $conn);
 			$row = @mysql_fetch_assoc($result);
 			if (!$row['id']) {
@@ -58,12 +58,12 @@ function update_ohc_app($force_reload, $conn)
 				}
 			}
 	
-			mysql_query("UPDATE merchant_update_t SET up_date=NOW() WHERE mcode = '{$db_mcode}'", $conn);
+			mysql_query("UPDATE al_merchant_update_t SET up_date=NOW() WHERE mcode = '{$db_mcode}'", $conn);
 			commit($conn);
 		} 
 		catch(Exception $e) 
 		{
-			echo $e->getMessage();
+			if ($_REQUEST['dev'] == 1) echo $e->getMessage();
 			rollback($conn);
 			return false;
 		}
@@ -71,7 +71,7 @@ function update_ohc_app($force_reload, $conn)
 	else 
 	{
 		// 갱신시간을 update 
-		mysql_query("UPDATE merchant_update_t SET up_date=NOW() WHERE mcode = '{$db_mcode}'", $conn);
+		mysql_query("UPDATE al_merchant_update_t SET up_date=NOW() WHERE mcode = '{$db_mcode}'", $conn);
 	}
 
 	// 제공되는 숫자 금액에 대한 merchant_fee (우리쪽의 실제 지급되는 원)의 변환 율

@@ -1,41 +1,43 @@
 <?	
-$g_sucom['lib'] = 'SUCOMM';				// 해당 광고에 대한 처리 routine 명 (이 파일)
-$g_sucom['mcode'] = 'sucomm_m';			// ALINE의 mcode 값
-$g_sucom['aline-code'] = "aline_json";	// Merchant의 매체 연동 코드
-$g_sucom['appkey_prefix'] = "suc";		// 앱키 시작 문자열 ( + md5한 mkey 결과 뒤에 붙임 )
+/*
+	이 후부터 APPANG 으로 연동 작업을 함.
+*/
+$g_appang['lib'] = 'APPANG';				// 해당 광고에 대한 처리 routine 명 (이 파일)
+$g_appang['mcode'] = '31e9c6g39afd04d1';			// ALINE의 mcode 값
+$g_appang['aline-code'] = "ecb32e0e17df83a5c79732436542dd02";	// Merchant의 매체 연동 코드
+$g_appang['appkey_prefix'] = "apg";		// 앱키 시작 문자열 ( + md5한 mkey 결과 뒤에 붙임 )
 
-$g_sucom['unique_prefix'] = "suc";		// 적립 결과에 Unique 키
-$g_sucom['timeout_sec'] = 60;				// 시작 / 적립 요청시의 Timeout 초
+$g_appang['unique_prefix'] = "apg";		// 적립 결과에 Unique 키
+$g_appang['timeout_sec'] = 60;				// 시작 / 적립 요청시의 Timeout 초
 
-$g_sucom['list'] = "http://api.flexplatform.net/v1/get_ad_list_v2.php";
-$g_sucom['start'] = "http://api.flexplatform.net/v1/connect.php";
-$g_sucom['done'] = "http://api.flexplatform.net/v1/return_result.php";
-$g_sucom['img'] = "http://api.flexplatform.net/v1/get_ad_image.php";
+$g_appang['list'] = "http://www.appang.kr/nas/api/list.json.asp";
+$g_appang['start'] = "http://www.appang.kr/nas/api/join.json.asp";
+$g_appang['done'] = "http://www.appang.kr/nas/api/complete.json.asp";
 
 // ---------------------------------------
-// 처음 가져온 광고에 대한 관리자 차단 여부
-// 필요할 경우에만 특별히 사용
-$g_sucom['is_mactive'] = 'Y';
+// 처음 가져온 광고에 대한 관리자 차단 여부 (실제 광고의 경우 Y로 해놓고 개발상태이므로 노출되지는 않으므로 문제 안됨)
+// 필요할 경우에만 특별히 사용 (N => Y)
+$g_appang['is_mactive'] = 'Y';
 // ---------------------------------------
 
-// http://api.aline-soft.kr/ajax-request.php?id=_partner_sucomm&dev=1
-if ($_REQUEST['dev'] == 1 && $_REQUEST['id'] == "_partner_sucomm") {
-	update_sucomm_app(true, $conn);
+// http://api.aline-soft.kr/ajax-request.php?id=_partner_appang&dev=1
+if ($_REQUEST['dev'] == 1 && $_REQUEST['id'] == "_partner_appang") {
+	update_appang_app(true, $conn);
 	exit;
 }	
 
-function update_sucomm_app($force_reload, $conn) 
+function update_appang_app($force_reload, $conn) 
 {
-	global $g_sucom;
+	global $g_appang;
 
-	// g_sucom의 lib와 mcode
-	$db_lib = mysql_real_escape_string($g_sucom['lib']);
-	$db_mcode = mysql_real_escape_string($g_sucom['mcode']);
+	// g_appang의 lib와 mcode
+	$db_lib = mysql_real_escape_string($g_appang['lib']);
+	$db_mcode = mysql_real_escape_string($g_appang['mcode']);
 
 	//////////////////////////////////////////////////////////////////////////
 	// 기본 추가에 대한 is_mactive 설정 : 
 	//////////////////////////////////////////////////////////////////////////
-	$flag_is_mactive = $g_sucom['is_mactive'];
+	$flag_is_mactive = $g_appang['is_mactive'];
 	//////////////////////////////////////////////////////////////////////////
 	
 	// 자동 Reload 여부 체크
@@ -82,26 +84,26 @@ function update_sucomm_app($force_reload, $conn)
 	// ----------------------------------------------------------------------
 	// 요청 URL생성하기
 	$url_param = array();
-	$url_param['media'] = $g_sucom['aline-code'];
-	
-	$url_param['checktime'] = time();
-	$url_param['checkkey'] = md5($url_param['checktime'].$url_param['media']);
+	$url_param['ap'] = $g_appang['aline-code'];
 	// ----------------------------------------------------------------------
 	
-	$campain_url = $g_sucom['list'] . "?" . http_build_query($url_param);
+	$campain_url = $g_appang['list'] . "?" . http_build_query($url_param);
 	if ($_REQUEST['dev'] == 1) {
 		echo "URL : " . $campain_url . "<br>\n";
+		echo "<table border=1 cellpadding=0 cellspacing=0><style>* {font-size:11px} .content {max-width:300px; max-height:13px; overflow:hidden} .desc {display:inline-block; color:lightblue; width:300px; max-height:15px; overflow: hidden}</style>";
 	}
 	
 	// 광고 목록 요청
 	$start_tm = get_timestamp();
 	$sz_camp_data = @file_get_contents($campain_url);
-	if (intval($sz_camp_data)) return false;
+	if (!$sz_camp_data) return false;
 	
 	$js_camp_data = json_decode($sz_camp_data, true);
-	$n_item_cnt = $js_camp_data['adcount'];
+	if ($js_camp_data['result'] != 0) return false;
+	
+	$n_item_cnt = count($js_camp_data['items']);
 
-	// 현재 SUCOMM 의 active되어 있는 항목의 flag_updating ==> "Y" (나중에 갱신되지 않은 것은 모두 inactive 로 설정함 (Lock 걸지 않고 함)
+	// 현재 OHC 의 active되어 있는 항목의 flag_updating ==> "Y" (나중에 갱신되지 않은 것은 모두 inactive 로 설정함 (Lock 걸지 않고 함)
 	if ($n_item_cnt > 0) {
 		$sql = "UPDATE al_app_t SET flag_updating = 'Y' WHERE mcode = '{$db_mcode}' AND is_active = 'Y'";
 		mysql_execute($sql, $conn);
@@ -109,34 +111,40 @@ function update_sucomm_app($force_reload, $conn)
 
 	// 가져온 항목들을 모두 추가/갱신한다.
 	for ($i=0; $i < $n_item_cnt; $i++) {
-		$item = $js_camp_data['list'][$i];
+		$item = $js_camp_data['items'][$i];
 		
 		/////////////////////////////////////////
 		// 광고 상태가 start가 아니면 스킵		
+		/*
+		## APPANG에는 중지된 광고는 제공되지 않음
 		if ($item['ads_open'] != 'start') {
 			if ($_REQUEST['dev'] == 1) {
 				echo "{$item['ads_open']} ======> {$item['title']}, {$item['ads']}<br>\n";
 			}
 			continue;
 		}
+		*/
 		
 		//## app_key & m_key 
-		$app_key = $g_sucom['appkey_prefix'] . md5($item['ads']);
-		$m_key = $item['ads'];
+		$app_key = $g_appang['appkey_prefix'] . md5($item['key']);
+		$m_key = $item['key'];
 
 		//-------------------------------------
 		
 		//## app_title
 		$app_title = $item['title'];
 		
-		//## app_content
-		$app_content = $item['details'];
+		//## app_content (앱 소개내용)
+		$app_content = $item['intro']; // $item['details'];
 		
 		//## app_iconurl
-		$app_iconurl = $g_sucom['img'] . "?ads=" . $item['ads'];
+		$app_iconurl = $item['icon'];
 
 		//## app_packageid
-		$app_packageid = $item['ads_package'];
+		$app_packageid = ($item['app'] ? $item['app']['package'] : "");
+		
+		//## app_scheme (아직 iOS 대상 처리 안 함)
+		// $app_scheme = ($item['app'] ? $item['app']['scheme'] : "");
 		
 		//## app_execurl
 		$app_execurl = "";
@@ -144,47 +152,54 @@ function update_sucomm_app($force_reload, $conn)
 		//-------------------------------------
 
 		//## app_gender
-		$arr_item_sex = array("" => "", "mail" => "M", "female" => "F");
-		$app_gender = $arr_item_sex[$item['sex']];
+		$arr_item_sex = array("" => "", "m" => "M", "f" => "F");
+		$app_gender = $arr_item_sex[($item['target'] ? $item['target']['target_sex'] : "")];
 		
 		//## app_agefrom, app_ageto
 		$app_agefrom = "";
 		$app_ageto = "";
-		if (intval($item['age_from']) > 0 && intval($item['age_to']) > intval($item['age_from'])) {
-			$app_agefrom = $item['age_from'];
-			$app_ageto = $item['age_to'];
+		if ($item['target'] && intval($item['target']['age_from']) > 0 && intval($item['target']['age_to']) > intval($item['target']['age_from'])) {
+			$app_agefrom = $item['target']['age_from'];
+			$app_ageto = $item['target']['age_to'];
 		}
 
 		//## app_exec_type		
-		$arr_exec_type = array('CPI' => 'I', 'CPE' => 'E', 'CPA' => 'W');
-		$app_exec_type = ifempty($arr_exec_type[$item['ads_type']], 'W');	// 설치형 등...
+		$arr_exec_type = array(11 => 'I', 12 => 'E');
+		if ($arr_exec_type[ $item['type'] ]) 
+			$app_exec_type = $arr_exec_type[ $item['type'] ];
+		else
+			$app_exec_type = 'W';		// 설치 / 실행형 외는 모두 참여형
 
 		//-------------------------------------
 
-		//## app_exec_desc
-		$arr_exec_desc = array('CPI' => '설치형', 'CPE' => '실행형', 'CPA' => '회원가입형');
-		$app_exec_desc = ifempty( ifempty($item['participation'] , $arr_exec_desc[$item['ads_type']]), '참여형');	// 실행 방법..
+		//## app_exec_desc (사용자 적립 수행 방법)
+		$app_exec_desc = $item['description'];	// 적립 수행 방법..
 		
-		//## app_platform
-		$app_platform = 'A';
-		if ($item['os_type']) {
-			$arr_type = explode('|', $item['os_type']);
-			if (in_array("android", $arr_type)) 
-				$app_platform = 'A';
-			else if (in_array("web", $arr_type))
-				$app_platform = 'W';
-			else continue;		// a타입도 없고,  w타입도 없는 경우엔 통과 (ios 만 있는 경우에는 통과)
+		//## app_platform (수행할 Android / iOS / 전체 OS 기기 플롯폼 대상)
+		$app_platform = "W";					// 기본 Web형 플랫폼 제한 없음
+		if ($item['app'] && $item['app']['market']) 
+		{
+			if ($item['app']['market'] == '1') continue;					// 앱스토어 인경우엔 광고를 추가하지 않음 (통과)
+			else if ($item['app']['market'] == '2') $app_platform = 'A';	// 안드로이드 마켓인 경우
+			else if ($item['app']['market'] == '3') $app_platform = 'A';	// 안드로이드 마켓인 경우 (원스토어 ~ 내에버스토어는 모두 구글 Android 플랫폼)
+			else if ($item['app']['market'] == '4') $app_platform = 'A';	// 안드로이드 마켓인 경우
+			else if ($item['app']['market'] == '5') $app_platform = 'A';	// 안드로이드 마켓인 경우
+			else if ($item['app']['market'] == '6') $app_platform = 'A';	// 안드로이드 마켓인 경우
 		}
-
-		//## app_market
-		$arr_markets = explode('|', $item['market']);
-		if (!$item['market']) $app_market = "P";							// 별도 지정이 없으면 PLAYSTORE
-		else if (in_array("google_play", $arr_markets)) $app_market = "P";
-		else if (in_array("tstore", $arr_markets)) $app_market = "T";
-		else if (in_array("olleh", $arr_markets)) $app_market = "O";
-		else if (in_array("uplus", $arr_markets)) $app_market = "U";
-		else $app_market = "P";	// ELSE인 경우는 일단 P 로 처리
-
+		
+		//## app_market (수행시 이동할 마켓)
+		$arr_markets = explode('|', ($item['app'] ? $item['app']['market'] : ""));
+		$app_market = "P";						// 기본 PLAYSTORE
+		if ($item['app'] && $item['app']['market']) 
+		{
+			if ($item['app']['market'] == '1') continue;					// 앱스토어 인경우엔 광고를 추가하지 않음 (통과)
+			else if ($item['app']['market'] == '2') $app_market = "P";			// 구글스토어
+			else if ($item['app']['market'] == '3') $app_market = "O";			// 티스토어 ~ 네이버 스토어 까지 모두 OneStore로 설정함.
+			else if ($item['app']['market'] == '4') $app_market = "O";
+			else if ($item['app']['market'] == '5') $app_market = "O";
+			else if ($item['app']['market'] == '6') $app_market = "O";
+		}
+		
 		//## app_merchant_fee
 		$app_merchant_fee = intval($item['price'] * $exchange_fee_rate / 100);
 
@@ -236,8 +251,8 @@ function update_sucomm_app($force_reload, $conn)
 			$app_id = $row['id'];
 			if ($row['last_deactive_time'] && $row['error_stopped_time'] != $row['last_deactive_time'] && 
 				$row['is_active'] != 'Y' && in_array($app_exec_type, array('I', 'E')) ) {
-				$g_sucom['reactive-added'] ++;
-				$g_sucom['reactive-added-title'][] = "{$app_exec_type} {$app_title}";
+				$g_appang['reactive-added'] ++;
+				$g_appang['reactive-added-title'][] = "{$app_exec_type} {$app_title}";
 			}
 			
 			if ($row['flag_keep_modify'] == 'Y') 
@@ -338,8 +353,12 @@ function update_sucomm_app($force_reload, $conn)
 		mysql_execute($sql, $conn);
 		
 		if ($_REQUEST['dev'] == 1) {
-			echo "{$app_title}, {$m_key}, {$app_exec_type}, {$app_merchant_fee}<br>\n";
+			echo "<tr><td><img src='{$app_iconurl}' width=25 /></td><td>{$app_title}</td><td><div class='content'>{$app_content}</div><div class='desc'>{$app_exec_desc}</div></td><td>{$m_key}</td><td>{$app_platform}</td><td>{$app_market}</td><td>{$app_packageid}</td><td>{$app_exec_type}</td><td>{$app_merchant_fee}</td><td>{$app_gender}</td><td>{$app_agefrom}~{$app_ageto}</td></tr>\n";
 		}
+	}
+	
+	if ($_REQUEST['dev'] == 1) {
+		echo "</table>";
 	}
 
 	// 갱신되지 못한 나머지 항목은 모두 in_active 로 설정
@@ -349,59 +368,87 @@ function update_sucomm_app($force_reload, $conn)
 	return true;
 }
 
-function sucomm_request_start($app_key, &$arr_data, &$conn) 
+/*
+	$arr_data (array object) 키
+		now			// 요청 수행 초기에 받아놓은 NOW() 값
+		day			// 요청 수행 초기에 받아놓은 DATE() 값
+		
+		sid			// publisher사의 Sub 매체 구별값 varchar(64)
+		uid			// publisher사의 사용자 구별값 varchar(64)
+		userdata	// publisher사의 사용자 context text
+		
+		pcode
+		ad
+		ip
+		adid
+		imei
+		model
+		mf			// manufacturer
+		brand
+		account (not encoded)
+		
+		user_app_id			// al_user_app_t 의 id 값
+		ad (array object) 	// al_app_t 테이블 정보
+			
+
+*/
+function appang_request_start($app_key, &$arr_data, &$conn) 
 {
-	global $g_sucom;
+	global $g_appang;
 	
 	$ar_app = $arr_data['ad'];
 	$userapp_id = $arr_data['user_app_id'];
 	
 	// 광고 시작 URL 생성
 	$url_param = array();
-	$url_param['media'] = $g_sucom['aline-code'];
-	$url_param['flexcode'] = $ar_app['mkey'];
-	$url_param['rewardkey'] = base64_encode(json_encode(array('aid' => $userapp_id)));		// appkey와 adid 의 HashCode
-	$url_param['adid'] = $arr_data['adid'];
-	$url_param['go_type'] = "json";
-	$url_param['real_ip'] = $arr_data['ip'];
+	$url_param['os'] = 'a';
+	$url_param['ap'] = $g_appang['aline-code'];
+	$url_param['a'] = $ar_app['mkey'];
 	
-	$url_param['udid'] = base64_encode($arr_data['imei']);
-	$url_param['ugid'] = base64_encode($arr_data['first-account']);		// account중 첫번째 것만 
-	$url_param['mcode'] = $arr_data['model'];
-	$url_param['fcode'] = $arr_data['mf'];
-	$url_param['submdeia'] = md5($arr_data['pcode']);
+	if ($arr_data['imei']) {
+		$url_param['u'] = md5($arr_data['imei']);
+		$url_param['u2'] = base64_encode($arr_data['imei']);
+	} else {
+		return array('result' => false, 'error' => 'NEP', 'error_msg' => '시작요청 정보가 부족합니다');
+	}
 	
-	$campain_url = concat_url($g_sucom['start'], http_build_query($url_param));
+	$url_param['ua'] = $ar_app['adid'];
+	$url_param['ud'] = base64_encode(json_encode(array('aid' => $userapp_id)));
+	$url_param['ajip'] = $arr_data['ip'];
 
+	$url_param['d_model'] = $arr_data['model'];
+	$url_param['d_manu'] = $arr_data['mf'];
+	$campain_url = concat_url($g_appang['start'], http_build_query($url_param));
+	
 	// 광고 URL 요청하기
 	$start_tm = get_timestamp();
-	$ctx = stream_context_create( array( 'http'=> array('timeout' => $g_sucom['timeout_sec']), 'https'=> array('timeout' => $g_sucom['timeout_sec']) ) );
+	$ctx = stream_context_create( array( 'http'=> array('timeout' => $g_appang['timeout_sec']), 'https'=> array('timeout' => $g_appang['timeout_sec']) ) );
 	
 	// MYSQL을 닫은 후 요청이 완료되면 재 연결한다.
 	mysql_close($conn);
 	$result_data = @file_get_contents($campain_url, 0, $ctx);
 	$conn = dbConn();
 	
-	make_action_log("user-start-sucomm", ($result_data?'Y':'N'), $arr_data['pcode'], $arr_data['adid'], $app_key,  null, get_timestamp() - $start_tm, $campain_url, null, $result_data, $conn);
+	make_action_log("user-start-appang", ($result_data?'Y':'N'), $arr_data['pcode'], $arr_data['adid'], $app_key,  null, get_timestamp() - $start_tm, $campain_url, null, $result_data, $conn);
 	if (!$result_data) return array('result' => 'N', 'code' => '-1003');
 	
-	//전달할 결과 조합
+	// 전달할 결과 조합
 	$js_data = json_decode($result_data, true);
-	$result_data = $js_data['return_code'];
+	$result_data = $js_data['result'];		// APPANG은 result 가 0 이 아니면 오류임
 	$result_msg = "";
 
 	// error-handling
-	if ($result_data != "0000") {
-		return sucomm_code_mapping($result_data, $result_msg);
+	if (!$result_data) {
+		return appang_code_mapping($result_data, $result_msg);
 	}
 	$arr_data['result'] = 'Y';
 	$arr_data['url'] = $js_data['url'];
 	return array('result' => 'Y', 'code' => '1');
 }
 
-function sucomm_request_done($app_key, $arr_data, &$conn) 
+function appang_request_done($app_key, $arr_data, &$conn) 
 {
-	global $g_sucom;
+	global $g_appang;
 
 	$ar_app = $arr_data['ad'];
 	$userapp_id = $arr_data['user_app_id'];
@@ -411,76 +458,62 @@ function sucomm_request_done($app_key, $arr_data, &$conn)
 
 	// 광고 적립 URL생성
 	$url_param = array();
-	$url_param['media'] = $g_sucom['aline-code'];
-	$url_param['flexcode'] = $ar_app['mkey'];
-	$url_param['adid'] = $arr_data['adid'];
+	$url_param['os'] = 'a';
+	$url_param['ap'] = $g_appang['aline-code'];
+	$url_param['a'] = $ar_app['mkey'];
+	
+	if ($arr_data['imei']) {
+		$url_param['u'] = md5($arr_data['imei']);
+		$url_param['u2'] = base64_encode($arr_data['imei']);
+	} else {
+		return array('result' => false, 'error' => 'NEP', 'error_msg' => '시작요청 정보가 부족합니다');
+	}
+	
+	$url_param['ua'] = $ar_app['adid'];
+	$url_param['ajip'] = $arr_data['ip'];
+	$campain_url = concat_url($g_appang['done'], http_build_query($url_param));
 
 	// 광고 적립 요청 보내기
 	$start_tm = get_timestamp();
 	
 	// MYSQL을 닫은 후 요청이 완료되면 재 연결한다.
-	mysql_close($conn);
-	$result_data = post($g_sucom['done'], $url_param, $g_sucom['timeout_sec']);
-	$conn = dbConn();	
+	$ctx = stream_context_create( array( 'http'=> array('timeout' => $g_appang['timeout_sec']), 'https'=> array('timeout' => $g_appang['timeout_sec']) ) );
 	
-	make_action_log("user-done-sucomm", ($result_data?'Y':'N'), $arr_data['pcode'], $arr_data['adid'], $app_key, null, get_timestamp() - $start_tm, $g_sucom['done'], $url_param, $result_data, $conn);
+	// MYSQL을 닫은 후 요청이 완료되면 재 연결한다.
+	mysql_close($conn);
+	$result_data = @file_get_contents($campain_url, 0, $ctx);
+	$conn = dbConn();
+
+	make_action_log("user-done-appang", ($result_data?'Y':'N'), $arr_data['pcode'], $arr_data['adid'], $app_key, null, get_timestamp() - $start_tm, $g_appang['done'], $url_param, $result_data, $conn);
 	if (!$result_data) return array('result' => 'N', 'code' => '-1003');
 
 	// 전달할 결과 조합
 	$js_data = json_decode($result_data, true);
-	$result_data = $js_data['return_code'];
+	$result_data = $js_data['result'];
 	$result_msg = "";
 	
 	// error-handling
-	if ($result_data != "0000") {
-		return sucomm_code_mapping($result_data, $result_msg);
+	if (!$result_data) {
+		return appang_code_mapping($result_data, $result_msg);
 	}
 	return array('result' => 'Y', 'code' => '1');
 }
 
-function sucomm_code_mapping($code, $msg) {
+function appang_code_mapping($code, $msg) {
 
-	$ar_err_msg = sucom_error_msg($code);
+	$ar_err_msg = appang_error_msg($code);
 	return array('result' => 'N', 'code' => $ar_err_msg[0], 'msg' => $ar_err_msg[1] );
 }
 
-function sucom_error_msg($code) {
+function appang_error_msg($code) {
 	
 	// 오류 설명
-	$arr_error_msg[1101] = array('-100', '정확하지 않는 정보로 접속 되었습니다. 다시 참여해 주십시오.');
-	$arr_error_msg[1102] = array('-100', '정확하지 않는 정보로 접속 되었습니다. 다시 참여해 주십시오.');
-	$arr_error_msg[1103] = array('-103', '이벤트가 일시 중지 되었거나 오픈 전 입니다.');
-	$arr_error_msg[1104] = array('-103', '이벤트가 일시 중지 되었거나 오픈 전 입니다.');
-	$arr_error_msg[1105] = array('-103', '이벤트가 일시 중지 되었거나 오픈 전 입니다.');
-	$arr_error_msg[1106] = array('-103', '이벤트가 일시 중지 되었거나 오픈 전 입니다.');
-	$arr_error_msg[1107] = array('-104', '일시 중지 되었거나 오픈 전 입니다.');
-	$arr_error_msg[1108] = array('-104', '일시 중지 되었거나 오픈 전 입니다.');
-	$arr_error_msg[1109] = array('-104', '일시 중지 되었습니다.');
-	$arr_error_msg[1110] = array('-111', '광고 접속에 실패 하였습니다. 다시 참여해 주십시오.');
-	$arr_error_msg[1111] = array('-105', '이미 참여한 이벤트 입니다.');
-	$arr_error_msg[1112] = array('-105', '이미 참여한 이벤트 입니다.');
-	$arr_error_msg[1113] = array('-105', '이미 참여한 이벤트 입니다.');
-	$arr_error_msg[1114] = array('-105', '이미 참여한 이벤트 입니다.');
-	$arr_error_msg[1115] = array('-105', '이미 참여한 이벤트 입니다.');
-	$arr_error_msg[1116] = array('-106', '모바일웹 환경에서만 참여 가능합니다.');
-	$arr_error_msg[1117] = array('-106', '참여하셨거나, 이벤트 참여 대상자가 대상자가 아닙니다.');
-	$arr_error_msg[1118] = array('-103', '이벤트가 일시 중지 되었거나 오픈 전 입니다.');
-	$arr_error_msg[1119] = array('-104', '당일 이벤트 참여가 일시 중지 되었습니다. 내일 다시 참여 해 주세요.');
-	$arr_error_msg[1120] = array('-103', 'IMEI전용 광고 입니다');
-	
-	$arr_error_msg[1201] = array('-107', '정확하지 않는 정보로 접속 되었습니다. 다시 참여해 주십시오.');
-	$arr_error_msg[1202] = array('-111', '광고 접속에 실패 하였습니다. 다시 참여해 주십시오');
-	$arr_error_msg[1203] = array('-111', '광고 접속에 실패 하였습니다. 다시 참여해 주십시오');
-	$arr_error_msg[1204] = array('-104', '이벤트가 일시 중지 되었거나 오픈 전 입니다');
-	$arr_error_msg[1205] = array('-111', '광고 접속에 실패 하였습니다. 다시 참여해 주십시오');
-	$arr_error_msg[1206] = array('-103', '이벤트가 일시 중지 되었거나 오픈 전 입니다');
-	$arr_error_msg[1207] = array('-106', '참여하셨거나, 이벤트 참여 대상자가 아닙니다');
-	$arr_error_msg[1208] = array('-104', '이벤트가 일시 중지 되었거나 오픈 전 입니다');
-	$arr_error_msg[1209] = array('-104', '금일 광고 수량이 모두 소진되었습니다. 익일 참여하시기 바랍니다');
-	$arr_error_msg[1210] = array('-111', '광고 접속에 실패 하였습니다. 다시 참여해 주십시오');
-	$arr_error_msg[1211] = array('-111', '광고 접속에 실패 하였습니다. 다시 참여해 주십시오');
-	$arr_error_msg[1212] = array('-100', '정확하지 않는 정보로 접속 되었습니다. 다시 참여해 주십시오');
-	$arr_error_msg[1213] = array('-160', '참여하셨거나, 이벤트 참여 대상자가 아닙니다');
+	$arr_error_msg[-99999] = array('-1004', '정확하지 않는 정보로 접속 되었습니다. 다시 참여해 주십시오.');
+	$arr_error_msg[-99995] = array('-111', '사용하시는 기기로는 광고에 참여할 수 없습니다.');
+	$arr_error_msg[-10001] = array('-104', '광고가 일시 중지 또는 종료되었습니다.');
+	$arr_error_msg[-20001] = array('-106', '참여하셨거나, 이벤트 참여 대상자가 대상자가 아닙니다.');
+	$arr_error_msg[-30001] = array('-119', '광고 설정 오류 (CB-URL 미등록).');
+	$arr_error_msg[-40001] = array('-100', 'API 연동 권한 없음.');
 
 	if ($arr_error_msg[$code]) return $arr_error_msg[$code];
 	return array('-1005', '알 수 없는 오류');

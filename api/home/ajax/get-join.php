@@ -215,6 +215,11 @@
 		include dirname(__FILE__)."/_partner_sucomm.php";
 		$ar_data = sucomm_request_start($appkey, $arr_param, $conn);
 		
+	} else if ($row_app['lib'] == 'APPANG') {
+
+		include dirname(__FILE__)."/_partner_appang.php";
+		$ar_data = appang_request_start($appkey, $arr_param, $conn);
+		
 	} else {
 		
 		return_die('N', array('code'=>'-110'), '광고 오류입니다.');
