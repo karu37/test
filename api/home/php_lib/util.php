@@ -245,7 +245,7 @@ function post($url, $ar_post_param, $timeout_sec = 60)
 		);
 	
 	$context = stream_context_create($options);
-	$result = file_get_contents($url, false, $context);	
+	$result = @file_get_contents($url, false, $context);	
 	return $result;
 }
 

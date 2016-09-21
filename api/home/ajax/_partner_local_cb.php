@@ -92,7 +92,7 @@ $g_local['timeout_sec'] = 60;				// 시작 / 적립 요청시의 Timeout 초
 		// 	 callback_done 결과를 al_user_app_t 에 기록하기 실패시 F 로 설정함.
 		// ----------------------------------------------------------------------
 		if ($ar_resp['result'] == 'Y') $callback_result = 'Y';
-		else if ($response_data === "") $callback_result = 'R';		// 아무것도 응답하지 않은 경우 ==> 실패로 보고 재시도함.
+		else if (trim($response_data) == "") $callback_result = 'R';		// 아무것도 응답하지 않은 경우 ==> 실패로 보고 재시도함.
 		else $callback_result = 'N';
 		
 		$db_callback_url = mysql_real_escape_string($req_base_url);

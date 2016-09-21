@@ -2,7 +2,7 @@
 	// http://api.aline-soft.kr/ajax-request.php?id=scheduler-post-uncompleted-callback
 	
 	$max_try_cnt = 3;				// 최대 재시도
-	$min_retry_minutes = 10;		// 재 시도 시간
+	$min_retry_minutes = 120;		// 재 시도 시간
 	$timeout_callback_sec = 20;		// callback timeout
 
 	// 1. get id of failed callback request from the al_user_app_t
@@ -19,7 +19,7 @@
 				
 				$sql = "UPDATE al_user_app_t SET callback_time = NOW(), callback_tried = callback_tried + 1 WHERE id = '{$row['id']}'";
 				mysql_query($sql, $conn);
-				echo $sql . '<br>';
+				// echo $sql . '<br>';
 			} else {
 				echo "No more request";	
 			}
@@ -37,7 +37,16 @@
 		$url_param = json_decode($ar_info['callback_post'], true);
 		$response_data = post($ar_info['callback_url'], $url_param, $timeout_callback_sec);
 		$ar_resp = json_decode($response_data, true);
-
+		
+/*		
+		// debug log output
+		echo "url : " . $ar_info['callback_url'] . '<br>';
+		echo "param : "; 
+		var_dump($url_param);
+		echo '<br>';
+		echo $response_data;
+		exit;
+*/
 		// retry 로그 남김		
 		make_action_log("callback-pub-local-retry", ifempty($ar_resp['result'], 'N'), $ar_info['pcode'], $ar_info['adid'], $ar_info['adid'], $ar_info['app_key'], null, get_timestamp() - $start_tm, $req_base_url, $url_param, $response_data, $conn);
 		
