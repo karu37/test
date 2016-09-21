@@ -1,12 +1,24 @@
 <?
+	// ---------------------------------------------------------
+	// 1시간에 1회 호출되므로 이 php는 1시간을 초과해선 안된다.
+	// 그래서 실행 시간을 59분 ( 3540 )
+	// ---------------------------------------------------------
+
 	// http://api.aline-soft.kr/ajax-request.php?id=scheduler-post-uncompleted-callback
 	
 	$max_try_cnt = 3;				// 최대 재시도
-	$min_retry_minutes = 120;		// 재 시도 시간
+	$min_retry_minutes = 120;		// 단위 재 시도 시간
 	$timeout_callback_sec = 20;		// callback timeout
+
+	$start_time = microtime(true);	// php 수행 시작 시간 (소수점을 갖는 초단위)
 
 	// 1. get id of failed callback request from the al_user_app_t
 	do {
+		
+		// 시작 시간 이 후 59분 경과시 종료
+		$elapsed_time_sec = floor(microtime(true) - $start_time);
+		if ( $elapsed_time_sec >= 59*60 ) break;
+		
 		$ar_info = array();
 		try {
 			
@@ -31,8 +43,9 @@
 			break;
 		}
 		
+		// no more request인 경우 빠져나감
 		if (!$ar_info['id']) break;
-
+		
 		// 요청을 시작한다.
 		$url_param = json_decode($ar_info['callback_post'], true);
 		$response_data = post($ar_info['callback_url'], $url_param, $timeout_callback_sec);
@@ -66,5 +79,5 @@
 		// echo $sql;
 		mysql_query($sql, $conn);
 			
-	} while(false);
+	} while(true);
 ?>
