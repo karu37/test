@@ -1,5 +1,5 @@
 <?
-	$partner_id = $_REQUEST['partnerid'];
+	// $partner_id = $_REQUEST['partnerid'];
 	$guest_id = $_REQUEST['guestid'];
 
 	$date = $_REQUEST['date'];
@@ -136,7 +136,7 @@
 			$check_date = sprintf("%04d-%02d-%02d", $year, $month, $i);
 			
 			?>
-			<tr class='row-datum week-<?=$week_day?>' onclick=window.location.href='?id=stat-summary-partner-guest-app-sales-month&partnerid=<?=$partner_id?>&guestid=<?=$guest_id?>&date=<?=$check_date?>' style='cursor:pointer'>
+			<tr class='row-datum week-<?=$week_day?>' onclick=window.location.href='?id=stat-summary-partner-guest-app-sales-month&guestid=<?=$guest_id?>&date=<?=$check_date?>' style='cursor:pointer'>
 				<td><?=$i?>일</td>
 				<td class='cnt'><?=number_format($ar_summary[$check_date]['cnt'])?></td>
 				<td class='sal'><?=number_format($ar_summary[$check_date]['fee'])?></td>

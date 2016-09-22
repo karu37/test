@@ -138,7 +138,7 @@
 			$idx ++;
 			
 			$url_guestid = urlencode($row['guest_id']);
-			$td_onclick = "onclick='window.location.href=\"?id=stat-summary-partner-guest-sales-month&date={$date}&partnerid={$partner_id}&guestid={$url_guestid}\"'";
+			$td_onclick = "onclick='window.location.href=\"?id=stat-summary-partner-guest-sales-month&date={$date}&guestid={$url_guestid}\"'";
 			?>
 			<tr style='cursor:pointer' id='line-m-<?=$row['guest_id']?>'>
 				<td <?=$td_onclick?>><?=$pages->limit_start + $idx?></td>

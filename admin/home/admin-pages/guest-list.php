@@ -25,13 +25,17 @@
 		$arr_category[$row['type']][] = $row['name'];		
 	}
 
-	$sql = "SELECT a.*, COUNT(*) AS app_cnt FROM guest_user_t a LEFT OUTER JOIN guest_app_list b ON a.guest_id = b.guest_id WHERE 1=1 {$where} GROUP BY a.guest_id {$order_by} {$limit}";
+	$sql = "SELECT a.*, COUNT(*) AS app_cnt, c.partner_id, c.name as 'partner_name' , c.company as 'partner_company'
+			FROM guest_user_t a 
+				LEFT OUTER JOIN guest_app_list b ON a.guest_id = b.guest_id 
+				LEFT OUTER JOIN al_partner_t c ON a.partner_id = c.partner_id
+			WHERE 1=1 {$where} GROUP BY a.guest_id {$order_by} {$limit}";
 	$result = mysql_query($sql, $conn);
 ?>
 	<style>
 		#ctl-main-list tr:not(:last-child):hover td 			{background:#dff}
 		
-		#ctl-main-list tr	{line-height:25px}
+		#ctl-main-list tr	{line-height:14px; height: 40px}
 		#ctl-main-list th	{padding: 2px 4px}
 		#ctl-main-list td	{padding: 2px 4px}
 		
@@ -89,6 +93,7 @@
 			<th>앱 개수</th>
 			<th>회사</th>
 			<th>전화번호</th>
+			<th>소속 파트너</th>
 			<th>등록일</th>
 			<th></th>
 		</tr>	
@@ -111,6 +116,9 @@
 				<td><?=$row['app_cnt']?></td>
 				<td><?=$row['company']?></td>
 				<td><?=to_phoneno($row['telno'])?></td>
+				
+				<td><?=$row['partner_id']?><br><?=$row['partner_name']?></td>
+				
 				<td><?=admin_to_date($row['reg_date'])?></td>
 				<td>
 					<a href='?id=guest-modify&guestid=<?=$row['guest_id']?>' style='padding: 5px 4px' data-theme='b' data-role='button' data-mini='true' data-inline='true'>정보 수정</a>

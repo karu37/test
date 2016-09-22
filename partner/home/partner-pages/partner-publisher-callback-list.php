@@ -91,9 +91,6 @@
 		while ( $publisher = mysql_fetch_assoc($result) ) {
 			$idx ++;
 			
-			$url_pcode = urlencode($publisher['pcode']);
-			$td_onclick = "onclick='window.location.href=\"?id=publisher-appkey-list&partnerid={$partner_id}&pcode={$url_pcode}\"'";
-
 			// 현재의 Publisher의 active상태 : Y / T / N 만 가능함.					
 			$ar_btn_theme = array('a','a','a');
 			if ($publisher['is_mactive'] == 'Y') $ar_btn_theme = array('b','a','a');
@@ -102,11 +99,11 @@
 
 			?>
 			<tr style='cursor:pointer' id='line-p-<?=$publisher['pcode']?>' class="mactive-<?=$publisher['is_mactive']?>" onclick='mvPage("publisher-setup-callback", null, {pcode:"<?=$publisher['pcode']?>"})'>
-				<td <?=$td_onclick?>><?=$pages->limit_start + $idx?></td>
-				<td <?=$td_onclick?>><?=$arr_status[$publisher['is_mactive']]?></td>
-				<td <?=$td_onclick?>><?=admin_to_date($publisher['reg_date'])?></td>
-				<td <?=$td_onclick?>><?=$publisher['name']?></td>
-				<td <?=$td_onclick?>><?=$publisher['pcode']?></td>
+				<td><?=$pages->limit_start + $idx?></td>
+				<td><?=$arr_status[$publisher['is_mactive']]?></td>
+				<td><?=admin_to_date($publisher['reg_date'])?></td>
+				<td><?=$publisher['name']?></td>
+				<td><?=$publisher['pcode']?></td>
 			</tr>
 			<?
 		}

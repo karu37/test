@@ -158,7 +158,7 @@
 			$idx ++;
 			
 			$url_mcode = urlencode($merchant['mcode']);
-			$td_onclick = "onclick='window.location.href=\"?id=stat-summary-partner-merchant-sales-month&date={$date}&partnerid={$partner_id}&mcode={$url_mcode}\"'";
+			$td_onclick = "onclick='window.location.href=\"?id=stat-summary-partner-merchant-sales-month&date={$date}&mcode={$url_mcode}\"'";
 			?>
 			<tr style='cursor:pointer' id='line-m-<?=$merchant['mcode']?>' class="mactive-<?=$merchant['is_mactive']?>">
 				<td <?=$td_onclick?>><?=$pages->limit_start + $idx?></td>

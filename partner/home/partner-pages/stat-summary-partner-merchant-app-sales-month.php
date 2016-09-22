@@ -1,5 +1,5 @@
 <?
-	$partner_id = $_REQUEST['partnerid'];
+	// $partner_id = $_REQUEST['partnerid'];
 	$mcode = $_REQUEST['mcode'];
 
 	$date = $_REQUEST['date'];
@@ -60,7 +60,7 @@
 		google.charts.load('current', {packages:["corechart"]});
 	</script>
 	
-	<t4 style='line-height: 40px'>월간 앱별 실적 현황</t4>
+	<t4 style='line-height: 40px'>월간 Merchant 실적 현황</t4>
 	<hr>
 	<div class='ui-grid-a'>
 		<div class='ui-block-a'>

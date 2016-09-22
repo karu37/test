@@ -1,5 +1,5 @@
 <?
-	$partner_id = $_REQUEST['partnerid'];
+	// $partner_id = $_REQUEST['partnerid'];
 	$guest_id = $_REQUEST['guestid'];
 
 	$date = $_REQUEST['date'];
@@ -26,7 +26,7 @@
 				INNER JOIN guest_app_list b ON a.app_key = b.app_key
 				INNER JOIN guest_user_t c ON b.guest_id = c.guest_id
 			WHERE b.guest_id = '{$db_guest_id}' AND a.reg_day >= '{$date}' AND a.reg_day < DATE_ADD('{$date}', INTERVAL 1 DAY) 
-			GROUP by a.reg_day
+			GROUP by a.reg_day, a.app_key
 			ORDER by fee DESC";
 	$result = mysql_query($sql, $conn);
 	while ($row = mysql_fetch_assoc($result)) {
@@ -47,7 +47,7 @@
 	<style>
 		.main-list tr:not(:last-child):hover td 			{background:#dff}
 		.main-list .col-sum th			{text-align:right; padding-right: 15px; line-height:25px; background-color:#ddffdd}
-		.main-list td					{text-align:right; padding-right: 15px; line-height:25px}
+		.main-list td					{text-align:right; padding: 5px 15px 5px 0; line-height:1.3em}
 
 		.main-list th, .main-list td 	{border-left: 1px solid #888; border-top: 1px solid #888}
 		.main-list th:last-child, .main-list td:last-child 	{border-right: 1px solid #888}

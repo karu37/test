@@ -1,5 +1,5 @@
 <?
-	$partner_id = $_REQUEST['partnerid'];
+	// $partner_id = $_REQUEST['partnerid'];
 	$pcode = $_REQUEST['pcode'];
 
 	$date = $_REQUEST['date'];
@@ -24,7 +24,7 @@
 				INNER JOIN al_app_t b ON a.app_key = b.app_key
 				INNER JOIN al_partner_mpcode_t mp ON mp.partner_id = '$db_partner_id' AND mp.pcode = a.pcode AND mp.type = 'P'
 			WHERE a.pcode = '{$db_pcode}' AND a.reg_day >= '{$date}' AND a.reg_day < DATE_ADD('{$date}', INTERVAL 1 DAY) 
-			GROUP by a.reg_day
+			GROUP by a.reg_day, a.app_key
 			ORDER by fee DESC";
 	$result = mysql_query($sql, $conn);
 	while ($row = mysql_fetch_assoc($result)) {
@@ -45,7 +45,7 @@
 	<style>
 		.main-list tr:not(:last-child):hover td 			{background:#dff}
 		.main-list .col-sum th			{text-align:right; padding-right: 15px; line-height:25px; background-color:#ddffdd}
-		.main-list td					{text-align:right; padding-right: 15px; line-height:25px}
+		.main-list td					{text-align:right; padding: 5px 15px 5px 0; line-height:1.3em}
 
 		.main-list th, .main-list td 	{border-left: 1px solid #888; border-top: 1px solid #888}
 		.main-list th:last-child, .main-list td:last-child 	{border-right: 1px solid #888}
@@ -60,7 +60,7 @@
 		google.charts.load('current', {packages:["corechart"]});
 	</script>
 	
-	<t4 style='line-height: 40px'>월간 앱별 실적 현황</t4>
+	<t4 style='line-height: 40px'>월간 Publisher 실적 현황</t4>
 	<hr>
 	<div class='ui-grid-a'>
 		<div class='ui-block-a'>

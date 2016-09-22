@@ -9,6 +9,7 @@
 	
 	$header_title = "ALINE 파트너";
 	
+	$page_id = "";
 	if (isset($_REQUEST['id'])) $page_id = $_REQUEST['id'];
 	if ($page_id == "") $page_id = 'partner-app-lists';
 	$js_page_id = str_replace("-", "_", $page_id);

@@ -99,7 +99,7 @@
 			<th>회사</th>
 			<th>전화번호</th>
 			<th>등록일</th>
-			<th width=1px></th>
+			<th width=220px></th>
 		</tr>	
 	</thead>
 	<tbody>
@@ -124,6 +124,7 @@
 				<td <?=$td_click?>><?=admin_to_date($row['reg_date'])?></td>
 				<td class='btn'>
 					<a href='?id=partner-modify&partnerid=<?=$row['partner_id']?>' style='padding: 5px 4px' data-theme='b' data-role='button' data-mini='true' data-inline='true'>계정정보 수정</a>
+					<a href='http://partner.aline-soft.co.kr/login.php?partnerid=<?=urlencode($row['partner_id'])?>&partnerpw=<?=urlencode($row['partner_pw'])?>' target=_blank style='padding: 5px 4px' data-theme='b' data-role='button' data-mini='true' data-inline='true'>파트너 로그인</a>
 				</td>
 				
 			</tr>

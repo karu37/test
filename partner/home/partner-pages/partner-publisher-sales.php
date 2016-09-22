@@ -53,12 +53,12 @@
 	// ---------------------------------------
 	// publisher info
 	// ---------------------------------------
-	$sql = "SELECT a.*, c.publisher_cnt, c.publisher_fee
+	$sql = "SELECT a.*, SUM(c.publisher_cnt) as 'publisher_cnt', SUM(c.publisher_fee) as 'publisher_fee'
 			FROM al_publisher_t a 
 				INNER JOIN al_partner_mpcode_t mp ON a.pcode = mp.pcode AND mp.type = 'P' 
 				LEFT OUTER JOIN al_summary_sales_m_t c ON a.pcode = c.pcode AND c.reg_day = '{$year}-{$month}-01'
 			WHERE mp.partner_id = '{$db_partner_id}' {$where} 
-			GROUP BY a.pcode 
+			GROUP BY a.pcode
 			{$order_by} {$limit}";
 	$result = mysql_query($sql, $conn);
 ?>
@@ -156,7 +156,7 @@
 			$idx ++;
 			
 			$url_pcode = urlencode($publisher['pcode']);
-			$td_onclick = "onclick='window.location.href=\"?id=stat-summary-partner-publisher-sales-month&date={$date}&partnerid={$partner_id}&pcode={$url_pcode}\"'";
+			$td_onclick = "onclick='window.location.href=\"?id=stat-summary-partner-publisher-sales-month&date={$date}&pcode={$url_pcode}\"'";
 			?>
 			<tr style='cursor:pointer' id='line-m-<?=$publisher['pcode']?>' class="mactive-<?=$publisher['is_mactive']?>">
 				<td <?=$td_onclick?>><?=$pages->limit_start + $idx?></td>
