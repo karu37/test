@@ -27,10 +27,12 @@
 
 	$is_public_mode = $row_app['is_public_mode'];
 	
-	$sql = "SELECT p.*, pa.merchant_disabled, pa.merchant_enabled, IFNULL(IF('$is_public_mode' = 'Y', pa.merchant_disabled, pa.merchant_enabled), 'N') as 'checked'
+	$sql = "SELECT p.*, pa.merchant_disabled, pa.merchant_enabled, IFNULL(IF('$is_public_mode' = 'Y', pa.merchant_disabled, pa.merchant_enabled), 'N') as 'checked', t.name as 'partner_name', t.company as 'partner_company'
 			FROM al_publisher_t p
 				LEFT OUTER JOIN al_publisher_app_t pa ON p.pcode = pa.pcode AND pa.app_key = '{$db_appkey}' 
-			WHERE p.is_mactive <> 'D' {$where}
+					LEFT OUTER JOIN al_partner_mpcode_t pmp ON pmp.pcode = p.pcode AND pmp.type = 'P'
+					LEFT OUTER JOIN al_partner_t t ON t.partner_id = pmp.partner_id
+			WHERE p.is_mactive IN ('Y','T') {$where}
 			ORDER BY checked DESC {$limit}";
 			
 	$result = mysql_query($sql, $conn);
@@ -129,8 +131,9 @@
 	<thead>
 		<tr>
 			<th width=1px>상태</th>
-			<th>Publisher 명</th>
-			<th>Publisher 코드</th>
+			<th>Publisher 이름/코드</th>
+			<th>소속 파트너 이름</th>
+			<th>소속 파트너 회사</th>
 		</tr>
 	</thead>
 	<tbody>
@@ -157,8 +160,9 @@
 						<a class='btn-p-<?=$publisherapp['pcode']?> btn-N' href='#' onclick='<?=$js_page_id?>.action.on_btn_set_publisher_active("<?=$mcode?>", "<?=$publisherapp['pcode']?>", "<?=$appkey?>", "<?=$is_public_mode?>", "N")' data-theme='<?=$ar_btn_theme[1]?>'  data-role='button' data-mini='true' data-inline='true'><?=$status_selected?></a>
 					</div>
 				</td>
-				<td><?=$publisherapp['name']?></td>
-				<td><?=$publisherapp['pcode']?></td>
+				<td><b><?=$publisherapp['name']?></b><br><span style='color:#888; line-height: 1.2em'><?=$publisherapp['pcode']?></span></td>
+				<td><?=$publisherapp['partner_name']?></td>
+				<td><?=$publisherapp['partner_company']?></td>
 			</tr>
 			<?
 		}

@@ -12,7 +12,7 @@
 	$result = mysql_query($sql, $conn);
 	while ($row = mysql_fetch_assoc($result)) {
 
-		$ar_key_names[$row['name']] = true;
+		$ar_key_names[$row['name']] = $row['mcode'];
 		$ar_names_mcode[$row['name']] = $row['mcode'];
 		
 		$col_name = $row['name'];
@@ -146,7 +146,7 @@
 			<th colspan=2 width=4%>합</th>
 <?
         	foreach($ar_key_names as $key => $val) {
-	        	echo "\n<th colspan=2 width=4%>{$key}</th>";
+	        	echo "\n<th colspan=2 width=4%><a href='?id=stat-summary-mp-sales-day&mcode={$val}'>{$key}</a></th>";
         	}
 ?>			
 

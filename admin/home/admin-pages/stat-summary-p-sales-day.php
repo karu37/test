@@ -2,13 +2,25 @@
 	$date = $_REQUEST['date'];
 	if (!$date) $date = date("Y-m-d");
 	
+	$mcode = $_REQUEST['mcode'];
+	$db_mcode = mysql_real_escape_string($mcode);
+	
+	if ($mcode) {
+		$sql = "SELECT * FROM al_merchant_t WHERE mcode = '{$db_mcode}'";
+		$row = mysql_fetch_assoc(mysql_query($sql, $conn));
+		$merchant_name = $row['name'];
+	}
+		
 	$year = date("Y", strtotime($date));
 	$month = date("m", strtotime($date));
 	$day = date("d", strtotime($date));
 	
 	$ar_key_names = array();
 	
-	$sql = "SELECT a.pcode, sum(a.publisher_cnt) as 'cnt', sum(a.publisher_fee) as 'fee', reg_day, hr, b.name FROM al_summary_sales_h_t a INNER JOIN al_publisher_t b ON a.pcode = b.pcode WHERE reg_day = '{$year}-{$month}-{$day}' GROUP by a.pcode, reg_day, hr";
+	$where = '';
+	if ($mcode) $where .= "AND a.mcode = '{$db_mcode}'";
+	
+	$sql = "SELECT a.pcode, sum(a.publisher_cnt) as 'cnt', sum(a.publisher_fee) as 'fee', reg_day, hr, b.name FROM al_summary_sales_h_t a INNER JOIN al_publisher_t b ON a.pcode = b.pcode WHERE 1=1 {$where} AND reg_day = '{$year}-{$month}-{$day}' GROUP by a.pcode, reg_day, hr";
 	$result = mysql_query($sql, $conn);
 	while ($row = mysql_fetch_assoc($result)) {
 
@@ -53,8 +65,13 @@
 	<script type="text/javascript">
 		google.charts.load('current', {packages:["corechart"]});
 	</script>
-	
-	<t4 style='line-height: 40px'>일간 매출 현황</t4>
+	<?
+		$title_name = "";
+		if ($mcode) {
+				$title_name = "<b3 style='color:darkred'>{$merchant_name}</b3>의 ";
+		}
+	?>
+	<t4 style='line-height: 40px'><?=$title_name?>일간 매출 현황</t4>
 	<hr>
 	<div class='ui-grid-a'>
 		<div class='ui-block-a'>
@@ -74,9 +91,9 @@
 			</div>
 		</div>
 		<div class='ui-block-b' style='text-align:right'>
-			<a href='?id=stat-summary-p-sales-year&date=<?=$date?>' data-role='button' data-inline='true' data-mini='true'>연간 매출 현황</a>
-			<a href='?id=stat-summary-p-sales-month&date=<?=$date?>' data-role='button' data-inline='true' data-mini='true'>월간 매출 현황</a>
-			<a href='?id=stat-summary-p-sales-day&date=<?=$date?>' data-role='button' data-inline='true' data-mini='true'>일간 매출 현황</a>
+			<a href='?id=stat-summary-p-sales-year&date=<?=$date?>&mcode=<?=$mcode?>' data-role='button' data-inline='true' data-mini='true'>연간 매출 현황</a>
+			<a href='?id=stat-summary-p-sales-month&date=<?=$date?>&mcode=<?=$mcode?>' data-role='button' data-inline='true' data-mini='true'>월간 매출 현황</a>
+			<a href='?id=stat-summary-p-sales-day&date=<?=$date?>&mcode=<?=$mcode?>' data-role='button' data-inline='true' data-mini='true'>일간 매출 현황</a>
 		</div>
 	</div>
 	<hr>

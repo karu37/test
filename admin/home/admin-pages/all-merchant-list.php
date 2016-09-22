@@ -23,7 +23,13 @@
 	// ---------------------------------------
 	// publisher info
 	// ---------------------------------------
-	$sql = "SELECT a.*, count(distinct b.app_key) as 'appkey_cnt' FROM al_merchant_t a LEFT OUTER JOIN al_app_t b ON a.mcode = b.mcode WHERE 1=1 {$where} GROUP BY a.mcode {$order_by} {$limit}";
+	$sql = "SELECT a.*, count(distinct b.app_key) as 'appkey_cnt', t.name as 'partner_name', t.company as 'partner_company'
+			FROM al_merchant_t a 
+				LEFT OUTER JOIN al_app_t b ON a.mcode = b.mcode 
+				LEFT OUTER JOIN al_partner_mpcode_t pmp ON pmp.mcode = a.mcode AND pmp.type = 'M'
+				LEFT OUTER JOIN al_partner_t t ON t.partner_id = pmp.partner_id
+			WHERE 1=1 {$where} GROUP BY a.mcode 
+			{$order_by} {$limit}";
 	$result = mysql_query($sql, $conn);
 ?>
 	<style>
@@ -85,8 +91,8 @@
 			<th width=30px>순서</th>
 			<th width=1px><div class='th_status'>상태</div></th>
 			<th width=70px>등록일</th>
-			<th>이름</th>
-			<th>코드</th>
+			<th>Merchant 이름/코드</th>
+			<th>소속 파트너</th>
 			<th width=40px>광고수</th>
 			<th width=40px>공급가<br>환율%</th>
 			<th width=1px></th>
@@ -118,8 +124,8 @@
 					</div>
 				</td>
 				<td <?=$td_onclick?>><?=admin_to_date($merchant['reg_date'])?></td>
-				<td <?=$td_onclick?>><?=$merchant['name']?></td>
-				<td <?=$td_onclick?>><?=$merchant['mcode']?></td>
+				<td <?=$td_onclick?>><b><?=$merchant['name']?></b><br><span style='color:#888; line-height: 1.2em'><?=$merchant['mcode']?></span></td>
+				<td <?=$td_onclick?>><b><?=$merchant['partner_name']?></b><br><span style='color:#888; line-height: 1.2em'><?=$merchant['partner_company']?></span></td>
 				<td <?=$td_onclick?>><?=admin_number($merchant['appkey_cnt'])?></td>
 				<td <?=$td_onclick?>><?=admin_number($merchant['exchange_fee_rate'])?></td>
 				<td><a href='#' onclick='goPage("dlg-merchant-modify", null, {merchant_code:"<?=$merchant['mcode']?>"})' data-theme='a' data-role='button' data-mini='true' data-inline='true'>정보<br>변경</a></td>

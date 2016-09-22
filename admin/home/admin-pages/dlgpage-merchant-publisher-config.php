@@ -24,10 +24,13 @@
 	$limit = "LIMIT " . $pages->limit_start . "," . $pages->limit_end;
 	// --------------------------------
 
-	$sql = "SELECT p.*, IFNULL(mp2.is_mactive, 'Y') as 'is_mactive'
+	$sql = "SELECT p.*, IFNULL(mp2.is_mactive, 'Y') as 'is_mactive', t.name as 'partner_name', t.company as 'partner_company'
 			FROM al_publisher_t p
 				LEFT OUTER JOIN al_merchant_publisher_t mp2 ON mp2.mcode = '{$db_mcode}' AND mp2.pcode = p.pcode
-			WHERE p.is_mactive <> 'D' {$where}
+					LEFT OUTER JOIN al_partner_mpcode_t pmp ON pmp.pcode = p.pcode AND pmp.type = 'P'
+					LEFT OUTER JOIN al_partner_t t ON t.partner_id = pmp.partner_id
+			WHERE p.is_mactive IN ('Y','T') {$where}
+			GROUP BY p.pcode
 			ORDER BY p.reg_date DESC {$limit}";
 	$result = mysql_query($sql, $conn);
 ?>
@@ -75,8 +78,9 @@
 	<thead>
 		<tr>
 			<th width=1px>상태</th>
-			<th>Publisher 명</th>
-			<th>Publisher 코드</th>
+			<th>Publisher 이름/코드</th>
+			<th>소속 파트너 이름</th>
+			<th>소속 파트너 회사</th>
 		</tr>
 	</thead>
 	<tbody>
@@ -95,8 +99,9 @@
 						<a class='btn-p-<?=$merpub['pcode']?> btn-N' href='#' onclick='<?=$js_page_id?>.action.on_btn_set_merchant_publisher_enable("<?=$mcode?>", "<?=$merpub['pcode']?>", "N")' data-theme='<?=$ar_btn_theme[1]?>' data-role='button' data-mini='true' data-inline='true'>차<br>단</a>
 					</div>
 				</td>
-				<td><?=$merpub['name']?></td>
-				<td><?=$merpub['pcode']?></td>
+				<td><b><?=$merpub['name']?></b><br><span style='color:#888; line-height: 1.2em'><?=$merpub['pcode']?></span></td>
+				<td><?=$merpub['partner_name']?></td>
+				<td><?=$merpub['partner_company']?></td>
 			</tr>
 			<?
 		}

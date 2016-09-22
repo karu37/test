@@ -23,7 +23,13 @@
 	// ---------------------------------------
 	// publisher info
 	// ---------------------------------------
-	$sql = "SELECT * FROM al_publisher_t a WHERE 1=1 {$where} {$order_by} {$limit}";
+	$sql = "SELECT a.*, t.name as 'partner_name', t.company as 'partner_company'
+			FROM al_publisher_t a 
+				LEFT OUTER JOIN al_partner_mpcode_t pmp ON pmp.pcode = a.pcode AND pmp.type = 'P'
+				LEFT OUTER JOIN al_partner_t t ON t.partner_id = pmp.partner_id
+			WHERE 1=1 {$where} 
+			GROUP BY a.pcode
+			{$order_by} {$limit}";
 	$result = mysql_query($sql, $conn);
 ?>
 	<style>
@@ -84,11 +90,11 @@
 		<tr>
 			<th width=30px>순서</th>
 			<th width=1px><div class='th_status'>상태</div></th>
-			<th width=70px>등록일</th>
-			<th>이름</th>
-			<th>코드</th>
+			<th>이름/코드</th>
+			<th>소속 파트너</th>
 			<th width=50px>제공(%)</th>
 			<th width=30px>레벨</th>
+			<th width=70px>등록일</th>
 			<th width=1px></th>
 			<th width=1px></th>
 			<th width=1px></th>
@@ -119,11 +125,11 @@
 						<a class='btn-p-<?=$publisher['pcode']?> btn-N' href='#' onclick='<?=$js_page_id?>.action.on_btn_set_publisher_active("<?=$publisher['pcode']?>", "N")' data-theme='<?=$ar_btn_theme[2]?>'  data-role='button' data-mini='true' data-inline='true'>중<br>지</a>
 					</div>
 				</td>
-				<td <?=$td_onclick?>><?=admin_to_date($publisher['reg_date'])?></td>
-				<td <?=$td_onclick?>><?=$publisher['name']?></td>
-				<td <?=$td_onclick?>><?=$publisher['pcode']?></td>
+				<td <?=$td_onclick?>><b><?=$publisher['name']?></b><br><span style='color:#888; line-height: 1.2em'><?=$publisher['pcode']?></span></td>
+				<td <?=$td_onclick?>><b><?=$publisher['partner_name']?></b><br><span style='color:#888; line-height: 1.2em'><?=$publisher['partner_company']?></span></td>
 				<td <?=$td_onclick?>><?=$publisher['offer_fee_rate']?></td>
 				<td <?=$td_onclick?>><?=$publisher['level']?></td>
+				<td <?=$td_onclick?>><?=admin_to_date($publisher['reg_date'])?></td>
 				<td><a href='#' onclick='mvPage("publisher-setup-callback", null, {pcode:"<?=$publisher['pcode']?>"})' data-theme='e' data-role='button' data-mini='true' data-inline='true'>콜백<br>설정</a></td>
 				<td><a href='#' onclick='goPage("dlg-publisher-modify", null, {publisher_code:"<?=$publisher['pcode']?>"})' data-theme='b' data-role='button' data-mini='true' data-inline='true'>정보<br>변경</a></td>
 				<td><a href='#' onclick='mvPage("publisher-ads-list", null, {pcode:"<?=$publisher['pcode']?>"})' data-theme='b' data-role='button' data-mini='true' data-inline='true'>라이브<br>목록</a></td>

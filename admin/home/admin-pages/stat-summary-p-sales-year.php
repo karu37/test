@@ -1,12 +1,24 @@
 <?
 	$date = $_REQUEST['date'];
 	if (!$date) $date = date("Y-m-d");
+
+	$mcode = $_REQUEST['mcode'];
+	$db_mcode = mysql_real_escape_string($mcode);
+	
+	if ($mcode) {
+		$sql = "SELECT * FROM al_merchant_t WHERE mcode = '{$db_mcode}'";
+		$row = mysql_fetch_assoc(mysql_query($sql, $conn));
+		$merchant_name = $row['name'];
+	}
 	
 	$year = date("Y", strtotime($date));
 	
 	$ar_key_names = array();
+
+	$where = '';
+	if ($mcode) $where .= "AND a.mcode = '{$db_mcode}'";
 	
-	$sql = "SELECT a.pcode, sum(a.publisher_cnt) as 'cnt', sum(a.publisher_fee) as 'fee', reg_day, b.name FROM al_summary_sales_m_t a INNER JOIN al_publisher_t b ON a.pcode = b.pcode WHERE reg_day >= '{$year}-01-01' AND reg_day <= '{$year}-12-31' GROUP by a.pcode, reg_day";
+	$sql = "SELECT a.pcode, sum(a.publisher_cnt) as 'cnt', sum(a.publisher_fee) as 'fee', reg_day, b.name FROM al_summary_sales_m_t a INNER JOIN al_publisher_t b ON a.pcode = b.pcode WHERE 1=1 {$where} AND reg_day >= '{$year}-01-01' AND reg_day <= '{$year}-12-31' GROUP by a.pcode, reg_day";
 	$result = mysql_query($sql, $conn);
 	while ($row = mysql_fetch_assoc($result)) {
 
@@ -45,8 +57,13 @@
 	<script type="text/javascript">
 		google.charts.load('current', {packages:["corechart"]});
 	</script>
-	
-	<t4 style='line-height: 40px'>월간 매출 현황</t4>
+	<?
+		$title_name = "";
+		if ($mcode) {
+				$title_name = "<b3 style='color:darkred'>{$merchant_name}</b3>의 ";
+		}
+	?>
+	<t4 style='line-height: 40px'><?=$title_name?>월간 매출 현황</t4>
 	<hr>
 	<div class='ui-grid-a'>
 		<div class='ui-block-a'>
@@ -66,9 +83,9 @@
 			</div>
 		</div>
 		<div class='ui-block-b' style='text-align:right'>
-			<a href='?id=stat-summary-p-sales-year&date=<?=$date?>' data-role='button' data-inline='true' data-mini='true'>연간 매출</a>
-			<a href='?id=stat-summary-p-sales-month&date=<?=$date?>' data-role='button' data-inline='true' data-mini='true'>월간 매출</a>
-			<a href='?id=stat-summary-p-sales-day&date=<?=$date?>' data-role='button' data-inline='true' data-mini='true'>일간 매출</a>
+			<a href='?id=stat-summary-p-sales-year&date=<?=$date?>&mcode=<?=$mcode?>' data-role='button' data-inline='true' data-mini='true'>연간 매출</a>
+			<a href='?id=stat-summary-p-sales-month&date=<?=$date?>&mcode=<?=$mcode?>' data-role='button' data-inline='true' data-mini='true'>월간 매출</a>
+			<a href='?id=stat-summary-p-sales-day&date=<?=$date?>&mcode=<?=$mcode?>' data-role='button' data-inline='true' data-mini='true'>일간 매출</a>
 		</div>
 	</div>
 	<hr>
@@ -171,7 +188,7 @@
 			$check_date = sprintf("%04d-%02d-%02d", $year, $i, 1);
 			
 			?>
-			<tr onclick=window.location.href='?id=stat-summary-p-sales-month&date=<?=$check_date?>' style='cursor:pointer'>
+			<tr onclick=window.location.href='?id=stat-summary-p-sales-month&date=<?=$check_date?>&mcode=<?=$mcode?>' style='cursor:pointer'>
 				<td><?=$i?>월</td>
 				<td class='cnt'><?=number_format($ar_summary_row[$check_date]['cnt'])?></td>
 				<td class='sal'><?=number_format($ar_summary_row[$check_date]['fee'])?></td>
