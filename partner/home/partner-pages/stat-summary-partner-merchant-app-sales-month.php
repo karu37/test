@@ -45,7 +45,7 @@
 	<style>
 		.main-list tr:not(:last-child):hover td 			{background:#dff}
 		.main-list .col-sum th			{text-align:right; padding-right: 15px; line-height:25px; background-color:#ddffdd}
-		.main-list td					{text-align:right; padding-right: 15px; line-height:25px}
+		.main-list td					{text-align:right; padding: 5px 15px 5px 0; line-height:1.3em}
 
 		.main-list th, .main-list td 	{border-left: 1px solid #888; border-top: 1px solid #888}
 		.main-list th:last-child, .main-list td:last-child 	{border-right: 1px solid #888}
