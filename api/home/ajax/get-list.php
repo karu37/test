@@ -1,6 +1,6 @@
 <?
 	// 요청 URL (pcode = aline)
-	//	http://api.aline-soft.kr/ajax-request.php?id=get-list&pcode=aline&is_web=Y
+	//	http://api.aline-soft.kr/ajax-request.php?id=get-list&pcode=autoring_p&is_web=Y
 	
 	$pub_mactive = get_publisher_info("reward_percent", $ar_publisher);
 	if (!$pub_mactive || $pub_mactive == 'N' || $pub_mactive == 'D') return_die('N', array('code'=>'-100'), '유효하지 않은 매체코드입니다.');
@@ -53,6 +53,9 @@
 			echo "<td>{$row['app_gender']}</td>";
 			echo "<td>{$row['exec_stime']} ~ {$row['exec_etime']}</td>";
 			echo "<td>{$row['edate_expired']}, {$row['tot_complished']}</td>";
+			if ($pcode == "autoring_p") {
+				echo "<td>{$row['mcode']}</td>";
+			}
 			echo "<tr>";
 			continue;
 		}
@@ -77,6 +80,14 @@
 		if ($row['app_agefrom']) $item['age_from'] = intval($row['app_agefrom']);
 		if ($row['app_ageto']) $item['age_to'] = intval($row['app_ageto']);
 		if ($row['app_sex']) $item['gender'] = $row['app_sex'];
+		
+		// --------------------------------------------------
+		// Autoring 에게 전달할 때의 추가 파라미터
+		// --------------------------------------------------
+		if ($pcode == "autoring_p") {
+			$item['mcode'] = $row['mcode'];
+		}
+		// --------------------------------------------------
 		
 		$arr_data['items'][] = $item;
 	}
