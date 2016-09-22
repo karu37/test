@@ -24,7 +24,7 @@
 				INNER JOIN al_app_t b ON a.app_key = b.app_key
 				INNER JOIN al_partner_mpcode_t mp ON mp.partner_id = '$db_partner_id' AND mp.mcode = a.mcode AND mp.type = 'M'
 			WHERE a.mcode = '{$db_mcode}' AND a.reg_day >= '{$date}' AND a.reg_day < DATE_ADD('{$date}', INTERVAL 1 DAY) 
-			GROUP by a.reg_day
+			GROUP by a.reg_day, a.app_key
 			ORDER by fee DESC";
 	$result = mysql_query($sql, $conn);
 	while ($row = mysql_fetch_assoc($result)) {

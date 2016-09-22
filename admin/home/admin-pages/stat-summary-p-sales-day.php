@@ -183,7 +183,7 @@
 <?
         	foreach($ar_key_names as $key => $val) {
 				echo "\n<th class='cnt'>" . number_format($ar_summary_col[$key]['cnt']) . "</th>
-						<th class='sal'><a href='?id=stat-summary-sales-by-day&pcode={$ar_names_pcode[$key]}' target=_blank >" . number_format($ar_summary_col[$key]['fee']) . "</a></th>";
+						<th class='sal'><a href='?id=stat-summary-sales-by-day&pcode={$ar_names_pcode[$key]}&day={$date}' target=_blank >" . number_format($ar_summary_col[$key]['fee']) . "</a></th>";
         	}
 ?>
 		</tr>

@@ -11,6 +11,9 @@
 		$sql = "SELECT * FROM al_merchant_t WHERE mcode = '{$db_mcode}'";
 		$row = mysql_fetch_assoc(mysql_query($sql, $conn));
 		$merchant_name = $row['name'];
+	} else {
+		echo 'Merchant 정보가 없습니다.';
+		exit;	
 	}
 	
 	$year = date("Y", strtotime($date));
@@ -91,9 +94,9 @@
 			</div>
 		</div>
 		<div class='ui-block-b' style='text-align:right'>
-			<a href='?id=stat-summary-p-sales-year&date=<?=$date?>&mcode=<?=$mcode?>' data-role='button' data-inline='true' data-mini='true'>연간 매출</a>
-			<a href='?id=stat-summary-p-sales-month&date=<?=$date?>&mcode=<?=$mcode?>' data-role='button' data-inline='true' data-mini='true'>월간 매출</a>
-			<a href='?id=stat-summary-p-sales-day&date=<?=$date?>&mcode=<?=$mcode?>' data-role='button' data-inline='true' data-mini='true'>일간 매출</a>
+			<a href='?id=stat-summary-mp-sales-year&date=<?=$date?>&mcode=<?=$mcode?>' data-role='button' data-inline='true' data-mini='true'>연간 매출</a>
+			<a href='?id=stat-summary-mp-sales-month&date=<?=$date?>&mcode=<?=$mcode?>' data-role='button' data-inline='true' data-mini='true'>월간 매출</a>
+			<a href='?id=stat-summary-mp-sales-day&date=<?=$date?>&mcode=<?=$mcode?>' data-role='button' data-inline='true' data-mini='true'>일간 매출</a>
 		</div>
 	</div>
 	<hr>
@@ -196,7 +199,7 @@
 			$check_date = sprintf("%04d-%02d-%02d", $year, $month, $i);
 			
 			?>
-			<tr class='row-datum week-<?=$week_day?>' onclick=window.location.href='?id=stat-summary-p-sales-day&date=<?=$check_date?>&mcode=<?=$mcode?>' style='cursor:pointer'>
+			<tr class='row-datum week-<?=$week_day?>' onclick=window.location.href='?id=stat-summary-mp-sales-day&date=<?=$check_date?>&mcode=<?=$mcode?>' style='cursor:pointer'>
 				<td><?=$i?>일</td>
 				<td class='cnt'><?=number_format($ar_summary_row[$check_date]['cnt'])?></td>
 				<td class='sal'><?=number_format($ar_summary_row[$check_date]['fee'])?></td>
