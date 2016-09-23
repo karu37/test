@@ -44,6 +44,7 @@
 		$ar_summary_all['cnt'] += $row['cnt'];
 		$ar_summary_all['fee'] += $row['fee'];
 	}
+	ksort($ar_key_names);
 ?>
 	<style>
 		.main-list tr:not(:last-child):hover td 			{background:#dff}

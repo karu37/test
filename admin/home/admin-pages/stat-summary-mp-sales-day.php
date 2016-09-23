@@ -47,6 +47,7 @@
 		$ar_summary_all['cnt'] += $row['cnt'];
 		$ar_summary_all['fee'] += $row['fee'];
 	}
+	ksort($ar_key_names);
 	
 	$ar_names = array();
 	foreach($ar_key_names as $key => $val) {
