@@ -162,12 +162,12 @@
 	<table width=100% class='main-list' cellpadding=0 cellspacing=0>
 	<thead>
 		<tr>
-			<th rowspan=2 width=1%>시</th>
+			<th rowspan=2 width=50px>시</th>
 			
-			<th colspan=2 width=4%>합</th>
+			<th colspan=2 width=120px>합</th>
 <?
         	foreach($ar_key_names as $key => $val) {
-	        	echo "\n<th colspan=2 width=4%>{$key}</th>";
+	        	echo "\n<th colspan=2 width=120px>{$key}</th>";
         	}
 ?>			
 
