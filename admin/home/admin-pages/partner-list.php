@@ -15,7 +15,7 @@
 	if ($searchfor == "name" && $search) $where .= " AND a.name LIKE '%{$db_search}%'";
 	else if ($searchfor == "id" && $search) $where .= " AND a.partner_id LIKE '%{$db_search}%'";
 	
-	$order_by = "ORDER BY a.id DESC";
+	$order_by = "ORDER BY a.name ASC, a.id DESC";
 	// --------------------------------
 	// Paginavigator initialize	
 	$sql = "SELECT COUNT(*) as cnt FROM al_partner_t a WHERE 1=1 {$where}";
@@ -24,7 +24,7 @@
 	$limit = "LIMIT " . $pages->limit_start . "," . $pages->limit_end;
 	// --------------------------------
 
-	$sql = "SELECT * FROM al_partner_t a WHERE 1=1 {$where} {$limit}";
+	$sql = "SELECT * FROM al_partner_t a WHERE 1=1 {$where} {$order_by} {$limit}";
 	$result = mysql_query($sql, $conn);
 ?>
 	<style>

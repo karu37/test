@@ -10,7 +10,7 @@
 	if ($searchfor == "name" && $search) $where .= " AND a.name LIKE '%{$db_search}%'";
 	if ($searchfor == "code" && $search) $where .= " AND a.pcode LIKE '%{$db_search}%'";
 	
-	$order_by = "ORDER BY a.reg_date DESC";
+	$order_by = "ORDER BY a.is_mactive, a.reg_date DESC";
 
 	// --------------------------------
 	// Paginavigator initialize	
