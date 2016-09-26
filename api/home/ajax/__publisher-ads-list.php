@@ -23,7 +23,7 @@
 		.c			{text-align:center}
 	</style>
 </head>
-<body style='background-color: white'>
+<body style='background-color: white; overflow-y: hidden'>
 	<div style='background-color: white'>
 		<table width=100% border=1 cellpadding=0 cellspacing=0>
 		<tr>
@@ -91,14 +91,24 @@ function base64_decode(str) { if (!str) return null; return Base64.decode(str);}
 	
 var page = function(){
 	
+	var timer_posting = null;
+	var time_pagestart = new Date();
+	var n_last_height = 0;
 	var fn = {
 		init: function() {
 			
 			// parent 에게 Height Posting을 한다.
-			setTimeout(function() {
+			timer_posting = setInterval(function() {
 				var data = {'height': $(document).height()};
-				top.window.postMessage(data, 'http://admin.aline-soft.kr');
-			}, 10);
+				
+				// 높이가 달라진 경우에만 Posting하기
+				if (n_last_height != $(document).height()) {
+					n_last_height = $(document).height();
+					top.window.postMessage(data, 'http://admin.aline-soft.kr');
+				}
+				
+				if ( new Date() - time_pagestart >= 10 * 1000 ) clearInterval( timer_posting );
+			}, 100);
 		},
 
 	};
