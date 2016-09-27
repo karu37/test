@@ -20,11 +20,22 @@
 		<div class='ui-block-b'>
 			<fieldset id="app-platform" class='td-2-item' data-role="controlgroup" data-type="horizontal" data-mini=true init-value="A" >
 		        <input name="app-platform" id="app-platform-android" value="A" type="radio" />
-		        <label for="app-platform-android">Android APP 형</label>
+		        <label for="app-platform-android">Android OS</label>
 		        <input name="app-platform" id="app-platform-web" value="W" onclick='mvPage("merchant-campaign-add-web", null, {mcode:"<?=$mcode?>"})' type="radio" />
 		        <label for="app-platform-web">기타</label>
 		    </fieldset>									
 		</div>
+		
+		<div class='ui-block-a'>앱 마켓</div>
+		<div class='ui-block-b'>
+			<fieldset id="app-market" class='td-2-item' data-role="controlgroup" data-type="horizontal" data-mini=true init-value="P" >
+		        <input name="app-market" id="app-market-playstore" value="P" type="radio" />
+		        <label for="app-market-playstore">플레이스토어</label>
+		        <input name="app-market" id="app-market-onestore" value="O" type="radio" />
+		        <label for="app-market-onestore">원스토어</label>
+		    </fieldset>									
+		</div>
+
 		<div class='ui-block-a' style='height:50px'>실행 타입</div>
 		<div class='ui-block-b' style='height:50px; padding-top:3px'>
         	<div data-role="fieldcontain" style='padding: 0px 0px; border: 0; margin: 0'>
@@ -110,15 +121,15 @@
 			<div style='width:100px; display: inline-block; height: 20px; padding-top: 5px; float:left'>
 				<input type="text" id="app-merchant-fee" name="app-merchant-fee" />
 			</div>
-			<div style='float:left; padding: 15px 10px'>원 - 판매시 매출로 잡히는 금액</div>
+			<div style='float:left; padding: 15px 10px'>원 - 판매시 실제 수입으로 들어오는 금액</div>
 			<div style='clear:both'></div>
 		</div>
-		<div class='ui-block-a required'>광고원가</div>
+		<div class='ui-block-a required'>매체원가</div>
 		<div class='ui-block-b required'>
 			<div style='width:100px; display: inline-block; height: 20px; padding-top: 5px; float:left'>
 				<input type="text" id="app-tag-price" name="app-tag-price" />
 			</div>
-			<div style='float:left; padding: 15px 10px'>원 - 일반적으로 매출원가와 같음</div>
+			<div style='float:left; padding: 15px 10px'>원 - 매체에 공급하는 원가 (매체 제공 금액은 이 가격으로 계산)</div>
 			<div style='clear:both'></div>
 		</div>
 		<div class='ui-block-a required'>총 실행 수</div>
@@ -467,7 +478,7 @@ var <?=$js_page_id?> = function()
 					'appimageurl' : _$("#app-image-url").val(),
 					'appimagetype' : _$("#img-app-icon").data('type'),		// base64 데이터형식인지, URL인지 구별
 					'appexecdesc' : _$("#app-exec-desc").val(),
-					'appmarket' : 'P',
+					'appmarket' : util.get_item_value(_$("#app-market")),
 					'appcontent' : _$("#app-content").val(),
 					'appgender' : util.get_item_value(_$("#app-sex")),
 					'appagefrom' : util.intval(_$("#app-agefrom").val()),

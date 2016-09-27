@@ -19,7 +19,14 @@
 		#app-content	{height: 80px !important; overflow-y: scroll !important}
 		#app-exec-desc 	{height: 180px !important; overflow-y: scroll !important}
 
+		.app-interactive		{background-color: #ddffdd}
 		.required			{background-color:lightyellow}
+		.app-keyword-wrapper	{background-color: lightgreen}
+		
+		.btn-small-wrapper a	{font-size: 12px}
+		.btn-wrapper			{width: 200px}
+		.btn-wrapper a			{padding:8px 5px; margin: 5px 2px 2px -1px; box-shadow:none}
+		
 	</style>
 	<div style='padding: 10px'>
 		<a href='#' onclick='<?=$js_page_id?>.action.on_btn_modifycampaign()' data-role='button' data-theme='b' data-inline='true' data-mini='true' >변경사항 적용하기</a>
@@ -46,8 +53,8 @@
 		<div class='ui-block-b'>
 			<t3 style='line-height: 43px'><?=$row['m_name']?></t3>
 		</div>
-		<div class='ui-block-a'>적립 상태</div>
-		<div class='ui-block-b'>
+		<div class='ui-block-a app-interactive'>적립 상태</div>
+		<div class='ui-block-b app-interactive'>
 			<style>
 				.icon-active-Y	{border: 1px solid blue; padding: 4px 10px; position: inline-block; border-radius: 0.4em; background: blue; color: yellow; font-size: 16px; font-weight: normal;}
 				.icon-active-N	{border: 1px solid orange; padding: 4px 10px; position: inline-block; border-radius: 0.4em; background: red; color: white; font-size: 16px; font-weight: normal;}
@@ -74,6 +81,27 @@
 
 			</td></tr></table>
 		</div>
+		
+		<div class='ui-block-a app-interactive'>광고상태</div>
+		<div class='ui-block-b app-interactive'>
+			<?
+				// 현재의 Merchant의 active상태 : Y / T / N 만 가능함.					
+				$ar_btn_theme = array('a','a','a','a');
+				if ($row['is_mactive'] == 'Y') $ar_btn_theme[0] = 'b';
+				else if ($row['is_mactive'] == 'N') $ar_btn_theme[1] = 'b';
+				else if ($row['is_mactive'] == 'D') $ar_btn_theme[2] = 'b';
+				else if ($row['is_mactive'] == 'T') $ar_btn_theme[3] = 'b';			
+			
+			?>			
+			<div class='btn-small-wrapper btn-wrapper'>
+				<a class='btn-mactive btn-Y' href='#' onclick='<?=$js_page_id?>.action.on_btn_set_mactive("Y")' data-theme='<?=$ar_btn_theme[0]?>' data-role='button' data-mini='true' data-inline='true'>정상</a>
+				<a class='btn-mactive btn-N' href='#' onclick='<?=$js_page_id?>.action.on_btn_set_mactive("N")' data-theme='<?=$ar_btn_theme[1]?>' data-role='button' data-mini='true' data-inline='true'>중지</a>
+				<a class='btn-mactive btn-D' href='#' onclick='<?=$js_page_id?>.action.on_btn_set_mactive("D")' data-theme='<?=$ar_btn_theme[2]?>' data-role='button' data-mini='true' data-inline='true'>삭제</a>
+				<a class='btn-mactive btn-T' href='#' onclick='<?=$js_page_id?>.action.on_btn_set_mactive("T")' data-theme='<?=$ar_btn_theme[3]?>' data-role='button' data-mini='true' data-inline='true'>개발</a>
+			</div>
+			
+		</div>
+		
 		<div class='ui-block-a'>플랫폼</div>
 		<div class='ui-block-b'>
 			<fieldset id="app-platform" class='td-2-item' data-role="controlgroup" data-type="horizontal" data-mini=true init-value="W" readonly >
@@ -169,15 +197,15 @@
 			<div style='width:100px; display: inline-block; height: 20px; padding-top: 5px; float:left'>
 				<input type="text" id="app-merchant-fee" name="app-merchant-fee" value='<?=number_format($row['app_merchant_fee'])?>'/>
 			</div>
-			<div style='float:left; padding: 15px 10px'>원 - 판매시 매출로 잡히는 금액</div>
+			<div style='float:left; padding: 15px 10px'>원 - 판매시 실제 수입으로 들어오는 금액</div>
 			<div style='clear:both'></div>
 		</div>
-		<div class='ui-block-a required'>광고원가</div>
+		<div class='ui-block-a required'>매체원가</div>
 		<div class='ui-block-b required'>
 			<div style='width:100px; display: inline-block; height: 20px; padding-top: 5px; float:left'>
 				<input type="text" id="app-tag-price" name="app-tag-price" value='<?=number_format($row['app_tag_price'])?>'/>
 			</div>
-			<div style='float:left; padding: 15px 10px'>원 - 일반적으로 매출원가와 같음</div>
+			<div style='float:left; padding: 15px 10px'>원 - 매체에 공급하는 원가 (매체 제공 금액은 이 가격으로 계산)</div>
 			<div style='clear:both'></div>
 		</div>
 		<div class='ui-block-a required'>총 실행 수</div>
@@ -550,6 +578,25 @@ var <?=$js_page_id?> = function()
 					} else util.Alert(js_data['msg']);
 				});
 			},
+			
+			on_btn_set_mactive: function(active) {
+				
+				var ar_merchant_active = {'Y':'정상', 'D':'삭제', 'T':'개발', 'N':'중지'};
+				var ar_param = {mcode: '<?=$row["mcode"]?>', appkey: '<?=$row["app_key"]?>', isactive: active};
+				util.request(get_ajax_url('admin-merchantapp-set-mactive', ar_param), function(sz_data) {
+					var js_data = util.to_json(sz_data);
+					if (js_data['result']) {
+						$('.btn-mactive.btn-Y').removeClass('ui-btn-a ui-btn-b ui-btn-up-a ui-btn-up-b');
+						$('.btn-mactive.btn-N').removeClass('ui-btn-a ui-btn-b ui-btn-up-a ui-btn-up-b');
+						$('.btn-mactive.btn-D').removeClass('ui-btn-a ui-btn-b ui-btn-up-a ui-btn-up-b');
+						$('.btn-mactive.btn-T').removeClass('ui-btn-a ui-btn-b ui-btn-up-a ui-btn-up-b');
+						$('.btn-mactive.btn-' + ar_param.isactive).addClass('ui-btn-b ui-btn-up-b').attr('data-theme', 'b');
+						toast('저장되었습니다. (' + ar_merchant_active[ar_param.isactive] + ')');
+					} else util.Alert(js_data['msg']);
+				});
+				
+			},
+
 			on_btn_search_info: function()
 			{
 				var url =  _$("#app-homeurl").val();

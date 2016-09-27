@@ -105,15 +105,15 @@
 			<div style='width:100px; display: inline-block; height: 20px; padding-top: 5px; float:left'>
 				<input type="text" id="app-merchant-fee" name="app-merchant-fee" />
 			</div>
-			<div style='float:left; padding: 15px 10px'>원 - 판매시 매출로 잡히는 금액</div>
+			<div style='float:left; padding: 15px 10px'>원 - 판매시 실제 수입으로 들어오는 금액</div>
 			<div style='clear:both'></div>
 		</div>
-		<div class='ui-block-a required'>광고원가</div>
+		<div class='ui-block-a required'>매체원가</div>
 		<div class='ui-block-b required'>
 			<div style='width:100px; display: inline-block; height: 20px; padding-top: 5px; float:left'>
 				<input type="text" id="app-tag-price" name="app-tag-price" />
 			</div>
-			<div style='float:left; padding: 15px 10px'>원 - 일반적으로 매출원가와 같음</div>
+			<div style='float:left; padding: 15px 10px'>원 - 매체에 공급하는 원가 (매체 제공 금액은 이 가격으로 계산)</div>
 			<div style='clear:both'></div>
 		</div>
 		<div class='ui-block-a required'>총 실행 수</div>
