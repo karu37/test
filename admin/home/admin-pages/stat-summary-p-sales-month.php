@@ -24,7 +24,7 @@
 	$where = '';
 	if ($mcode) $where .= "AND a.mcode = '{$db_mcode}'";
 	
-	$sql = "SELECT a.pcode, sum(a.publisher_cnt) as 'cnt', sum(a.publisher_fee) as 'fee', reg_day, b.name FROM al_summary_sales_d_t a INNER JOIN al_publisher_t b ON a.pcode = b.pcode WHERE 1=1 {$where} AND reg_day >= '{$year}-{$month}-01' AND reg_day <= LAST_DAY('{$year}-{$month}-01') GROUP by a.pcode, reg_day";
+	$sql = "SELECT a.pcode, sum(a.publisher_cnt) as 'cnt', sum(a.publisher_fee) as 'fee', sum(a.merchant_fee) as 'merchant_fee', reg_day, b.name FROM al_summary_sales_d_t a INNER JOIN al_publisher_t b ON a.pcode = b.pcode WHERE 1=1 {$where} AND reg_day >= '{$year}-{$month}-01' AND reg_day <= LAST_DAY('{$year}-{$month}-01') GROUP by a.pcode, reg_day";
 	$result = mysql_query($sql, $conn);
 	while ($row = mysql_fetch_assoc($result)) {
 
@@ -36,14 +36,17 @@
 		// ROW별 합
 		$ar_summary_row[$row['reg_day']]['cnt'] += $row['cnt'];
 		$ar_summary_row[$row['reg_day']]['fee'] += $row['fee'];
+		$ar_summary_row[$row['reg_day']]['merchant_fee'] += $row['merchant_fee'];
 		
 		// COL별 합
 		$ar_summary_col[$col_name]['cnt'] += $row['cnt'];
 		$ar_summary_col[$col_name]['fee'] += $row['fee'];
+		$ar_summary_col[$col_name]['merchant_fee'] += $row['merchant_fee'];
 		
 		// TOTAL 합
 		$ar_summary_all['cnt'] += $row['cnt'];
 		$ar_summary_all['fee'] += $row['fee'];
+		$ar_summary_all['merchant_fee'] += $row['merchant_fee'];
 	}
 	ksort($ar_key_names);
 ?>
@@ -52,12 +55,13 @@
 		.main-list .col-sum th			{text-align:right; padding-right: 5px; line-height:20px; background-color:#ddffdd}
 		.main-list td					{text-align:right; padding-right: 5px; line-height:20px}
 
-		.main-list th, .main-list td 	{border-left: 1px solid #888; border-top: 1px solid #888}
+		.main-list th, .main-list td 	{border-left: 1px solid #888; border-top: 1px solid #888; font-size: 11px}
 		.main-list th:last-child, .main-list td:last-child 	{border-right: 1px solid #888}
 		.main-list tr:last-child td 	{border-bottom: 1px solid #888}
 		
-		.main-list .cnt					{color: #888}
-		.main-list .sal					{color: #00f; font-weight:bold}
+		.main-list .cnt					{color: #888; padding: 0 4px}
+		.main-list .sal					{color: #048; font-weight:bold; padding: 0 4px}
+		.main-list .sal2				{color: #00f; font-weight:bold; padding: 0 4px}
 		
 	</style>
 	<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
@@ -159,19 +163,19 @@
 		<tr>
 			<th rowspan=2 width=50px>시</th>
 			
-			<th colspan=2 width=120px>합</th>
+			<th colspan=3 width=120px>합</th>
 <?
         	foreach($ar_key_names as $key => $val) {
-	        	echo "\n<th colspan=2 width=120px>{$key}</th>";
+	        	echo "\n<th colspan=3 width=120px>{$key}</th>";
         	}
 ?>			
 
 		</tr>	
 		<tr class='title-line2'>
-			<th>건수</th><th>매출</th>
+			<th>건수</th><th>실적</th><th>매출</th>
 <?			
         	foreach($ar_key_names as $key => $val) {
-				echo "\n<th>건수</th><th>매출</th>";
+				echo "\n<th>건수</th><th>실적</th><th>매출</th>";
         	}
 ?>		
 		</tr>	
@@ -179,10 +183,12 @@
 			<th><div style='width:35px'>계</div></th>
 			<th class='cnt'><?=number_format($ar_summary_all['cnt'])?></th>
 			<th class='sal'><?=number_format($ar_summary_all['fee'])?></th>
+			<th class='sal2'><?=number_format($ar_summary_all['merchant_fee'])?></th>
 <?
         	foreach($ar_key_names as $key => $val) {
 				echo "\n<th class='cnt'>" . number_format($ar_summary_col[$key]['cnt']) . "</th>
-						<th class='sal'>" . number_format($ar_summary_col[$key]['fee']) . "</th>";
+						<th class='sal'>" . number_format($ar_summary_col[$key]['fee']) . "</th>
+						<th class='sal2'>" . number_format($ar_summary_col[$key]['merchant_fee']) . "</th>";
         	}
 ?>
 		</tr>
@@ -199,10 +205,12 @@
 				<td><?=$i?>일</td>
 				<td class='cnt'><?=number_format($ar_summary_row[$check_date]['cnt'])?></td>
 				<td class='sal'><?=number_format($ar_summary_row[$check_date]['fee'])?></td>
+				<td class='sal2'><?=number_format($ar_summary_row[$check_date]['merchant_fee'])?></td>
 <?			
 	        	foreach($ar_key_names as $key => $val) {
 					echo "\n<td class='cnt'>" . number_format($ar_summary[$check_date][$key]['cnt']) . "</td>
-							<td class='sal'>" . number_format($ar_summary[$check_date][$key]['fee']) . "</td>";
+							<td class='sal'>" . number_format($ar_summary[$check_date][$key]['fee']) . "</td>
+							<td class='sal2'>" . number_format($ar_summary[$check_date][$key]['merchant_fee']) . "</td>";
 	        	}			
 ?>	        	
 			</tr>
