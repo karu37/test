@@ -82,7 +82,7 @@
 			</td></tr></table>
 		</div>
 		
-		<div class='ui-block-a app-interactive'>광고상태</div>
+		<div class='ui-block-a app-interactive'>관리자차단</div>
 		<div class='ui-block-b app-interactive'>
 			<?
 				// 현재의 Merchant의 active상태 : Y / T / N 만 가능함.					
