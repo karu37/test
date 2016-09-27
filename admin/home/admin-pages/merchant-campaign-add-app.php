@@ -74,13 +74,13 @@
 			</div>
 			<br>
 		</div>		
-		<div class='ui-block-a' style='height: 65px'>마켓 링크</div>
+		<div class='ui-block-a' style='height: 65px; padding-top: 12px; line-height: 1.5em'>마켓 링크<br>(트랙킹 링크)</div>
 		<div class='ui-block-b' style='height: 65px'>
 			<div style='width:400px; display: block; height: 20px; padding-top: 5px'>
 				<input type="text" id="app-execurl" name="app-execurl" />
 			</div>
 			<br>
-			(고객이 요청한 URL을 꼭 경우해야하는 경우에만 사용 - 사용시 검색키워드 사용불가)
+			(고객이 요청한 시작 URL 입력)
 		</div>		
 		<div class='ui-block-a' style='height: 100px'>아이콘</div>
 		<div class='ui-block-b' style='height: 100px'>
@@ -465,6 +465,15 @@ var <?=$js_page_id?> = function()
 				// 검색형 / Review형이 아닌 경우 Keyword Clear
 				if (!util.in_array(app_type, ['S'])) {
 					_$("#app-keyword").val("");
+				}
+				
+				// 원스토어 마켓의 경우 마켓링크가 있어야 함.
+				if (util.get_item_value(_$("#app-market")) == 'O') {
+					var execurl = util.trim(_$("#app-execurl").val());
+					if (!execurl || execurl.indexOf('http://onestore.co.kr') == 0) {
+						alert('원스토어의 [마켓링크]를 입력하세요\n\n형식 : http://m.onestore.co.kr/mobilepoc/apps/appsDetail.omp?prodId=0000000000');
+						return;
+					}
 				}
 				
 				var ar_param = {

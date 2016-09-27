@@ -132,19 +132,19 @@
 		</div>
 		<div class='ui-block-a'>앱 이름</div>
 		<div class='ui-block-b'>
-			<div style='width:300px; display: inline-block; height: 20px; padding-top: 5px'>
+			<div style='width:400px; display: inline-block; height: 20px; padding-top: 5px'>
 				<input type="text" id="app-title" name="app-title" value='<?=addslashes($row['app_title'])?>'/>
 			</div>
 		</div>
 		<div class='ui-block-a'>Package ID</div>
 		<div class='ui-block-b'>
-			<div style='width:450px; display: inline-block; height: 20px; padding-top: 5px'>
+			<div style='width:400px; display: inline-block; height: 20px; padding-top: 5px'>
 				
-				<div style='float:left; width:330px'>
+				<div style='float:left; width:335px'>
 					<input type="text" id="app-packageid" name="app-packageid" value='<?=addslashes($row['app_packageid'])?>' />
 				</div>
 				<? if ($row['app_packageid']) { ?>
-				<a data-role='button' data-inline='true' data-mini='true' href='https://play.google.com/store/apps/details?id=<?=$row['app_packageid']?>' target=_blank style='float:right'>구글확인</a>
+				<a data-role='button' data-inline='true' data-mini='true' href='https://play.google.com/store/apps/details?id=<?=$row['app_packageid']?>' target=_blank style='float:right'>이동</a>
 				<? } ?>
 				<div style='clear:both'></div>
 				
@@ -152,19 +152,19 @@
 		</div>
 		<div class='ui-block-a app-keyword-wrapper' style='height: 55px'>검색 키워드</div>
 		<div class='ui-block-b app-keyword-wrapper' style='height: 55px'>
-			<div style='width:300px; display: block; height: 20px; padding-top: 5px'>
+			<div style='width:400px; display: block; height: 20px; padding-top: 5px'>
 				<input type="text" id="app-keyword" name="app-keyword" value='<?=addslashes($row['app_keyword'])?>' />
 			</div>
 			<br>
 			(리뷰형의 경우 앱에 연령제한이 있는 꼭 입력)
 		</div>		
-		<div class='ui-block-a' style='height: 55px'>마켓 링크</div>
-		<div class='ui-block-b' style='height: 55px'>
-			<div style='width:300px; display: block; height: 20px; padding-top: 5px'>
+		<div class='ui-block-a' style='height: 65px; padding-top: 12px; line-height: 1.5em'>마켓 링크<br>(트랙킹 링크)</div>
+		<div class='ui-block-b' style='height: 65px'>
+			<div style='width:400px; display: block; height: 20px; padding-top: 5px'>
 				<input type="text" id="app-execurl" name="app-execurl" value='<?=addslashes($row['app_execurl'])?>' />
 			</div>
 			<br>
-			(고객이 요청한 URL을 꼭 경우해야하는 경우에만 사용 - 사용시 검색키워드 사용불가)
+			(고객이 요청한 시작 URL 입력)
 		</div>	
 		<div class='ui-block-a' style='height: 100px'>아이콘</div>
 		<div class='ui-block-b' style='height: 100px'>
@@ -481,6 +481,15 @@ var <?=$js_page_id?> = function()
 					_$("#app-keyword").val("");
 				}
 				
+				// 원스토어 마켓의 경우 마켓링크가 있어야 함.
+				if (util.get_item_value(_$("#app-market")) == 'O') {
+					var execurl = util.trim(_$("#app-execurl").val());
+					if (!execurl || execurl.indexOf('http://onestore.co.kr/') == 0) {
+						alert('원스토어의 [마켓링크]를 입력하세요\n\n원스토어 마켓링크 예)\n    http://m.onestore.co.kr/mobilepoc/apps/appsDetail.omp?prodId=0000000000');
+						return;
+					}
+				}
+				
 				var ar_param = {
 					'mcode' : '<?=$mcode?>',
 					'appkey' : '<?=$appkey?>',
@@ -524,7 +533,7 @@ var <?=$js_page_id?> = function()
 					return;					
 				}
 				
-				alert(util.var_dump(ar_param));
+				// alert(util.var_dump(ar_param));
 				util.post(get_ajax_url('admin-campaign-app-modify'), ar_param, function(sz_data) {
 					var js_data = util.to_json(sz_data);
 					if (js_data['result']) {
