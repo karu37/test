@@ -56,7 +56,7 @@
 	$sql = "SELECT a.*, count(distinct b.app_key) as 'appkey_cnt', SUM(c.merchant_cnt) as 'merchant_cnt', SUM(c.merchant_fee) as 'merchant_fee'
 			FROM al_merchant_t a 
 				INNER JOIN al_partner_mpcode_t mp ON a.mcode = mp.mcode AND mp.type = 'M' 
-				INNER JOIN al_summary_sales_m_t c ON a.mcode = c.mcode AND c.reg_day = '2016-09-01' 
+				INNER JOIN al_summary_sales_m_t c ON a.mcode = c.mcode AND c.reg_day = '{$year}-{$month}-01' 
 				INNER JOIN al_app_t b ON b.app_key = c.app_key
 			WHERE mp.partner_id = '{$db_partner_id}' {$where} 
 			GROUP BY a.mcode 
