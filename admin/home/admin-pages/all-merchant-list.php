@@ -9,11 +9,11 @@
 	$where .= "AND a.is_mactive " . (ifempty($_REQUEST['listtype'], 'A') == 'A' ? " <> 'N'" : " = 'N'");
 	if ($searchfor == "name" && $search) $where .= " AND a.name LIKE '%{$db_search}%'";
 	if ($searchfor == "code" && $search) $where .= " AND a.mcode LIKE '%{$db_search}%'";
-	
+
 	$order_by = "ORDER BY a.is_mactive, a.reg_date DESC";
 
 	// --------------------------------
-	// Paginavigator initialize	
+	// Paginavigator initialize
 	// --------------------------------
 	$sql = "SELECT COUNT(*) as cnt FROM al_merchant_t a WHERE 1=1 {$where}";
 	$row = mysql_fetch_assoc(mysql_query($sql, $conn));
@@ -23,12 +23,13 @@
 	// ---------------------------------------
 	// publisher info
 	// ---------------------------------------
-	$sql = "SELECT a.*, count(distinct b.app_key) as 'appkey_cnt', t.name as 'partner_name', t.company as 'partner_company'
-			FROM al_merchant_t a 
-				LEFT OUTER JOIN al_app_t b ON a.mcode = b.mcode 
+	$sql = "SELECT a.*, count(distinct b.app_key) as 'appkey_cnt', t.name as 'partner_name', t.company as 'partner_company', SUM(s.merchant_cnt) AS 'exec_day_cnt'
+			FROM al_merchant_t a
+				LEFT OUTER JOIN al_app_t b ON a.mcode = b.mcode
 				LEFT OUTER JOIN al_partner_mpcode_t pmp ON pmp.mcode = a.mcode AND pmp.type = 'M'
 				LEFT OUTER JOIN al_partner_t t ON t.partner_id = pmp.partner_id
-			WHERE 1=1 {$where} GROUP BY a.mcode 
+				LEFT OUTER JOIN al_summary_sales_h_t s ON s.app_key = b.app_key AND reg_day = CURRENT_DATE
+			WHERE 1=1 {$where} GROUP BY a.mcode
 			{$order_by} {$limit}";
 	$result = mysql_query($sql, $conn);
 ?>
@@ -39,7 +40,7 @@
 		.list tr.mactive-N:hover td 	{background:#888}
 		.list tr.mactive-T td 			{background:#f90; color:#000}
 		.list tr.mactive-T:hover td 	{background:#f80}
-		
+
 		.list tr > * 		{height:25px; line-height:1em; padding: 4px 4px}
 
 		.list .btn-td									{padding-left: 0px padding-right: 0px}
@@ -58,23 +59,23 @@
 		        <label for="list-type-normal">정상 목록</label>
 		        <input name="list-type" id="list-type-deleted" value="B" type="radio" onclick="window.location.href=window.location.href.set_url_param('listtype', 'B').del_url_param('page')" />
 		        <label for="list-type-deleted">중지 목록</label>
-		    </fieldset>			
-			
+		    </fieldset>
+
 		</td><td valign=top align=right style='border-left: 1px solid #ddd'>
-			
+
 			<div style='width:300px; padding-top:10px; text-align: left'>
 				<fieldset id="search-for" class='td-2-item' data-role="controlgroup" data-type="horizontal" style='margin-top: 3px;' data-mini=true init-value="<?=$searchfor?>" >
 			        <input name="search-for" id="search-for-name" value="name" type="radio" />
 			        <label for="search-for-name">이름</label>
 			        <input name="search-for" id="search-for-code" value="code" type="radio" />
 			        <label for="search-for-code">코드</label>
-			    </fieldset>	
+			    </fieldset>
 			    <div class='ui-grid-a' style='padding:2px 0px; width: 300px; margin: 0 0 0 auto'>
 			    	<div class='ui-block-a' style='width:200px'><input type=text name=search id=search data-clear-btn='true' value="<?=$_REQUEST['search']?>"  style='line-height: 25px;'/></div>
 					<div class='ui-block-b' style='width:100px'><a href='#' onclick='<?=$js_page_id?>.action.on_btn_search()' data-role='button' data-mini='true'>검색</a></div>
 				</div>
 			</div>
-			
+
 		</td></tr></table>
 	</form>
 	<hr>
@@ -84,7 +85,7 @@
 		<div class='ui-block-b' style='width:30%; text-align:right'><?=$pages->display_jump_menu() . $pages->display_items_per_page()?></div>
 	</div>
 	<br>
-	
+
 	<table class='single-line list'  cellpadding=0 cellspacing=0 width=100%>
 	<thead>
 		<tr>
@@ -95,6 +96,7 @@
 			<th>소속 파트너</th>
 			<th width=40px>광고수</th>
 			<th width=40px>공급가<br>환율%</th>
+			<th width=40px>금일<br>적립수</th>
 			<th width=1px></th>
 			<th width=1px></th>
 		</tr>
@@ -104,11 +106,11 @@
 		$idx = 0;
 		while ( $merchant = mysql_fetch_assoc($result) ) {
 			$idx ++;
-			
+
 			$url_mcode = urlencode($merchant['mcode']);
 			$td_onclick = "onclick='window.location.href=\"?id=merchant-appkey-list&partnerid={$partner_id}&mcode={$url_mcode}\"'";
 
-			// 현재의 merchant의 active상태 : Y / T / N 만 가능함.					
+			// 현재의 merchant의 active상태 : Y / T / N 만 가능함.
 			$ar_btn_theme = array('a','a','a');
 			if ($merchant['is_mactive'] == 'Y') $ar_btn_theme = array('b','a','a');
 			else if ($merchant['is_mactive'] == 'T') $ar_btn_theme = array('a','b','a');
@@ -128,46 +130,47 @@
 				<td <?=$td_onclick?>><b><?=$merchant['partner_name']?></b><br><span style='color:#888; line-height: 1.2em'><?=$merchant['partner_company']?></span></td>
 				<td <?=$td_onclick?>><?=admin_number($merchant['appkey_cnt'])?></td>
 				<td <?=$td_onclick?>><?=admin_number($merchant['exchange_fee_rate'])?></td>
+				<td <?=$td_onclick?>><?=admin_number($merchant['exec_day_cnt'])?></td>
 				<td><a href='#' onclick='goPage("dlg-merchant-modify", null, {merchant_code:"<?=$merchant['mcode']?>"})' data-theme='a' data-role='button' data-mini='true' data-inline='true'>정보<br>변경</a></td>
 				<td><a href='#' onclick='mvPage("dlgpage-merchant-publisher-config", null, {mcode: "<?=$merchant['mcode']?>"})' data-theme='b' data-role='button' data-mini='true' data-inline='true'>Publisher별<br>공급 설정</a></div>
-				
+
 			</tr>
 			<?
 		}
-		
+
 	?>
 	</tbody>
 	</table>
-	<div style='padding: 5px; color:#888; background: #eef; font-size:11px; border-radius:0.6em; border: 1px solid #88f'>	
+	<div style='padding: 5px; color:#888; background: #eef; font-size:11px; border-radius:0.6em; border: 1px solid #88f'>
 	* 연동 상태: 광고를 사용자 목록에 노출 + 사용자 적립 가능<br>
 	* 개발 상태: 광고를 사용자 목록에 숨김 + 사용자 적립 가능<br>
-	* 중지 상태: 광고를 사용자 목록에 숨김 + 사용자 적립 불가 
+	* 중지 상태: 광고를 사용자 목록에 숨김 + 사용자 적립 불가
 	</div>
 	<hr>
 	<div style='padding:10px' class='ui-grid-a'>
 		<div class='ui-block-a' style='width:70%; padding-top:20px'><?=$pages->display_pages()?></div>
 		<div class='ui-block-b' style='width:30%; text-align:right'><?=$pages->display_jump_menu() . $pages->display_items_per_page()?></div>
 	</div>
-	
+
 </div>
 
-<script type="text/javascript"> 
+<script type="text/javascript">
 
 var <?=$js_page_id?> = function()
 {
 	// 외부에서 사용할 (Event Callback)함수 정의
-	var page = 
-	{			
+	var page =
+	{
 		action: {
 			initialize: function() {
 				util.initPage($('#page'));
 				$("div[data-role='popup']").on("popupbeforeposition", function(){ util.initPage($(this)); });
 			},
-			
+
 			on_btn_search: function() {
 				var ar_param = {
-						id: '<?=$page_id?>', 
-						searchfor: util.get_item_value($("#search-for")), 
+						id: '<?=$page_id?>',
+						searchfor: util.get_item_value($("#search-for")),
 						search: $("#search").val()
 				};
 				window.location.href = '?' + util.json_to_urlparam(ar_param);
@@ -187,20 +190,20 @@ var <?=$js_page_id?> = function()
 						$('.btn-m-'+mcode+'.btn-T').removeClass('ui-btn-a ui-btn-b ui-btn-up-a ui-btn-up-b');
 						$('.btn-m-'+mcode+'.btn-N').removeClass('ui-btn-a ui-btn-b ui-btn-up-a ui-btn-up-b');
 						$('.btn-m-'+mcode+'.btn-' + ar_param.isactive).addClass('ui-btn-b ui-btn-up-b').attr('data-theme', 'b');
-						
+
 						$('#line-m-'+mcode).removeClassMatch(/mactive\-/g).addClass('mactive-'+status);
 					} else util.Alert(js_data['msg']);
 				});
 			},
-			
+
 		},
-	};		
-	
+	};
+
 	function setEvents() {
 		$(document).on("pageinit", function(){page.action.initialize();} );
-	}		
+	}
 
-	setEvents(); // Event Attaching		
+	setEvents(); // Event Attaching
 	return page;
 }();
 

@@ -26,7 +26,7 @@
 	$partner_id = $_REQUEST['partnerid'];	// this'll be used for go back to partnerid's appkey list page.
 	$mcode = $_REQUEST['mcode'];
 	$db_mcode = mysql_real_escape_string($mcode);
-	
+
 	// --------------------------------
 	$searchfor = $_REQUEST['searchfor'];
 	$search = trim($_REQUEST['search']);
@@ -35,7 +35,7 @@
 
 	// $where = "AND app.is_active = 'Y' AND app.is_mactive = 'Y'";
 	$where = "";
-	
+
 	// ------------------------------------------------------
 	// A 면 is_active = Y AND is_mactive <> T 인 대상들 전체
 	$listtype = ifempty($_REQUEST['listtype'], 'A');
@@ -43,12 +43,12 @@
 	else if ($listtype == 'B') $where .= " AND app.is_active <> 'Y' AND app.is_mactive <> 'D'";
 	else if ($listtype == 'D') $where .= " AND app.is_mactive = 'D'";
 	// ------------------------------------------------------
-	
+
 	if ($searchfor == "title" && $search) $where .= " AND app.app_title LIKE '%{$db_search}%'";
-	
+
 	$order_by = "ORDER BY IF(CONCAT(app.is_mactive, app.is_active) = 'YY', 1, 2) ASC, app.app_exec_type ASC, app.id DESC";
 	// --------------------------------
-	// Paginavigator initialize	
+	// Paginavigator initialize
 	$sql = "SELECT COUNT(*) as cnt FROM al_app_t app WHERE app.mcode = '{$db_mcode}' {$where}";
 	$row = mysql_fetch_assoc(mysql_query($sql, $conn));
 	$pages = new Paginator($row['cnt']);
@@ -59,9 +59,15 @@
 	$row_merchant = @mysql_fetch_assoc(mysql_query($sql, $conn));
 
 	$sql = "SELECT app.*,
-				t.short_txt AS 'app_exec_type_name' 
+
+				IFNULL(IF(s.exec_time = DATE_ADD(CURRENT_DATE, INTERVAL HOUR(NOW()) HOUR), s.exec_hour_cnt, 0), 0) as 'app_exec_hour_cnt',
+				IFNULL(IF(DATE(s.exec_time) = CURRENT_DATE, s.exec_day_cnt, 0), 0) as 'app_exec_day_cnt',
+				IFNULL(s.exec_tot_cnt, 0) as 'app_exec_tot_cnt',
+
+				t.short_txt AS 'app_exec_type_name'
 			FROM al_app_t app
-				LEFT OUTER JOIN string_t t ON t.type = 'app_exec_type' AND app.app_exec_type = t.code 
+				LEFT OUTER JOIN al_app_exec_stat_t s ON app.app_key = s.app_key
+				LEFT OUTER JOIN string_t t ON t.type = 'app_exec_type' AND app.app_exec_type = t.code
 			WHERE app.mcode = '{$db_mcode}' {$where} {$order_by} {$limit}";
 	$result = mysql_query($sql, $conn);
 ?>
@@ -69,9 +75,9 @@
 		.list tr:hover td 				{background:#eff}
 		.list tr.app-active-N td 		{background:#eee; color:#444}
 		.list tr.app-active-N:hover td 	{background:#ddd}
-		
+
 		.list tr > * 	{height:25px; line-height:1em; padding: 4px 4px}
-				
+
 		.btn-small-wrapper a	{font-size: 10px}
 		.btn-wrapper			{width: 90px}
 		.btn-wrapper a			{padding:7px 4px; letter-spacing:0px; margin: 2px -2px 2px -1px; box-shadow:none;}
@@ -81,7 +87,7 @@
 	<form onsubmit='return <?=$js_page_id?>.action.on_btn_search()'>
 		<table border=0 cellpadding=0 cellspacing=0 width=100%>
 		<tr><td id='btns-group' valign=top>
-			
+
 			<fieldset id="list-type" data-theme='c' class='td-2-item' data-role="controlgroup" data-type="horizontal" data-mini=true init-value="<?=ifempty($_REQUEST['listtype'],'A')?>" >
 		        <input name="list-type" id="list-type-normal" value="A" type="radio" onclick="window.location.href=window.location.href.set_url_param('listtype', 'A').del_url_param('page')" />
 		        <label for="list-type-normal">적립가능 목록</label>
@@ -89,8 +95,8 @@
 		        <label for="list-type-disabled">적립불가 목록</label>
 		        <input name="list-type" id="list-type-deleted" value="D" type="radio" onclick="window.location.href=window.location.href.set_url_param('listtype', 'D').del_url_param('page')" />
 		        <label for="list-type-deleted">삭제 목록</label>
-		    </fieldset>			
-			
+		    </fieldset>
+
 			<table class='line-height-15px' border=0 cellpadding=0 cellspacing=3px>
 			<tr>
 				<td valign=top align=right><t4 style='padding-top:6px; line-height:22px'>광고사 코드 :<t4></td>
@@ -100,7 +106,7 @@
 					</t3>
 				</td>
 				<td></td>
-			</tr><tr>	
+			</tr><tr>
 				<td align=right><t4>Merchant 상태 :<t4></td>
 				<td>
 					<div class='ui-block-a' style='width:200px'>
@@ -123,27 +129,27 @@
 						* 개발 상태: 사용자 목록에 숨김 + 사용자 적립 가능<br>
 						* 중지 상태: 사용자 목록에 숨김 + 사용자 적립 불가
 					</div>
-				</td>				
+				</td>
 			</tr>
-			</table>			
+			</table>
 		<td valign=top align=right style='border-left: 1px solid #ddd'>
 			<div style='width:300px; padding-top:10px; text-align: left'>
 				<fieldset id="search-for" class='td-2-item' data-role="controlgroup" data-type="horizontal" style='margin-top: 3px;' data-mini=true init-value="<?=$searchfor?>" >
 			        <input name="search-for" id="search-for-title" value="title" type="radio" />
 			        <label for="search-for-title">앱 제목</label>
-			    </fieldset>	
+			    </fieldset>
 			    <div class='ui-grid-a' style='padding:2px 0px; width: 300px; margin: 0 0 0 auto;'>
 			    	<div class='ui-block-a' style='width:200px'><input type=text name=search id=search data-clear-btn='true' value="<?=$_REQUEST['search']?>"  style='line-height: 25px;'/></div>
 					<div class='ui-block-b' style='width:100px'><a href='#' onclick='<?=$js_page_id?>.action.on_btn_search()' data-role='button' data-mini='true'>검색</a></div>
 				</div>
 			</div>
-			
+
 		</td></tr></table>
 	</form>
 	<hr>
 	<div style='text-align:left; padding-top:10px'>
 		<a href='#' onclick='<?=$js_page_id?>.action.on_btn_new_app_campaign()' data-role='button' data-theme='b' data-transition="none" data-inline='true' data-mini='true'>새 광고 등록</a>
-		
+
 		<a href='#' onclick='<?=$js_page_id?>.action.on_btn_set_merchantapp_all_active("<?=$row_merchant['mcode']?>", "Y")' data-theme='a' data-role='button' data-mini='true' data-inline='true'>전체[정상]</a>
 		<a href='#' onclick='<?=$js_page_id?>.action.on_btn_set_merchantapp_all_active("<?=$row_merchant['mcode']?>", "N")' data-theme='a' data-role='button' data-mini='true' data-inline='true'>전체[중지]</a>
 		<a href='#' onclick='<?=$js_page_id?>.action.on_btn_set_merchantapp_all_active("<?=$row_merchant['mcode']?>", "D")' data-theme='a' data-role='button' data-mini='true' data-inline='true'>전체[삭제]</a>
@@ -164,36 +170,39 @@
 			<th>제목</th>
 			<th>원가</th>
 			<th>판매</th>
+			<th>적립수<br>(오늘/총)</th>
 			<th>공개모드</th>
 			<th width=60px>적립<br>활성일</th>
 			<th width=60px>적립<br>불가일</th>
 			<th width=60px></th>
-		</tr>	
+		</tr>
 	</thead>
 	<tbody>
 		<?
 		$arr_public_mode = array('Y' => '공개', 'N' => '<span style="color:blue;font-weight:bold">제한</span>');
 		$arr_isactive = array('Y' => '가능', 'N' => '<span style="color:blue;font-weight:bold">불가</span>');
-		
+
 		while ($row = mysql_fetch_assoc($result)) {
 			$id = $row['id'];
-			
-			// 현재의 Merchant의 active상태 : Y / T / N 만 가능함.					
+
+			// 현재의 Merchant의 active상태 : Y / T / N 만 가능함.
 			$ar_btn_theme = array('a','a','a','a');
 			if ($row['is_mactive'] == 'Y') $ar_btn_theme[0] = 'b';
 			else if ($row['is_mactive'] == 'N') $ar_btn_theme[1] = 'b';
 			else if ($row['is_mactive'] == 'D') $ar_btn_theme[2] = 'b';
-			else if ($row['is_mactive'] == 'T') $ar_btn_theme[3] = 'b';			
-			
+			else if ($row['is_mactive'] == 'T') $ar_btn_theme[3] = 'b';
+
 			$url_mcode = urlencode($mcode);
 			$url_appkey = urlencode($row['app_key']);
 			$td_onclick = "onclick=\"mvPage('merchant-campaign-modify', null, {mcode:'{$mcode}', appkey: '{$row['app_key']}'})\"";
-			
+
 			// 광고 노출여부 Flag
 			$app_active = 'Y';
 			if ( $row['is_active'] != 'Y' || $row['is_mactive'] != 'Y' )
 				$app_active = 'N';
-			
+
+			$exec_tot_cnt = admin_number($row['app_exec_day_cnt']) . '<br><b>' . admin_number($row['app_exec_tot_cnt']) . '</b>';
+
 			?>
 			<tr id='list-<?=$row['id']?>' class='app-active-<?=$app_active ?>' style='cursor:pointer'>
 				<td <?=$td_onclick?>><?=$row['id']?></td>
@@ -210,6 +219,9 @@
 				<td <?=$td_onclick?>><?=$row['app_title']?></td>
 				<td <?=$td_onclick?>><?=number_format($row['app_merchant_fee'])?></td>
 				<td <?=$td_onclick?>><?=number_format($row['app_tag_price'])?></td>
+
+				<td <?=$td_onclick?>><?=$exec_tot_cnt?></td>
+
 				<td <?=$td_onclick?>><?=$arr_public_mode[$row['is_public_mode']]?></td>
 				<td <?=$td_onclick?>><?=admin_to_datetime($row['last_active_time'])?></td>
 				<td <?=$td_onclick?>><?=admin_to_datetime($row['last_deactive_time'])?></td>
@@ -222,15 +234,15 @@
 		?>
 	</tbody>
 	</table>
-	
+
 	<div style='padding: 5px; color:#888; background: #eef; font-size:11px; border-radius:0.6em; border: 1px solid #88f'>
 		<b>[관리자 차단]</b><br>
 		* 정상: 사용자 목록에 노출 + 사용자 적립 가능<br>
 		* 중지: 사용자 목록에 숨김 + 사용자 적립 불가<br>
 		* 삭제: 관리 목록에서 제외 (사용자 목록에 숨김 + 사용자 적립 불가)<br>
 		* 개발: Publisher 개발사에게만 노출 + 적립되는 것처럼 동작 (실제 적립 안 함)
-	</div>	
-	
+	</div>
+
 	<div style='padding:10px' class='ui-grid-a'>
 		<div class='ui-block-a' style='width:70%; padding-top:20px'><?=$pages->display_pages()?></div>
 		<div class='ui-block-b' style='width:30%; text-align:right'><?=$pages->display_jump_menu() . $pages->display_items_per_page()?></div>
@@ -238,34 +250,34 @@
 
 	<div style='text-align:left; padding-top:10px'>
 		<a href='#' onclick='<?=$js_page_id?>.action.on_btn_new_app_campaign()' data-role='button' data-theme='b' data-transition="none" data-inline='true' data-mini='true'>새 광고 등록</a>
-		
+
 		<a href='#' onclick='<?=$js_page_id?>.action.on_btn_set_merchantapp_all_active("<?=$row_merchant['mcode']?>", "Y")' data-theme='a' data-role='button' data-mini='true' data-inline='true'>전체[정상]</a>
 		<a href='#' onclick='<?=$js_page_id?>.action.on_btn_set_merchantapp_all_active("<?=$row_merchant['mcode']?>", "N")' data-theme='a' data-role='button' data-mini='true' data-inline='true'>전체[중지]</a>
 		<a href='#' onclick='<?=$js_page_id?>.action.on_btn_set_merchantapp_all_active("<?=$row_merchant['mcode']?>", "D")' data-theme='a' data-role='button' data-mini='true' data-inline='true'>전체[삭제]</a>
 	</div>
 	&nbsp; (전체 상태 변경은 개발대상은 변경하지 않음)
-	
 
-<script type="text/javascript"> 
+
+<script type="text/javascript">
 
 var <?=$js_page_id?> = function()
 {
 	// 외부에서 사용할 (Event Callback)함수 정의
 	var ar_merchant_active = {'Y':'연동', 'T':'개발', 'N':'중지'};
-	var page = 
-	{			
+	var page =
+	{
 		action: {
 			initialize: function() {
 				util.initPage($('#page'));
 				$("div[data-role='popup']").on("popupbeforeposition", function(){ util.initPage($(this)); });
 			},
-			
+
 			on_btn_search: function() {
 				var ar_param = {
-						id: '<?=$page_id?>', 
-						partnerid: '<?=$partner_id?>', 
-						mcode: '<?=$mcode?>', 
-						searchfor: util.get_item_value($("#search-for")), 
+						id: '<?=$page_id?>',
+						partnerid: '<?=$partner_id?>',
+						mcode: '<?=$mcode?>',
+						searchfor: util.get_item_value($("#search-for")),
 						search: $("#search").val()
 				};
 				window.location.href = '?' + util.json_to_urlparam(ar_param);
@@ -280,10 +292,10 @@ var <?=$js_page_id?> = function()
 						toast('저장되었습니다. (' + ar_merchant_active[ar_param.isactive] + ')');
 					} else util.Alert(js_data['msg']);
 				});
-				
+
 			},
 			on_btn_set_merchantapp_active: function(mcode, appkey, listid, active) {
-				
+
 				var ar_param = {mcode: '<?=$mcode?>', 'appkey': appkey, isactive: active};
 				util.request(get_ajax_url('admin-merchantapp-set-mactive', ar_param), function(sz_data) {
 					var js_data = util.to_json(sz_data);
@@ -296,7 +308,7 @@ var <?=$js_page_id?> = function()
 						toast('저장되었습니다. (' + ar_merchant_active[ar_param.isactive] + ')');
 					} else util.Alert(js_data['msg']);
 				});
-				
+
 			},
 			on_btn_set_merchantapp_all_active: function(mcode, active) {
 				// 개발은 제외됨.
@@ -317,13 +329,13 @@ var <?=$js_page_id?> = function()
 			},
 
 		},
-	};		
-	
+	};
+
 	function setEvents() {
 		$(document).on("pageinit", function(){page.action.initialize();} );
-	}		
+	}
 
-	setEvents(); // Event Attaching		
+	setEvents(); // Event Attaching
 	return page;
 }();
 

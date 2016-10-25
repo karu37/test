@@ -9,11 +9,11 @@
 	$where .= "AND a.is_mactive " . (ifempty($_REQUEST['listtype'], 'A') == 'A' ? " <> 'N'" : " = 'N'");
 	if ($searchfor == "name" && $search) $where .= " AND a.name LIKE '%{$db_search}%'";
 	if ($searchfor == "code" && $search) $where .= " AND a.pcode LIKE '%{$db_search}%'";
-	
+
 	$order_by = "ORDER BY a.is_mactive, a.reg_date DESC";
 
 	// --------------------------------
-	// Paginavigator initialize	
+	// Paginavigator initialize
 	// --------------------------------
 	$sql = "SELECT COUNT(*) as cnt FROM al_publisher_t a WHERE 1=1 {$where}";
 	$row = mysql_fetch_assoc(mysql_query($sql, $conn));
@@ -23,11 +23,12 @@
 	// ---------------------------------------
 	// publisher info
 	// ---------------------------------------
-	$sql = "SELECT a.*, t.name as 'partner_name', t.company as 'partner_company'
-			FROM al_publisher_t a 
+	$sql = "SELECT a.*, t.name as 'partner_name', t.company as 'partner_company',SUM(s.publisher_cnt) AS 'exec_day_cnt'
+			FROM al_publisher_t a
 				LEFT OUTER JOIN al_partner_mpcode_t pmp ON pmp.pcode = a.pcode AND pmp.type = 'P'
 				LEFT OUTER JOIN al_partner_t t ON t.partner_id = pmp.partner_id
-			WHERE 1=1 {$where} 
+				LEFT OUTER JOIN al_summary_sales_h_t s ON s.pcode = a.pcode AND reg_day = CURRENT_DATE
+			WHERE 1=1 {$where}
 			GROUP BY a.pcode
 			{$order_by} {$limit}";
 	$result = mysql_query($sql, $conn);
@@ -39,9 +40,9 @@
 		.list tr.mactive-N:hover td 	{background:#888}
 		.list tr.mactive-T td 			{background:#f90; color:#000}
 		.list tr.mactive-T:hover td 	{background:#f80}
-				
+
 		.list tr > * 		{height:25px; line-height:1em; padding: 4px 4px}
-		
+
 		.list .btn-td									{padding-left: 0px padding-right: 0px}
 		.list .th_status, .list .btn-td .btn-wrapper	{width: 66px}
 		.list .btn-td a									{padding:7px 4px; font-size: 10px; letter-spacing:0px; margin: 2px -2px 2px -1px; box-shadow:none;}
@@ -52,29 +53,29 @@
 	<form onsubmit='return <?=$js_page_id?>.action.on_btn_search()'>
 		<table border=0 cellpadding=0 cellspacing=0 width=100%>
 		<tr><td id='btns-group' valign=top>
-			
+
 			<fieldset id="list-type" data-theme='c' class='td-2-item' data-role="controlgroup" data-type="horizontal" data-mini=true init-value="<?=ifempty($_REQUEST['listtype'],'A')?>" >
 		        <input name="list-type" id="list-type-normal" value="A" type="radio" onclick="window.location.href=window.location.href.set_url_param('listtype', 'A').del_url_param('page')" />
 		        <label for="list-type-normal">정상 목록</label>
 		        <input name="list-type" id="list-type-deleted" value="B" type="radio" onclick="window.location.href=window.location.href.set_url_param('listtype', 'B').del_url_param('page')" />
 		        <label for="list-type-deleted">중지 목록</label>
-		    </fieldset>			
-			
+		    </fieldset>
+
 		</td><td valign=top align=right style='border-left: 1px solid #ddd'>
-			
+
 			<div style='width:300px; padding-top:10px; text-align: left'>
 				<fieldset id="search-for" class='td-2-item' data-role="controlgroup" data-type="horizontal" style='margin-top: 3px;' data-mini=true init-value="<?=$searchfor?>" >
 			        <input name="search-for" id="search-for-name" value="name" type="radio" />
 			        <label for="search-for-name">이름</label>
 			        <input name="search-for" id="search-for-code" value="code" type="radio" />
 			        <label for="search-for-code">코드</label>
-			    </fieldset>	
+			    </fieldset>
 			    <div class='ui-grid-a' style='padding:2px 0px; width: 300px; margin: 0 0 0 auto'>
 			    	<div class='ui-block-a' style='width:200px'><input type=text name=search id=search data-clear-btn='true' value="<?=$_REQUEST['search']?>"  style='line-height: 25px;'/></div>
 					<div class='ui-block-b' style='width:100px'><a href='#' onclick='<?=$js_page_id?>.action.on_btn_search()' data-role='button' data-mini='true'>검색</a></div>
 				</div>
 			</div>
-			
+
 		</td></tr></table>
 	</form>
 	<hr>
@@ -84,7 +85,7 @@
 		<div class='ui-block-b' style='width:30%; text-align:right'><?=$pages->display_jump_menu() . $pages->display_items_per_page()?></div>
 	</div>
 	<br>
-	
+
 	<table class='single-line list'  cellpadding=0 cellspacing=0 width=100%>
 	<thead>
 		<tr>
@@ -94,6 +95,7 @@
 			<th>소속 파트너</th>
 			<th width=50px>제공(%)</th>
 			<th width=30px>레벨</th>
+			<th width=60px>금일<br>적립수</th>
 			<th width=70px>등록일</th>
 			<th width=1px></th>
 			<th width=1px></th>
@@ -105,11 +107,11 @@
 		$idx = 0;
 		while ( $publisher = mysql_fetch_assoc($result) ) {
 			$idx ++;
-			
+
 			$url_pcode = urlencode($publisher['pcode']);
 			$td_onclick = "onclick='window.location.href=\"?id=publisher-appkey-list&partnerid={$partner_id}&pcode={$url_pcode}\"'";
 
-			// 현재의 Publisher의 active상태 : Y / T / N 만 가능함.					
+			// 현재의 Publisher의 active상태 : Y / T / N 만 가능함.
 			$ar_btn_theme = array('a','a','a');
 			if ($publisher['is_mactive'] == 'Y') $ar_btn_theme = array('b','a','a');
 			else if ($publisher['is_mactive'] == 'T') $ar_btn_theme = array('a','b','a');
@@ -129,6 +131,7 @@
 				<td <?=$td_onclick?>><b><?=$publisher['partner_name']?></b><br><span style='color:#888; line-height: 1.2em'><?=$publisher['partner_company']?></span></td>
 				<td <?=$td_onclick?>><?=$publisher['offer_fee_rate']?></td>
 				<td <?=$td_onclick?>><?=$publisher['level']?></td>
+				<td <?=$td_onclick?>><?=admin_number($publisher['exec_day_cnt'])?></td>
 				<td <?=$td_onclick?>><?=admin_to_date($publisher['reg_date'])?></td>
 				<td><a href='#' onclick='mvPage("publisher-setup-callback", null, {pcode:"<?=$publisher['pcode']?>"})' data-theme='e' data-role='button' data-mini='true' data-inline='true'>콜백<br>설정</a></td>
 				<td><a href='#' onclick='goPage("dlg-publisher-modify", null, {publisher_code:"<?=$publisher['pcode']?>"})' data-theme='b' data-role='button' data-mini='true' data-inline='true'>정보<br>변경</a></td>
@@ -136,15 +139,15 @@
 			</tr>
 			<?
 		}
-		
+
 	?>
 	</tbody>
 	</table>
-	<div style='padding: 5px; color:#888; background: #eef; font-size:11px; border-radius:0.6em; border: 1px solid #88f'>	
+	<div style='padding: 5px; color:#888; background: #eef; font-size:11px; border-radius:0.6em; border: 1px solid #88f'>
 	* 연동 상태: Publisher에게 광고 노출 + 적립 가능<br>
 	* 개발 상태: Publisher에게 테스트로 등록된 광고만 노출<br>
 	* 중지 상태: Publisher에게 광고 숨김 + 적립 불가
-	</div>	
+	</div>
 	<hr>
 	<div style='padding:10px' class='ui-grid-a'>
 		<div class='ui-block-a' style='width:70%; padding-top:20px'><?=$pages->display_pages()?></div>
@@ -152,23 +155,23 @@
 	</div>
 </div>
 
-<script type="text/javascript"> 
+<script type="text/javascript">
 
 var <?=$js_page_id?> = function()
 {
 	// 외부에서 사용할 (Event Callback)함수 정의
-	var page = 
-	{			
+	var page =
+	{
 		action: {
 			initialize: function() {
 				util.initPage($('#page'));
 				$("div[data-role='popup']").on("popupbeforeposition", function(){ util.initPage($(this)); });
 			},
-			
+
 			on_btn_search: function() {
 				var ar_param = {
-						id: '<?=$page_id?>', 
-						searchfor: util.get_item_value($("#search-for")), 
+						id: '<?=$page_id?>',
+						searchfor: util.get_item_value($("#search-for")),
 						search: $("#search").val()
 				};
 				window.location.href = '?' + util.json_to_urlparam(ar_param);
@@ -184,25 +187,25 @@ var <?=$js_page_id?> = function()
 					var js_data = util.to_json(sz_data);
 					if (js_data['result']) {
 						toast('변경되었습니다.');
-						
+
 						$('.btn-p-'+pcode+'.btn-Y').removeClass('ui-btn-a ui-btn-b ui-btn-up-a ui-btn-up-b');
 						$('.btn-p-'+pcode+'.btn-T').removeClass('ui-btn-a ui-btn-b ui-btn-up-a ui-btn-up-b');
 						$('.btn-p-'+pcode+'.btn-N').removeClass('ui-btn-a ui-btn-b ui-btn-up-a ui-btn-up-b');
 						$('.btn-p-'+pcode+'.btn-' + ar_param.isactive).addClass('ui-btn-b ui-btn-up-b').attr('data-theme', 'b');
-						
+
 						$('#line-p-'+pcode).removeClassMatch(/mactive\-/g).addClass('mactive-'+status);
 					} else util.Alert(js_data['msg']);
 				});
 			},
-			
+
 		},
-	};		
-	
+	};
+
 	function setEvents() {
 		$(document).on("pageinit", function(){page.action.initialize();} );
-	}		
+	}
 
-	setEvents(); // Event Attaching		
+	setEvents(); // Event Attaching
 	return page;
 }();
 
