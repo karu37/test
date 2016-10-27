@@ -29,7 +29,7 @@
 				LEFT OUTER JOIN al_merchant_publisher_t mp2 ON mp2.mcode = '{$db_mcode}' AND mp2.pcode = p.pcode
 					LEFT OUTER JOIN al_partner_mpcode_t pmp ON pmp.pcode = p.pcode AND pmp.type = 'P'
 					LEFT OUTER JOIN al_partner_t t ON t.partner_id = pmp.partner_id
-					LEFT OUTER JOIN al_summary_sales_h_t s ON s.mcode = 'aline_m' AND s.pcode = p.pcode AND s.reg_day = CURRENT_DATE
+					LEFT OUTER JOIN al_summary_sales_h_t s ON s.mcode = '{$db_mcode}' AND s.pcode = p.pcode AND s.reg_day = CURRENT_DATE
 			WHERE p.is_mactive IN ('Y','T') {$where}
 			GROUP BY p.pcode
 			ORDER BY p.reg_date DESC {$limit}";
