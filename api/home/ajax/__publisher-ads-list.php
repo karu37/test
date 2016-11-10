@@ -46,7 +46,7 @@
 		</tr>
 		<?
 			$i = 0;
-			$ar_type_names = array('I' => '<b style="color:blue">설치형</b>', 'E' => '<b style="color:darkgreen">실행형</b>', 'W' => '수행형');
+			$ar_type_names = array('I' => '<b style="color:blue">설치형</b>', 'E' => '<b style="color:darkgreen">실행형</b>', 'F' => '페북형', 'W' => '수행형');
 			while ($row = mysql_fetch_assoc($result)) {
 				$i++;
 				if ($row['tot_not_complished'] != 'Y' || $row['edate_not_expired'] != 'Y') {

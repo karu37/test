@@ -107,16 +107,16 @@
 		},
 		like: function(resp) {
 			if (alike.rtrim(resp) != alike.site) {
-				window.location.replace('facebook-ok.html?c=EE');
+				window.location.replace('facebook-ok.php?c=EE');
 			}
 			else if (alike.state == 'N') {
-				window.location.replace('facebook-ok.html?c=EA');
+				window.location.replace('facebook-ok.php?c=EA');
 			}
 			else if (alike.state == 'U') {
-				window.location.replace('facebook-ok.html?c=Y&p2=<?=$param2?>');
+				window.location.replace('facebook-ok.php?c=Y&p2=<?=$param2?>');
 			}
 			else {
-				window.location.replace('facebook-ok.html?c=EU');
+				window.location.replace('facebook-ok.php?c=EU');
 			}
 		},
 		unlike: function(resp) {
