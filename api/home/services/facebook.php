@@ -67,7 +67,7 @@
 			$error_msg = '이미 종료된 광고입니다.';
 			break;
 		}
-		if (!$dev && !$row['is_mactive'] != 'Y') {
+		if (!$dev && $row['is_mactive'] != 'Y') {
 			$is_error = true;
 			$error_msg = '광고가 임시 중단된 상태입니다.';
 			break;
