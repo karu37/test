@@ -1,9 +1,9 @@
 <?
 	// getting execution count and total count from live stat table
 	$db_appkey = mysql_real_escape_string($appkey);
-	
+
 	$sql = "SELECT DATE(a.exec_time) reg_day, IF(DATE(a.exec_time)=CURRENT_DATE, a.exec_day_cnt, 0) cnt, a.exec_tot_cnt totcnt
-				FROM al_app_exec_stat_t a 
+				FROM al_app_exec_stat_t a
 				WHERE a.app_key = '{$db_appkey}'";
  	$result = mysql_query($sql, $conn);
  	$row_today = @mysql_fetch_assoc(mysql_query($sql, $conn));
@@ -15,26 +15,26 @@
 	<style>
 		#app-info	.ui-block-a	{height: 45px; line-height:45px; padding-left: 10px; width:100px; border-bottom: 1px solid #ddd; font-weight: bold}
 		#app-info	.ui-block-b	{height: 45px; width:500px; border-bottom: 1px solid #ddd}
-		
+
 		#app-content	{height: 80px !important; overflow-y: scroll !important}
 		#app-exec-desc 	{height: 180px !important; overflow-y: scroll !important}
 
 		.app-interactive		{background-color: #ddffdd}
 		.required			{background-color:lightyellow}
 		.app-keyword-wrapper	{background-color: lightgreen}
-		
+
 		.btn-small-wrapper a	{font-size: 12px}
 		.btn-wrapper			{width: 200px}
 		.btn-wrapper a			{padding:8px 5px; margin: 5px 2px 2px -1px; box-shadow:none}
-		
+
 	</style>
 	<div style='padding: 10px'>
 		<a href='#' onclick='<?=$js_page_id?>.action.on_btn_modifycampaign()' data-role='button' data-theme='b' data-inline='true' data-mini='true' >변경사항 적용하기</a>
 		<a href='?id=merchant-campaign-user-list&mcode=<?=$row['mcode']?>&appkey=<?=urlencode($row['app_key'])?>' data-theme='b' data-role='button' data-mini='true' data-inline='true'>참가자</a>
-		
+
 		<a href='?id=merchant-campaign-exec-view&mcode=<?=$row['mcode']?>&appkey=<?=urlencode($row['app_key'])?>' data-role='button' data-theme='b' data-inline='true' data-mini='true' >일자별 수행수</a>
 		<a href='#' onclick='goPage("dlg-upload-app-adid", null, {appkey: "<?=$row['app_key']?>"})' data-theme='b' data-role='button' data-mini='true' data-inline='true'>ADID 등록(중복방지)</a>
-	</div>	
+	</div>
 	<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 	<script type="text/javascript">
 		google.charts.load('current', {packages:["corechart"]});
@@ -81,43 +81,44 @@
 
 			</td></tr></table>
 		</div>
-		
+
 		<div class='ui-block-a app-interactive'>관리자차단</div>
 		<div class='ui-block-b app-interactive'>
 			<?
-				// 현재의 Merchant의 active상태 : Y / T / N 만 가능함.					
+				// 현재의 Merchant의 active상태 : Y / T / N 만 가능함.
 				$ar_btn_theme = array('a','a','a','a');
 				if ($row['is_mactive'] == 'Y') $ar_btn_theme[0] = 'b';
 				else if ($row['is_mactive'] == 'N') $ar_btn_theme[1] = 'b';
 				else if ($row['is_mactive'] == 'D') $ar_btn_theme[2] = 'b';
-				else if ($row['is_mactive'] == 'T') $ar_btn_theme[3] = 'b';			
-			
-			?>			
+				else if ($row['is_mactive'] == 'T') $ar_btn_theme[3] = 'b';
+
+			?>
 			<div class='btn-small-wrapper btn-wrapper'>
 				<a class='btn-mactive btn-Y' href='#' onclick='<?=$js_page_id?>.action.on_btn_set_mactive("Y")' data-theme='<?=$ar_btn_theme[0]?>' data-role='button' data-mini='true' data-inline='true'>정상</a>
 				<a class='btn-mactive btn-N' href='#' onclick='<?=$js_page_id?>.action.on_btn_set_mactive("N")' data-theme='<?=$ar_btn_theme[1]?>' data-role='button' data-mini='true' data-inline='true'>중지</a>
 				<a class='btn-mactive btn-D' href='#' onclick='<?=$js_page_id?>.action.on_btn_set_mactive("D")' data-theme='<?=$ar_btn_theme[2]?>' data-role='button' data-mini='true' data-inline='true'>삭제</a>
 				<a class='btn-mactive btn-T' href='#' onclick='<?=$js_page_id?>.action.on_btn_set_mactive("T")' data-theme='<?=$ar_btn_theme[3]?>' data-role='button' data-mini='true' data-inline='true'>개발</a>
 			</div>
-			
+
 		</div>
-		
+
 		<div class='ui-block-a'>플랫폼</div>
 		<div class='ui-block-b'>
 			<fieldset id="app-platform" class='td-2-item' data-role="controlgroup" data-type="horizontal" data-mini=true init-value="W" readonly >
 		        <input name="app-platform" id="app-platform-android" value="W" type="radio" />
 		        <label for="app-platform-android">기타</label>
-		    </fieldset>									
+		    </fieldset>
 		</div>
 		<div class='ui-block-a' style='height:50px'>실행 타입</div>
 		<div class='ui-block-b' style='height:50px; padding-top:3px'>
         	<div data-role="fieldcontain" style='padding: 0px 0px; border: 0; margin: 0'>
-				<select name="app-type" id="app-type" onchange="<?=$js_page_id?>.action.on_change_app_type()" data-inline='true' data-mini='true' data-native-menu="true" data-theme='c'>
-					<option value="W" <?=$row['app_exec_type'] == 'W' ? 'selected' : ''?>>CPA (가입/신청 수행형)</option>
+				<select name="app-type" id="app-type" onchange="<?=$js_page_id?>.action.on_change_app_type()" data-inline='true' data-mini='true' data-native-menu="true" data-theme='c' init-value='<?=$row['app_exec_type']?>' >
+					<option value="F">페북 좋아요</option>
+					<option value="W">CPA (가입/신청 수행형)</option>
 				</select>
         	</div>
 		</div>
-		
+
 		<div class='ui-block-a'>홈 URL</div>
 		<div class='ui-block-b'>
 			<div style='width:400px; display: block; height: 20px; padding-top: 5px'>
@@ -127,13 +128,13 @@
 				</div>
 				<input type=submit data-role="button" data-theme='c' data-theme="b" data-inline='true' data-mini='true' style="margin-top: 15px; margin:0px 5px" value="검색" />
 				</form>
-				
+
 			</div>
 		</div>
-		<div class='ui-block-a'>Package ID</div>
-		<div class='ui-block-b'>
+		<div class='ui-block-a area-packageid'>Package ID</div>
+		<div class='ui-block-b area-packageid'>
 			<div style='width:420px; display: inline-block; height: 20px; padding-top: 5px'>
-				
+
 				<div style='float:left; width:330px'>
 					<input type="text" id="app-packageid" name="app-packageid" value='<?=addslashes($row['app_packageid'])?>' />
 				</div>
@@ -141,30 +142,30 @@
 				<a data-role='button' data-inline='true' data-mini='true' href='https://play.google.com/store/apps/details?id=<?=$row['app_packageid']?>' target=_blank style='float:right'>구글확인</a>
 				<? } ?>
 				<div style='clear:both'></div>
-				
+
 			</div>
 		</div>
-		<div class='ui-block-a'>실행 URL</div>
+		<div class='ui-block-a' id='app-execurl-title'>실행 URL</div>
 		<div class='ui-block-b'>
 			<div style='width:400px; display: block; height: 20px; padding-top: 5px'>
 				<input type="text" id="app-execurl" name="app-execurl" value='<?=$row['app_execurl']?>' />
 			</div>
-		</div>		
-		
+		</div>
+
 		<div class='ui-block-a'>적립URL 메모</div>
 		<div class='ui-block-b'>
 			<div style='width:400px; display: block; height: 20px; padding-top: 5px'>
 				<input type="text" id="app-etc" name="app-etc" value='<?=$row['app_etc']?>' />
 			</div>
-		</div>		
-		
+		</div>
+
 		<div class='ui-block-a'>제목</div>
 		<div class='ui-block-b'>
 			<div style='width:400px; display: inline-block; height: 20px; padding-top: 5px'>
 				<input type="text" id="app-title" name="app-title" value='<?=$row['app_title']?>' />
 			</div>
 		</div>
-				
+
 		<div class='ui-block-a' style='height: 100px'>아이콘</div>
 		<div class='ui-block-b' style='height: 100px'>
 			<div style='width:400px; display: inline-block; height: 20px; padding-top: 5px'>
@@ -227,7 +228,7 @@
 			    </fieldset>
 			</div>
 		</div>
-				
+
 		<div class='ui-block-a'>광고종료</div>
 		<div class='ui-block-b'>
 			<div style='width:100px; display: inline-block; height: 20px; padding-top: 2px; float:left'>
@@ -264,7 +265,7 @@
 			<div style='float:left; padding: 15px 10px'>시</div>
 			<div style='clear:both'></div>
 		</div>
-		
+
 		<div class='ui-block-a'>성별 필터</div>
 		<div class='ui-block-b'>
 			<div class='ui-block-a' style='width:200px'>
@@ -290,7 +291,7 @@
 			<div style='float:left; padding: 14px 10px'>세 까지 </div>
 			<div style='clear:both'></div>
 		</div>
-		
+
 		<div class='ui-block-a'>시간 최대 실행</div>
 		<div class='ui-block-b'>
 			<div style='width:100px; display: inline-block; height: 20px; padding-top: 5px; float:left'>
@@ -299,7 +300,7 @@
 			<div style='float:left; padding: 15px 10px'>회</div>
 			<div style='clear:both'></div>
 		</div>
-				
+
 		<div class='ui-block-a'>일일 최대 실행</div>
 		<div class='ui-block-b'>
 			<div style='width:100px; display: inline-block; height: 20px; padding-top: 5px; float:left'>
@@ -325,7 +326,7 @@
 			</div>
 			<div style='clear:both'></div>
 		</div>
-		
+
 		<div class='ui-block-a'>매체사 레벨</div>
 		<div class='ui-block-b'>
 			<div style='padding-top: 2px'>
@@ -336,13 +337,13 @@
 				        <option value="2">2 (전략적 제휴사)</option>
 				        <option value="3">3 (제휴사)</option>
 				        <option value="4">4 (비추천 제휴사)</option>
-				    </select>	        		
+				    </select>
 		        </div>
 			</div>
 			<div style='float:left; padding: 15px 10px'>(지정 레벨보다 낮은 경우 광고 공급 차단됨)</div>
 			<div style='clear:both'></div>
 		</div>
-		
+
 		<div class='ui-block-a' style='height:180px'>오픈일정</div>
 		<div class='ui-block-b' style='height:180px'>
 			<div>
@@ -431,43 +432,43 @@
 	<div style='padding-top: 20px'>
 		<a href='#' onclick='<?=$js_page_id?>.action.on_btn_modifycampaign()' data-role='button' data-theme='b' data-inline='true' data-mini='true' >변경사항 적용하기</a>
 		<a href='?id=merchant-campaign-user-list&mcode=<?=$row['mcode']?>&appkey=<?=urlencode($row['app_key'])?>' data-theme='b' data-role='button' data-mini='true' data-inline='true'>참가자</a>
-		
+
 		<a href='?id=merchant-campaign-exec-view&mcode=<?=$row['mcode']?>&appkey=<?=urlencode($row['app_key'])?>' data-role='button' data-theme='b' data-inline='true' data-mini='true' >일자별 수행수</a>
 		<a href='#' onclick='goPage("dlg-upload-app-adid", null, {appkey: "<?=$row['app_key']?>"})' data-theme='b' data-role='button' data-mini='true' data-inline='true'>ADID 등록(중복방지)</a>
 	</div>
 <div style='border: 1px solid gray; padding: 0 5px; margin-top: 10px'>
 <pre><b>A. 실행 URL에 데이터 파라미터 추가하기</b>
-	
+
 	<b>1. 값 종류 및 표기</b>
 		[IMEI] : IMEI 값
 		[ADID] : ADID 값
 		[MAC] : MAC 주소 값
 		[IP] : IP 주소 값
 		[USERDATA] : UserData 값
-		
+
 	<b>2. 값을 Encoding하기 (PostFix )</b>
 		.B64 : Bas64 Encoding. ex) [ADID.B64] : ADID Base64 Encoding 한 값
 		.URL : URL Encoding. ex) [ADID.URL] : ADID를 URL Encoding 한 값
 		.MD5 : MD5 Encoding. ex) [ADID.MD5] : ADID를 MD5 Encoding 한 값
-		
+
 		* 복합
 			[ADID.B64.URL] : ADID를 B64한 후 URL Encoding 한 값
 			[USERDATA.URL.URL] : USERDATA를 2번 URL Encoding 한 값
-		
+
 	<b>3. 실행 URL 예제</b>
 		http://adfree.gmnc.net/elink/ready.php?gid=c1d44a5296482f7c3dbe901b3c14e4b6<span style='color:red;font-weight: bold'>&userdata=[USERDATA.URL]</span>
 		market://details?id=com.kt.android.showtouch&referrer=ns_chid%3D3025%26nsw_media_id<span style='color:red;font-weight: bold'>%26userdata%3D[USERDATA.URL.URL]</span>
 		http://w2.ohpoint.co.kr/ohpoint/controll.do?path=304&c_id=hanamembers&m_id=marshsoft&referrer=ohc.hanamembers.marshsoft<span style='color:red;font-weight: bold'>&adid=[ADID]&userdata=[USERDATA.URL]</span>
-		
+
 <b>B. 실적 호출 주소 규칙</b>
-	
+
 	* UserData가 전달되는 파라미터 이 첫번째 Subpath 값으로 설정함.
 		리턴주는 주소 규칙이 http://www.도메인.co.kr/result.asp 를 등록하면
 		실제 호출이 ==> http://www.도메인.co.kr/result.asp?<span style='color:red;font-weight: bold'>adkey</span>=??? 인 경우
-		
+
 		http://cb.aline-soft.kr/<span style='color:red;font-weight: bold'>adkey</span>/typesf/result.json 을 등록함
 		실제 호출 http://cb.aline-soft.kr/<span style='color:red;font-weight: bold'>adkey</span>/typesf/result.json?<span style='color:red;font-weight: bold'>adkey</span>=??? 로 들어오도록 함.
-	
+
 	* 두번 째 라파미터는 리턴 타입에 따라 결정
 		- typesf : 은 성공시에는 S 또는 실패시에는 F 를 페이지에 출력함
 		- typejs : json 으로 결과 출력
@@ -477,31 +478,43 @@
 			결과를  S 또는 F 로 리턴한다.
 
 </pre>
-</div>	
+</div>
 
 </div>
-			
-<script type="text/javascript"> 
+
+<script type="text/javascript">
 
 var <?=$js_page_id?> = function()
 {
 	// 외부에서 사용할 (Event Callback)함수 정의
 	var _$ = function(selector) { if (!selector) return $("#<?=$page_id?>"); return $("#<?=$page_id?>").find(selector); };
-	var page = 
-	{			
+	var page =
+	{
 		action: {
-			initialize: function() 
+			initialize: function()
 			{
 				util.initPage($('#page'));
 				_$("div[data-role='popup']").on("popupbeforeposition", function(){ util.initPage($(this)); });
-				
+
 				// $("#app-exec-desc").cleditor();
 				// $("#app-content").cleditor();
-				
+
 				page.action.on_change_app_type();
 			},
 			on_change_app_type: function()
 			{
+				// 디폴트 상태
+				_$(".area-packageid").hide();
+				_$("#app-execurl-title").text("실행 URL");
+
+				// 페북 좋아요
+				if (_$("#app-type").val() == 'F') {
+					_$("#app-execurl-title").text("좋아요 URL");
+				}
+				// CPA 타입 (Packageid 표시)
+				else if (_$("#app-type").val() == 'W') {
+					_$(".area-packageid").show();
+				}
 			},
 			on_btn_modifycampaign: function()
 			{
@@ -534,31 +547,31 @@ var <?=$js_page_id?> = function()
 					'appexechourlycnt': util.intval(_$("#app-exec-hourly-cnt").val(), ""),
 					'appexecdailycnt' : util.intval(_$("#app-exec-daily-cnt").val(), ""),
 					'appexectotalcnt' : util.intval(_$("#app-exec-total-cnt").val(), ""),
-					
+
 					'apppublisherlevel': util.get_item_value(_$("#app-publisher-level")),
-					
+
 					'level1activedate': _$("#level-1-active-date").val() ? _$("#level-1-active-date").val() + " " + util.get_item_value(_$("#level-1-active-time")) : "",
 					'level2activedate': _$("#level-2-active-date").val() ? _$("#level-2-active-date").val() + " " + util.get_item_value(_$("#level-2-active-time")) : "",
 					'level3activedate': _$("#level-3-active-date").val() ? _$("#level-3-active-date").val() + " " + util.get_item_value(_$("#level-3-active-time")) : "",
 					'level4activedate': _$("#level-4-active-date").val() ? _$("#level-4-active-date").val() + " " + util.get_item_value(_$("#level-4-active-time")) : ""
 				};
-				
+
 				if (!util.is_empty(ar_param.appexechourlycnt) && ar_param.appexechourlycnt <= 0) {
 					alert('시간 최대 실행 값을 확인하세요 ');
-					return;					
+					return;
 				}
 				if (!util.is_empty(ar_param.appexecdailycnt) && ar_param.appexecdailycnt <= 0) {
 					alert('일일 최대 실행 값을 확인하세요 ');
-					return;					
+					return;
 				}
-				
+
 				// alert(util.var_dump(ar_param));
 				util.post(get_ajax_url('admin-campaign-app-modify'), ar_param, function(sz_data) {
 					var js_data = util.to_json(sz_data);
 					if (js_data['result']) {
 						util.Alert('알림', '수정되었습니다.', function() {
 							window.location.reload();
-						});	
+						});
 					} else util.Alert(js_data['msg']);
 				});
 
@@ -574,13 +587,13 @@ var <?=$js_page_id?> = function()
 					if (js_data['result']) {
 						util.Alert('알림', '수정되었습니다.', function() {
 							window.location.reload();
-						});	
+						});
 					} else util.Alert(js_data['msg']);
 				});
 			},
-			
+
 			on_btn_set_mactive: function(active) {
-				
+
 				var ar_merchant_active = {'Y':'정상', 'D':'삭제', 'T':'개발', 'N':'중지'};
 				var ar_param = {mcode: '<?=$row["mcode"]?>', appkey: '<?=$row["app_key"]?>', isactive: active};
 				util.request(get_ajax_url('admin-merchantapp-set-mactive', ar_param), function(sz_data) {
@@ -594,7 +607,7 @@ var <?=$js_page_id?> = function()
 						toast('저장되었습니다. (' + ar_merchant_active[ar_param.isactive] + ')');
 					} else util.Alert(js_data['msg']);
 				});
-				
+
 			},
 
 			on_btn_search_info: function()
@@ -604,27 +617,27 @@ var <?=$js_page_id?> = function()
 					alert('홈 URL을 입력하세요.\n\n[형식]\n안드로이드마켓 : https://play.google.com/store/apps/details?id=a.b.c\n페이스북 : https://m.facebook.com/samsung\n카카오스토리 : https://story.kakao.com/ch/kbs\n인스타그램 : https://www.instagram.com/ceo');
 					return false;
 				}
-				
+
 				$.mobile.loading('show');
-				
+
 				// 1. 구글 마켓인 경우 처리
 				if (url.indexOf('https://play.google.com') == 0) {
 					var ar_info = url.match(/[?&]id\=([^&]*)/i);
 					if (ar_info.length < 2) {
 						$.mobile.loading('hide');
-						alert('URL형식을 확인하세요');	
+						alert('URL형식을 확인하세요');
 						return;
 					}
 					var url = "http://heartoffice.iptime.org:12680/google-store/detail.php?id=" + ar_info[1];
 					util.request(url, function(sz_data) {
 						var js_data = util.to_json(sz_data);
-						
+
 						var profilePic = 'https:' + js_data['image'];
 						var title = js_data['title'];
 						var description = '';;
 
 						// -----------------------------------------------------------------
-						// image to base64 text							
+						// image to base64 text
 						// -----------------------------------------------------------------
 						var ar_param = {url: profilePic};
 						util.request(get_ajax_url('get-base64-img', ar_param), function(sz_data) {
@@ -632,42 +645,42 @@ var <?=$js_page_id?> = function()
 							if (js_data['result']) {
 								_$("#img-app-icon").data('type', 'base64');
 								_$("#img-app-icon").attr('src', 'data:image/png;base64,' + js_data['base64']);
-								_$("#app-image-url").val(js_data['base64']);			
+								_$("#app-image-url").val(js_data['base64']);
 							}
 						});
-						
+
 						_$("#app-title").val(title);
 						_$("#app-content").val(description + _$("#app-content").val()).blur();
-						_$("#home-page").attr('src', 'about:blank');						
-						
+						_$("#home-page").attr('src', 'about:blank');
+
 						// 홈 URL (빈 경우에만)
 						if (!_$("#app-execurl").val()) _$("#app-execurl").val(_$("#app-homeurl").val());
 						$.mobile.loading('hide');
-						
+
 					});
-				
-					return false;				
+
+					return false;
 				}
 				// 2. 웹 페이지의 경우 처리
 				var ar_param = {'url': url};
 				var request_url = get_ajax_url('get-url', ar_param);
 				_$("#home-page").attr('src', request_url);
-				
+
 				var startTimer = (new Date()).getTime();
 				var timer = setInterval(function() {
-					
-					if ((new Date()).getTime() - startTimer > 20*1000) 
+
+					if ((new Date()).getTime() - startTimer > 20*1000)
 					{
 						$.mobile.loading('hide');
 						clearInterval(timer);
 						alert('요청 시간 초과')
-					} 
-					else 
+					}
+					else
 					{
 						if (frames[0].window.location.href == request_url && frames[0].window.document.readyState == 'complete') {
 							$.mobile.loading('hide');
 							clearInterval(timer);
-							
+
 							// 홈 URL (빈 경우에만)
 							// if (!_$("#app-execurl").val()) _$("#app-execurl").val(_$("#app-homeurl").val());
 
@@ -686,17 +699,17 @@ var <?=$js_page_id?> = function()
 								var description = $('meta[property="og:description"]', frames[0].window.document).attr('content');
 							}
 
-							// image to base64 text							
+							// image to base64 text
 							var ar_param = {url: profilePic};
 							util.request(get_ajax_url('get-base64-img', ar_param), function(sz_data) {
 								var js_data = util.to_json(sz_data);
 								if (js_data['result']) {
 									_$("#img-app-icon").data('type', 'base64');
 									_$("#img-app-icon").attr('src', 'data:image/png;base64,' + js_data['base64']);
-									_$("#app-image-url").val(js_data['base64']);			
+									_$("#app-image-url").val(js_data['base64']);
 								}
 							});
-							
+
 							_$("#app-packageid").val(ar_info[1]);
 							_$("#app-title").val(title);
 							_$("#app-content").val(ifempty(description,'') + _$("#app-content").val()).blur();
@@ -706,13 +719,13 @@ var <?=$js_page_id?> = function()
 				}, 1000);
 
 				return false;
-			},			
+			},
 
 		},
 		upload: {
-		
+
 			on_change_file: function(e) {
-				
+
 				var data = new FormData();
 				data.append('file', _$("#upload-image-file")[0].files[0]);
 				data.append('width', 150);
@@ -728,35 +741,35 @@ var <?=$js_page_id?> = function()
 						var js_data = util.to_json(sz_data);
 						_$("#img-app-icon").attr('src', js_data['url']);
 						_$("#app-image-url").val(js_data['url']);
-					}, 
+					},
 					error: function(jqXHR, textStatus, erroThrown) {
 						alert('파일 업로드 실패 - 오류가 계속 되면 관리자에게 문의 바랍니다. \n\n오류 : ' + textStatus);
 					}
 				});
-				
+
 			},
 		},
-	};		
-	
+	};
+
 	function setEvents() {
 		$(document).on("pageinit", function(){page.action.initialize();} );
-		
+
 		_$("#upload-image-file").change(page.upload.on_change_file);
 		_$("#app-merchant-fee").change(function(){ _$("#app-tag-price").val(_$("#app-merchant-fee").val());});
 
 		util.set_event_for_input_number(_$("#app-merchant-fee"));
 		util.set_event_for_input_number(_$("#app-tag-price"));
-		
+
 		util.set_event_for_input_number(_$("#app-agefrom"), '0');
 		util.set_event_for_input_number(_$("#app-ageto"), '100');
-				
+
 		util.set_event_for_input_number(_$("#app-exec-hourly-cnt"), '');
 		util.set_event_for_input_number(_$("#app-exec-daily-cnt"), '');
 		util.set_event_for_input_number(_$("#app-exec-total-cnt"), '');
 
-	}		
+	}
 
-	setEvents(); // Event Attaching		
+	setEvents(); // Event Attaching
 	return page;
 }();
 

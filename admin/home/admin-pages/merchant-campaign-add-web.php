@@ -5,7 +5,7 @@
 	<style>
 		#add_app	.ui-block-a	{height: 45px; line-height:45px; padding-left: 10px; width:100px; border-bottom: 1px solid #ddd; font-weight: bold}
 		#add_app	.ui-block-b	{height: 45px; width:500px; border-bottom: 1px solid #ddd}
-		
+
 		#app-content	{height: 80px !important; overflow-y: scroll !important}
 		#app-exec-desc 	{height: 180px !important; overflow-y: scroll !important}
 
@@ -27,6 +27,7 @@
 		<div class='ui-block-b' style='height:50px; padding-top:3px'>
         	<div data-role="fieldcontain" style='padding: 0px 0px; border: 0; margin: 0'>
 				<select name="app-type" id="app-type" onchange="<?=$js_page_id?>.action.on_change_app_type()" data-inline='true' data-mini='true' data-native-menu="true" data-theme='c'>
+					<option value="F">페북 좋아요</option>
 					<option value="W">CPA (가입/신청 수행형)</option>
 				</select>
         	</div>
@@ -43,25 +44,25 @@
 				<div style='color:#aaa'>안드로이드 마켓, 페이스북, 카카오스토리, 인스타그램의 지정 페이지만 검색 가능함.</div>
 			</div>
 		</div>
-		<div class='ui-block-a'>Package ID</div>
-		<div class='ui-block-b'>
+		<div class='ui-block-a area-packageid'>Package ID</div>
+		<div class='ui-block-b area-packageid'>
 			<div style='width:400px; display: inline-block; height: 20px; padding-top: 5px'>
 				<input type="text" id="app-packageid" name="app-packageid" />
 			</div>
 		</div>
-		<div class='ui-block-a'>실행 URL</div>
+		<div class='ui-block-a' id='app-execurl-title'>실행 URL</div>
 		<div class='ui-block-b'>
 			<div style='width:400px; display: block; height: 20px; padding-top: 5px'>
 				<input type="text" id="app-execurl" name="app-execurl" />
 			</div>
-		</div>		
+		</div>
 		<div class='ui-block-a'>적립URL 메모</div>
 		<div class='ui-block-b'>
 			<div style='width:400px; display: block; height: 20px; padding-top: 5px'>
 				<input type="text" id="app-etc" name="app-etc" />
 			</div>
-		</div>		
-		
+		</div>
+
 		<div class='ui-block-a'>제목</div>
 		<div class='ui-block-b'>
 			<div style='width:400px; display: inline-block; height: 20px; padding-top: 5px'>
@@ -89,7 +90,7 @@
 				<textarea id="app-content" name="app-content"></textarea>
 			</div>
 		</div>
-		
+
 		<div class='ui-block-a' style='height:200px'>적립 방법</div>
 		<div class='ui-block-b' style='height:200px' id='app-exec-desc-wrapper'>
 			<div style='width:400px; display: inline-block; padding-top: 5px'>
@@ -135,7 +136,7 @@
 			    </fieldset>
 			</div>
 		</div>
-				
+
 		<div class='ui-block-a'>광고종료</div>
 		<div class='ui-block-b'>
 			<div style='width:100px; display: inline-block; height: 20px; padding-top: 2px; float:left'>
@@ -197,7 +198,7 @@
 			<div style='float:left; padding: 14px 10px'>세 까지 </div>
 			<div style='clear:both'></div>
 		</div>
-		
+
 		<div class='ui-block-a'>시간 최대 실행</div>
 		<div class='ui-block-b'>
 			<div style='width:100px; display: inline-block; height: 20px; padding-top: 5px; float:left'>
@@ -206,7 +207,7 @@
 			<div style='float:left; padding: 15px 10px'>회</div>
 			<div style='clear:both'></div>
 		</div>
-				
+
 		<div class='ui-block-a'>일일 최대 실행</div>
 		<div class='ui-block-b'>
 			<div style='width:100px; display: inline-block; height: 20px; padding-top: 5px; float:left'>
@@ -226,13 +227,13 @@
 				        <option value="2">2 (전략적 제휴사)</option>
 				        <option value="3">3 (제휴사)</option>
 				        <option value="4">4 (비추천 제휴사)</option>
-				    </select>	        		
+				    </select>
 		        </div>
 			</div>
 			<div style='float:left; padding: 15px 10px'>(지정 레벨보다 낮은 경우 광고 공급 차단됨)</div>
 			<div style='clear:both'></div>
 		</div>
-		
+
 		<div class='ui-block-a' style='height:180px'>오픈일정</div>
 		<div class='ui-block-b' style='height:180px'>
 			<div>
@@ -316,72 +317,82 @@
 				<div style='clear:both'></div>
 			</div>
 		</div>
-		
-		
-		
+
+
+
 		<iframe id='home-page' src='about:blank' style='width:100%;height:1'></iframe>
 	</div>
 	<div style='padding-top: 20px'>
 		<a href='#' onclick='<?=$js_page_id?>.action.on_btn_addcampaign()' data-role='button' data-theme='b' data-inline='true' data-mini='true' >등록하기</a>
 	</div>
-	
+
 <div style='border: 1px solid gray; padding: 0 5px; margin-top: 10px'>
 <pre><b>A. 실행 URL에 데이터 파라미터 추가하기</b>
-	
+
 	<b>1. 값 종류 및 표기</b>
 		[IMEI] : IMEI 값
 		[ADID] : ADID 값
 		[MAC] : MAC 주소 값
 		[IP] : IP 주소 값
 		[USERDATA] : UserData 값
-		
+
 	<b>2. 값을 Encoding하기 (PostFix )</b>
 		.B64 : Bas64 Encoding. ex) [ADID.B64] : ADID Base64 Encoding 한 값
 		.URL : URL Encoding. ex) [ADID.URL] : ADID를 URL Encoding 한 값
 		.MD5 : MD5 Encoding. ex) [ADID.MD5] : ADID를 MD5 Encoding 한 값
-		
+
 		* 복합
 			[ADID.B64.URL] : ADID를 B64한 후 URL Encoding 한 값
 			[USERDATA.URL.URL] : USERDATA를 2번 URL Encoding 한 값
-		
+
 	<b>3. 실행 URL 예제</b>
 		http://adfree.gmnc.net/elink/ready.php?gid=c1d44a5296482f7c3dbe901b3c14e4b6<span style='color:red;font-weight: bold'>&userdata=[USERDATA.URL]</span>
 		market://details?id=com.kt.android.showtouch&referrer=ns_chid%3D3025%26nsw_media_id<span style='color:red;font-weight: bold'>%26userdata%3D[USERDATA.URL.URL]</span>
 		http://w2.ohpoint.co.kr/ohpoint/controll.do?path=304&c_id=hanamembers&m_id=marshsoft&referrer=ohc.hanamembers.marshsoft<span style='color:red;font-weight: bold'>&adid=[ADID]&userdata=[USERDATA.URL]</span>
-		
+
 <b>B. 실적 호출 주소 규칙</b>
-	
+
 	리턴주는 주소 규칙이 http://www.도메인.co.kr/result.asp 를 등록하면
 	실제 호출이 ==> http://www.도메인.co.kr/result.asp?<span style='color:red;font-weight: bold'>adkey</span>=??? 인 경우
-	
+
 	http://cb.aline-soft.kr/<span style='color:red;font-weight: bold'>adkey</span>/result.json 을 등록함
 	실제 호출 http://cb.aline-soft.kr/<span style='color:red;font-weight: bold'>adkey</span>/result.json?<span style='color:red;font-weight: bold'>adkey</span>=??? 로 리턴됨
-		
+
 </pre>
-</div>	
-		
-<script type="text/javascript"> 
+</div>
+
+<script type="text/javascript">
 
 var <?=$js_page_id?> = function()
 {
 	// 외부에서 사용할 (Event Callback)함수 정의
 	var _$ = function(selector) { if (!selector) return $("#<?=$page_id?>"); return $("#<?=$page_id?>").find(selector); };
-	var page = 
-	{			
+	var page =
+	{
 		action: {
-			initialize: function() 
+			initialize: function()
 			{
 				util.initPage($('#page'));
 				_$("div[data-role='popup']").on("popupbeforeposition", function(){ util.initPage($(this)); });
-				
+
 				// $("#app-exec-desc").cleditor();
-				// $("#app-content").cleditor();				
-				
+				// $("#app-content").cleditor();
+
 				page.action.on_change_app_type();
 			},
 			on_change_app_type: function()
 			{
+				// 디폴트 상태
+				_$(".area-packageid").hide();
+				_$("#app-execurl-title").text("실행 URL");
+
+				// 페북 좋아요
 				if (_$("#app-type").val() == 'F') {
+					_$("#app-execurl-title").text("좋아요 URL");
+				}
+				// CPA 타입 (Packageid 표시)
+				else if (_$("#app-type").val() == 'W') {
+					_$(".area-packageid").show();
 				}
 			},
 			on_btn_search_info: function()
@@ -391,27 +402,27 @@ var <?=$js_page_id?> = function()
 					alert('홈 URL을 입력하세요.\n\n[형식]\n안드로이드마켓 : https://play.google.com/store/apps/details?id=a.b.c\n페이스북 : https://m.facebook.com/samsung\n카카오스토리 : https://story.kakao.com/ch/kbs\n인스타그램 : https://www.instagram.com/ceo');
 					return false;
 				}
-				
+
 				$.mobile.loading('show');
-				
+
 				// 1. 구글 마켓인 경우 처리
 				if (url.indexOf('https://play.google.com') == 0) {
 					var ar_info = url.match(/[?&]id\=([^&]*)/i);
 					if (ar_info.length < 2) {
 						$.mobile.loading('hide');
-						alert('URL형식을 확인하세요');	
+						alert('URL형식을 확인하세요');
 						return;
 					}
 					var url = "http://heartoffice.iptime.org:12680/google-store/detail.php?id=" + ar_info[1];
 					util.request(url, function(sz_data) {
 						var js_data = util.to_json(sz_data);
-						
+
 						var profilePic = 'https:' + js_data['image'];
 						var title = js_data['title'];
 						var description = '';;
 
 						// -----------------------------------------------------------------
-						// image to base64 text							
+						// image to base64 text
 						// -----------------------------------------------------------------
 						var ar_param = {url: profilePic};
 						util.request(get_ajax_url('get-base64-img', ar_param), function(sz_data) {
@@ -419,43 +430,43 @@ var <?=$js_page_id?> = function()
 							if (js_data['result']) {
 								_$("#img-app-icon").data('type', 'base64');
 								_$("#img-app-icon").attr('src', 'data:image/png;base64,' + js_data['base64']);
-								_$("#app-image-url").val(js_data['base64']);			
+								_$("#app-image-url").val(js_data['base64']);
 							}
 						});
-						
+
 						_$("#app-packageid").val(ar_info[1]);
 						_$("#app-title").val(title);
 						_$("#app-content").val(description + _$("#app-content").val()).blur();
-						_$("#home-page").attr('src', 'about:blank');						
-						
+						_$("#home-page").attr('src', 'about:blank');
+
 						// 홈 URL (빈 경우에만)
 						if (!_$("#app-execurl").val()) _$("#app-execurl").val(_$("#app-homeurl").val());
 						$.mobile.loading('hide');
-						
+
 					});
-				
-					return false;				
+
+					return false;
 				}
 				// 2. 웹 페이지의 경우 처리
 				var ar_param = {'url': url};
 				var request_url = get_ajax_url('get-url', ar_param);
 				_$("#home-page").attr('src', request_url);
-				
+
 				var startTimer = (new Date()).getTime();
 				var timer = setInterval(function() {
-					
-					if ((new Date()).getTime() - startTimer > 20*1000) 
+
+					if ((new Date()).getTime() - startTimer > 20*1000)
 					{
 						$.mobile.loading('hide');
 						clearInterval(timer);
 						alert('요청 시간 초과')
-					} 
-					else 
+					}
+					else
 					{
 						if (frames[0].window.location.href == request_url && frames[0].window.document.readyState == 'complete') {
 							$.mobile.loading('hide');
 							clearInterval(timer);
-							
+
 							// 홈 URL (빈 경우에만)
 							// if (!_$("#app-execurl").val()) _$("#app-execurl").val(_$("#app-homeurl").val());
 
@@ -474,17 +485,17 @@ var <?=$js_page_id?> = function()
 								var description = $('meta[property="og:description"]', frames[0].window.document).attr('content');
 							}
 
-							// image to base64 text							
+							// image to base64 text
 							var ar_param = {url: profilePic};
 							util.request(get_ajax_url('get-base64-img', ar_param), function(sz_data) {
 								var js_data = util.to_json(sz_data);
 								if (js_data['result']) {
 									_$("#img-app-icon").data('type', 'base64');
 									_$("#img-app-icon").attr('src', 'data:image/png;base64,' + js_data['base64']);
-									_$("#app-image-url").val(js_data['base64']);			
+									_$("#app-image-url").val(js_data['base64']);
 								}
 							});
-							
+
 							_$("#app-title").val(title);
 							_$("#app-content").val(ifempty(description,'') + _$("#app-content").val()).blur();
 							_$("#home-page").attr('src', 'about:blank');
@@ -527,38 +538,38 @@ var <?=$js_page_id?> = function()
 					'appexectotalcnt' : util.intval(_$("#app-exec-total-cnt").val(), ""),
 
 					'apppublisherlevel': util.get_item_value(_$("#app-publisher-level")),
-					
+
 					'level1activedate': _$("#level-1-active-date").val() ? _$("#level-1-active-date").val() + " " + util.get_item_value(_$("#level-1-active-time")) : "",
 					'level2activedate': _$("#level-2-active-date").val() ? _$("#level-2-active-date").val() + " " + util.get_item_value(_$("#level-2-active-time")) : "",
 					'level3activedate': _$("#level-3-active-date").val() ? _$("#level-3-active-date").val() + " " + util.get_item_value(_$("#level-3-active-time")) : "",
 					'level4activedate': _$("#level-4-active-date").val() ? _$("#level-4-active-date").val() + " " + util.get_item_value(_$("#level-4-active-time")) : ""
 				};
-				
+
 				if (!util.is_empty(ar_param.appexechourlycnt) && ar_param.appexechourlycnt <= 0) {
 					alert('시간 최대 실행 값을 확인하세요 ');
-					return;					
+					return;
 				}
 				if (!util.is_empty(ar_param.appexecdailycnt) && ar_param.appexecdailycnt <= 0) {
 					alert('일일 최대 실행 값을 확인하세요 ');
-					return;					
+					return;
 				}
-				
+
 				util.post(get_ajax_url('admin-campaign-app-add'), ar_param, function(sz_data) {
 					var js_data = util.to_json(sz_data);
 					if (js_data['result']) {
 						util.Alert('알림', '등록되었습니다.', function() {
 							mvPage('merchant-campaign-modify', null, {partnerid:'<?=$partner_id?>', mcode:'<?=$mcode?>', appkey:js_data['app_key']});
-						});	
+						});
 					} else util.Alert(js_data['msg']);
 				});
-				
-			},	
+
+			},
 
 		},
 		upload: {
-		
+
 			on_change_file: function(e) {
-				
+
 				var data = new FormData();
 				data.append('file', _$("#upload-image-file")[0].files[0]);
 				data.append('width', 150);
@@ -575,16 +586,16 @@ var <?=$js_page_id?> = function()
 						_$("#img-app-icon").data('type', 'url');		// base64 데이터형식인지, URL인지 구별
 						_$("#img-app-icon").attr('src', js_data['url']);
 						_$("#app-image-url").val(js_data['url']);
-					}, 
+					},
 					error: function(jqXHR, textStatus, erroThrown) {
 						alert('파일 업로드 실패 - 오류가 계속 되면 관리자에게 문의 바랍니다. \n\n오류 : ' + textStatus);
 					}
 				});
-				
+
 			},
-		},		
-	};		
-	
+		},
+	};
+
 	function setEvents() {
 		$(document).on("pageinit", function(){page.action.initialize();} );
 
@@ -596,18 +607,17 @@ var <?=$js_page_id?> = function()
 
 		util.set_event_for_input_number(_$("#app-agefrom"), '0');
 		util.set_event_for_input_number(_$("#app-ageto"), '100');
-				
+
 		util.set_event_for_input_number(_$("#app-exec-hourly-cnt"), '');
 		util.set_event_for_input_number(_$("#app-exec-daily-cnt"), '');
 		util.set_event_for_input_number(_$("#app-exec-total-cnt"), '');
-	}		
+	}
 
-	setEvents(); // Event Attaching		
+	setEvents(); // Event Attaching
 	return page;
 }();
 
 </script>
-	
-		
-		
-		
+
+
+

@@ -63,6 +63,12 @@ function local_request_start($app_key, &$arr_data, &$conn)
 			$exec_url = concat_url($ar_app['app_execurl'], "referrer=".urlencode($referrer));
 		else
 			$exec_url = "market://details?id={$ar_app['app_packageid']}&referrer=".urlencode($referrer);
+	} else if ($ar_app['app_exec_type'] == 'F') {
+		$ar_param = array();
+		$ar_param['u'] = base64_encode(json_encode(array('aid' => strval($userapp_id))));
+		$ar_param['m'] = md5('aline' . $ar_param['u']);
+		$param = urlencode(base64_encode(json_encode($ar_param)));
+		$exec_url = "http://api.aline-soft.kr/services/facebook.html?p=".$param;
 	} else {
 		// 그외
 		if ($ar_app['app_execurl'])

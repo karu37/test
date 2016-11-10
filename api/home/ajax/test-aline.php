@@ -1,9 +1,10 @@
 <?
 	// 요청 URL (pcode = aline)
-	//	http://api.aline-soft.kr/ajax-request.php?id=get-list&pcode=aline&is_web=Y
-	
+	// http://api.aline-soft.kr/ajax-request.php?id=test-aline
+	// http://api.aline-soft.kr/ajax-request.php?id=get-list&pcode=aline&is_web=Y
+
 	if (!$_REQUEST['pcode']) $_REQUEST['pcode'] = 'autoring_p';
-	
+
 	$pub_mactive = get_publisher_info();
 	if (!$pub_mactive || $pub_mactive == 'N' || $pub_mactive == 'D') return_die('N', array('code'=>'-100', 'type'=>'E-REQUEST'), '유효하지 않은 매체코드입니다.');
 
@@ -14,12 +15,12 @@
 	$sql = get_query_app_list($pcode, $ar_time, false, ($pub_mactive == 'T'), $conn);
 	$result = mysql_query($sql, $conn);
 
-?>	
+?>
 <head>
 	<title>A-Line 테스트 페이지</title>
 	<link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css" />
 	<script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
-	<script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>	
+	<script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
 	<style>
 		* {font-size:12px; }
 		td {padding: 0 2px}
@@ -27,7 +28,7 @@
 	</style>
 </head>
 <body>
-	<!-- 
+	<!--
 	<?=$sql?>
 	-->
 	<div style='padding:10px'>
@@ -37,7 +38,7 @@
 		<tr>
 			<form onsubmit='return page.on_btn_set_publisher()'>
 				<td width=150px>
-					Publisher Code : 
+					Publisher Code :
 				</td>
 				<td>
 					<div style='float:left; width:300px'>
@@ -46,12 +47,12 @@
 					<a href='#' onclick='page.on_btn_set_publisher()' data-role='button' data-mini='true' data-inline='true' data-theme='b'>변경</a>
 				</td>
 			</form>
-			
+
 		</tr>
 		<tr>
 			<form onsubmit='return page.on_btn_set_publisher()'>
 				<td width=150px>
-					테스트 사용자 ADID : 
+					테스트 사용자 ADID :
 				</td>
 				<td>
 					<div style='float:left; width:300px'>
@@ -63,7 +64,7 @@
 		</tr>
 		<tr>
 			<td colspan=2>
-				
+
 				<br>
 				<table border=1 cellpadding=0 cellspacing=0>
 				<tr>
@@ -82,7 +83,7 @@
 					<th></th>
 					<th></th>
 				</tr>
-				<?	
+				<?
 					$arr_inactive = array();
 					$i = 0;
 					while ($row = mysql_fetch_assoc($result)) {
@@ -92,15 +93,15 @@
 
 						if ($row['tot_not_complished'] != 'Y' || $row['edate_not_expired'] != 'Y') {
 echo "<!-- \n";
-// var_dump($row);							
+// var_dump($row);
 echo "\n-->";
 							$arr_inactive[] = "'" . $row['app_key'] . "'";
 							continue;
 						}
-			
+
 						// 표시 차단 대상 (위에서 필터링 안된 대상)
 						// 금액이 0 인 경우
-						if ( intval($row['publisher_fee']) <= 0 ) continue;	
+						if ( intval($row['publisher_fee']) <= 0 ) continue;
 
 						echo "<tr>";
 						echo "<td>{$i}</td>\n";
@@ -132,17 +133,17 @@ echo "\n-->";
 						</td>
 						<?
 						echo "<tr>";
-						
+
 					}
-				
+
 					// Expire되거나, 모두 달성된 광고 is_active ==> 'N' 시키기
 					if (count($arr_inactive) > 0) {
 						$sql = "UPDATE al_app_t SET is_active = 'N' WHERE is_active <> 'N' AND app_key IN ( " . implode(",", $arr_inactive) . ")";
 						mysql_executE($sql, $conn);
 					}
-				?>	
-				</table>					
-				
+				?>
+				</table>
+
 			</td>
 		</tr>
 	</table>
@@ -153,11 +154,11 @@ var basic_util = {
 	request: function(sz_url, callback_func, error_func) {
 		console.log('[__global.php] request: ' + sz_url);
 		$.ajax({
-			type:"GET",  
-			url:sz_url,      
-			success:function(sz_data){callback_func(sz_data);},   
-			error:function(e){if (error_func) error_func(e.statusText); else alert(e.statusText + "\n" + sz_url);}  
-		});		
+			type:"GET",
+			url:sz_url,
+			success:function(sz_data){callback_func(sz_data);},
+			error:function(e){if (error_func) error_func(e.statusText); else alert(e.statusText + "\n" + sz_url);}
+		});
 	},
 	json_to_urlparam: function(js_data) {
 	    var parts = [];
@@ -181,23 +182,23 @@ var Base64={_keyStr:"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456
 function base64_encode(str) { if (!str) return null; return Base64.encode(str);}
 function base64_decode(str) { if (!str) return null; return Base64.decode(str);}
 
-	
+
 var page = function(){
-	
+
 	var fn = {
 		init: function() {
 			if (!localStorage.getItem('adid')) localStorage.setItem('adid', '0000000000000000-0000-0000-0000-0001');
-/*			
+/*
 			$("#adid").on('change', function(){
 				localStorage.setItem('adid', $("#adid").val());
 				$("#status").attr('src', "http://api.aline-soft.kr/ajax-request.php?id=test-aline-status&pcode=<?=$pcode?>&adid=" + $("#adid").val());
 			});
-*/			
+*/
 			$("#adid").val(localStorage.getItem('adid'));
-			
+
 			$("#status").attr('src', "http://api.aline-soft.kr/ajax-request.php?id=test-aline-status&pcode=<?=$pcode?>&adid=" + localStorage.getItem('adid'));
 		},
-		
+
 		on_btn_start: function(pcode, uadid, ad, uid, userdata) {
 			// http://api.aline-soft.kr/ajax-request.php?id=get-join&pcode=aline&os=A&ad=LOC2&adid=0123456789012345-6789-0123-4567-8901&ip=127.0.0.1&uid=heartman@gmail.com&userdata=USERDATA
 			var ar_param = {id: 'get-join',
@@ -223,18 +224,18 @@ var page = function(){
 						alert("요청 실패\n\n code : " + js_data['code'] + "\n msg : " + js_data['msg']);
 					}
 				} catch(e) {alert(sz_data);}
-					
+
 				$("#status").attr('src', "http://api.aline-soft.kr/ajax-request.php?id=test-aline-status&pcode=<?=$pcode?>&adid=" + uadid);
 			});
 		},
-		
+
 		on_btn_done: function(pcode, uadid, ad) {
 			// http://api.aline-soft.kr/ajax-request.php?id=get-join&pcode=aline&os=A&ad=LOC2&adid=0123456789012345-6789-0123-4567-8901&ip=127.0.0.1&uid=heartman@gmail.com&userdata=USERDATA
 			var ar_param = {id: 'get-done',
 							'pcode': pcode,
 							'ad': ad,
 							'adid': uadid};
-							
+
 			alert(var_dump(ar_param));
 			basic_util.request('http://api.aline-soft.kr/ajax-request.php?' + basic_util.json_to_urlparam(ar_param), function(sz_data) {
 				try {
@@ -247,7 +248,7 @@ var page = function(){
 				} catch(e) {alert(sz_data);}
 
 				$("#status").attr('src', "http://api.aline-soft.kr/ajax-request.php?id=test-aline-status&pcode=<?=$pcode?>&adid=" + uadid);
-					
+
 			});
 		},
 		on_btn_forcedone: function(pcode, uadid, ad) {
@@ -256,7 +257,7 @@ var page = function(){
 							'pcode': pcode,
 							'ad': ad,
 							'adid': uadid};
-							
+
 			alert(var_dump(ar_param));
 			basic_util.request('http://api.aline-soft.kr/ajax-request.php?' + basic_util.json_to_urlparam(ar_param), function(sz_data) {
 				try {
@@ -269,7 +270,7 @@ var page = function(){
 				} catch(e) {alert(sz_data);}
 
 				$("#status").attr('src', "http://api.aline-soft.kr/ajax-request.php?id=test-aline-status&pcode=<?=$pcode?>&adid=" + uadid);
-					
+
 			});
 		},
 		on_btn_undone: function(pcode, uadid, ad) {
@@ -278,7 +279,7 @@ var page = function(){
 							'pcode': pcode,
 							'appkey': ad,
 							'adid': uadid};
-							
+
 			alert(var_dump(ar_param));
 			basic_util.request('http://api.aline-soft.kr/ajax-request.php?' + basic_util.json_to_urlparam(ar_param), function(sz_data) {
 				try {
@@ -291,9 +292,9 @@ var page = function(){
 				} catch(e) {alert(sz_data);}
 
 				$("#status").attr('src', "http://api.aline-soft.kr/ajax-request.php?id=test-aline-status&pcode=<?=$pcode?>&adid=" + uadid);
-					
+
 			});
-		},	
+		},
 		on_btn_set_publisher: function() {
 			window.location.href="?id=test-aline&pcode=" + $("#pcode").val();
 			return false;
@@ -303,7 +304,7 @@ var page = function(){
 			$("#status").attr('src', "http://api.aline-soft.kr/ajax-request.php?id=test-aline-status&pcode=<?=$pcode?>&adid=" + $("#adid").val());
 		},
 	};
-	
+
 	fn.init();
 	return fn;
 }();

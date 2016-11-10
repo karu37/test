@@ -6,12 +6,12 @@
 	$site_global_file = dirname(__FILE__).'/../../../site-definition-global.php';
 	$site_local_file = dirname(__FILE__).'/../../../site-definition-local.php';
 	if (file_exists($site_local_file)) $file = $site_local_file; else $file = $site_global_file;
-	
-	$txt = file_get_contents($file);
-	if (preg_match('/\/\*(.*)\*\//usim', $txt, $matched)) {
+
+	$__txt = file_get_contents($file);
+	if (preg_match('/\/\*(.*)\*\//usim', $__txt, $matched)) {
 		eval($matched[1]);
 	}
-	
+
 // ---------------------------------------
 
 // util_ 로 시작하는 모든 php include함.
@@ -33,7 +33,7 @@ function to_displaytime($datetime, $type = 0){
 	$week_kor=array('일','월','화','수','목','금','토');
 	$week_num = date("w", $time);
 	$time_week = $week_kor[$week_num];
-	
+
 	if ($type == 0) return date("n.d({$time_week}) G:i", $time);
 	if ($type == 1) return date("n.d G:i", $time);
 	if ($type == 10) return date("m/d H:i", $time);
@@ -64,10 +64,10 @@ function to_phoneno($telno) {
 		if (preg_match('/^(\+822)([\d]{3,4})([\d]{4})$/', $telno, $matched)) return $matched[1] . '-' . $matched[2] . '-' . $matched[3];
 		if (preg_match('/^(\+82\d{2})([\d]{3,4})([\d]{4})$/', $telno, $matched)) return $matched[1] . '-' . $matched[2] . '-' . $matched[3];
 		return $telno;
-	} 
+	}
 	if (preg_match('/^(.{2,}?)([\d]{3,4})([\d]{4})$/', $telno, $matched)) return $matched[1] . '-' . $matched[2] . '-' . $matched[3];
-	return $telno;		
-}	
+	return $telno;
+}
 
 function to_html($txt) {
 	return str_replace("\n", "<br>", htmlspecialchars($txt));
@@ -76,7 +76,7 @@ function from_html($txt) {
 	return htmlspecialchars_decode(str_replace("<br>", "\n", $txt));
 }
 
-function get_timestamp() 
+function get_timestamp()
 {
     list($usec, $sec) = explode(" ", microtime());
     return round(((float)$usec + (float)$sec) * 1000);
@@ -85,15 +85,15 @@ function get_timestamp()
 // 사용중인 Charset이 UTF-8인 경우 UTF-8로 설정해야 함.
 function Ux33Encoding($szText, $key = "garden", $textCharSet="utf-8")
 {
-	if (preg_match("/utf-8/i", $textCharSet)) 	
+	if (preg_match("/utf-8/i", $textCharSet))
 		$szText = iconv("UTF-8", "EUC-KR", $szText);
-	
-	$arCode = array(); 
-	$keyLength = strlen($key); 
+
+	$arCode = array();
+	$keyLength = strlen($key);
 	$keyFactor = 1;
-	for($i = 0;$i < $keyLength ; $i++) $arCode[$i] = $key[$i]; 
+	for($i = 0;$i < $keyLength ; $i++) $arCode[$i] = $key[$i];
 	for($i = 0;$i < $keyLength ; $i++) $keyFactor = ($keyFactor * ord($key[$i])) % 0xFF + 1;
-	
+
 	$nLength = strlen($szText);
 	for ($i=0; $i < $nLength; $i++)
 	{
@@ -104,7 +104,7 @@ function Ux33Encoding($szText, $key = "garden", $textCharSet="utf-8")
 	$retLength = strlen($szEncoded);
 	$retValue=1;
 	for ($i=0; $i < $retLength; $i++) $retValue = ($retValue * ord($szEncoded[$i])) % 0xFFFF + 1;
-	$szEncoded .= sprintf("%04x", $retValue);	
+	$szEncoded .= sprintf("%04x", $retValue);
 	return $szEncoded;
 }
 
@@ -117,13 +117,13 @@ function Ux33Decoding($szText, $key = "garden", $OutCharSet="utf-8")
 	for ($i=0; $i < $retLength; $i++) $retValue = ($retValue * ord($szEncoded[$i])) % 0xFFFF + 1;
 	if (sprintf("%04x", $retValue) != substr($szText, strlen($szText)-4, 4)) return "";
 	$szText = $szEncoded;
-	
-	$arCode = array(); 
-	$keyLength = strlen($key); 
+
+	$arCode = array();
+	$keyLength = strlen($key);
 	$keyFactor = 1;
-	for($i = 0;$i < $keyLength; $i++) $arCode[$i] = $key[$i]; 
+	for($i = 0;$i < $keyLength; $i++) $arCode[$i] = $key[$i];
 	for($i = 0;$i < $keyLength; $i++) $keyFactor = ($keyFactor * ord($key[$i])) % 0xFF + 1;
-	
+
 	$nLength = strlen($szText);
 	$nDecodedLen = $nLength / 2 ;
 	for ($i=0, $j=0; $i < $nLength; $i+=2, $j++)
@@ -131,10 +131,10 @@ function Ux33Decoding($szText, $key = "garden", $OutCharSet="utf-8")
 		$nChar = intval(substr($szText, $i, 2), 16);
 		$szDecoded .= sprintf("%c", ($nChar - $keyFactor + 0x10000 - ord($arCode[$j%$keyLength]) - (($j+1)*$nDecodedLen)) % 256);
 	}
-	
+
 	if (preg_match("/utf-8/i", $OutCharSet)) 	// UTF-8, utf-8
 		$szDecoded = iconv("EUC-KR", "UTF-8", $szDecoded);
-	
+
 	return $szDecoded;
 }
 
@@ -144,12 +144,12 @@ function return_die($result, $object = null, $msg = null, $error_sql = null) {
 	array_walk($object,function(&$item){if ($item === null) $item="";});
 	$object['result'] = $result;
 	if ($msg) $object['msg'] = $msg;
-	
+
 	// code로부터 오류 메시지를 설정함.
 	set_error_msg($object);
-	
+
 	echo json_encode($object, JSON_UNESCAPED_UNICODE);
-	
+
 	if (!$result && @mysql_errno($conn)) {
 		if ($error_sql == null) $error_sql = $sql;
 		$db_sql = mysql_real_escape_string($error_sql);
@@ -164,7 +164,7 @@ function return_die($result, $object = null, $msg = null, $error_sql = null) {
 
 // make_action_log("ohc-start", 'Y', $arr_data['adid'], null, get_timestamp() - $start_tm, $campain_url, null, $result_data, $conn);
 function make_visit_log($pageid, $is_result, $pcode, $adid, $appkey, $ip, $elapsed_time, $req_url, $arsz_post_param, $arsz_response, $conn) {
-	
+
 	_make_log($pageid, $is_result, $pcode, $adid, $appkey, $ip, $elapsed_time, $req_url, $arsz_post_param, $arsz_response, $conn, 'V');
 }
 function make_action_log($pageid, $is_result, $pcode, $adid, $appkey, $ip, $elapsed_time, $req_url, $arsz_post_param, $arsz_response, $conn) {
@@ -174,7 +174,7 @@ function make_action_log($pageid, $is_result, $pcode, $adid, $appkey, $ip, $elap
 function _make_log($pageid, $is_result, $pcode, $adid, $appkey, $ip, $elapsed_time, $req_url, $arsz_post_param, $arsz_response, $conn, $tb_target = 'V')
 {
 	global $dev_mode, $_start_api_tm;
-	
+
 	if ($pcode === null) $pcode = $_REQUEST['pcode'];
 	if ($elapsed_time === null) $elapsed_time = get_timestamp() - $_start_api_tm;
 	if ($pageid === null) $pageid = $_REQUEST['id'];
@@ -192,7 +192,7 @@ function _make_log($pageid, $is_result, $pcode, $adid, $appkey, $ip, $elapsed_ti
 	$db_req_url = @mysql_real_escape_string($req_url);
 	$db_remote_addr = @mysql_real_escape_string($ip);
 	$db_elapsed_time = @mysql_real_escape_string($elapsed_time);
-	
+
 	$db_post = '';
 	if ($arsz_post_param) {
 		if (gettype($arsz_post_param) == 'string')
@@ -203,7 +203,7 @@ function _make_log($pageid, $is_result, $pcode, $adid, $appkey, $ip, $elapsed_ti
 			}
 		}
 	}
-	
+
 	$db_response = '';
 	if ($arsz_response) {
 		if (gettype($arsz_response) == 'string') {
@@ -215,13 +215,13 @@ function _make_log($pageid, $is_result, $pcode, $adid, $appkey, $ip, $elapsed_ti
 			}
 		}
 	}
-	
+
 	if ($tb_target == 'A') $tbname = 'site_action_log';
 	else $tbname = 'site_visit_log';
-	
+
 	$sql = "INSERT INTO {$tbname} (pcode, result, pageid, adid, app_key, requrl, ip, elapsed, post, response)
 			VALUES ('$db_pcode',
-					'$db_result', 
+					'$db_result',
 					'$db_pageid',
 					'$db_adid',
 					'$db_appkey',
@@ -230,7 +230,7 @@ function _make_log($pageid, $is_result, $pcode, $adid, $appkey, $ip, $elapsed_ti
 					'$db_elapsed_time',
 					'$db_post',
 					'$db_response');";
-	mysql_query($sql, $conn);	
+	mysql_query($sql, $conn);
 }
 
 function post($url, $ar_post_param, $timeout_sec = 60)
@@ -243,9 +243,9 @@ function post($url, $ar_post_param, $timeout_sec = 60)
 			'timeout' => $timeout_sec,
 			),
 		);
-	
+
 	$context = stream_context_create($options);
-	$result = @file_get_contents($url, false, $context);	
+	$result = @file_get_contents($url, false, $context);
 	return $result;
 }
 
