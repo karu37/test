@@ -20,7 +20,7 @@ function simple_user_app_saving_fail($userdata, $error_code, $error_msg, $conn)
 	//## 현재 시간 $ar_time
 	$ar_time = mysql_get_time($conn);
 
-	// permanent_fail 처리 ==> 이 후 참여 불가
+	// permanent_fail 처리 ==> 이 후 참여 불가 (단 적립 성공인 경우에는 수정하면 안됨)
 	$sql = "UPDATE al_user_app_t
 			SET
 				action_ftime = '{$ar_time['now']}',
@@ -28,7 +28,7 @@ function simple_user_app_saving_fail($userdata, $error_code, $error_msg, $conn)
 				permanent_fail = 'Y',
 				error = '{$db_error_code}',
 				error_msg = '{$db_error_msg}'
-			WHERE id = '{$db_userapp_id}'";
+			WHERE id = '{$db_userapp_id}' AND status <> 'D'";
 	mysql_query($sql, $conn);
 
 	return true;
