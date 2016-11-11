@@ -20,10 +20,12 @@ function simple_user_app_saving_fail($userdata, $error_code, $error_msg, $conn)
 	//## 현재 시간 $ar_time
 	$ar_time = mysql_get_time($conn);
 
+	// permanent_fail 처리 ==> 이 후 참여 불가
 	$sql = "UPDATE al_user_app_t
 			SET
 				action_ftime = '{$ar_time['now']}',
 				status = 'F',
+				permanent_fail = 'Y',
 				error = '{$db_error_code}',
 				error_msg = '{$db_error_msg}'
 			WHERE id = '{$db_userapp_id}'";
