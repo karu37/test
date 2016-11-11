@@ -101,23 +101,17 @@
 	var alike = {
 		site: null,
 		state: null,
+		result: null,
 		init: function(url) {
 			alike.site = alike.rtrim(url);
 			alike.state = 'U';
 		},
 		like: function(resp) {
-			if (alike.rtrim(resp) != alike.site) {
-				window.location.replace('facebook-ok.php?c=EE');
-			}
-			else if (alike.state == 'N') {
-				window.location.replace('facebook-ok.php?c=EA');
-			}
-			else if (alike.state == 'U') {
-				window.location.replace('facebook-ok.php?c=Y&p2=<?=$param2?>');
-			}
-			else {
-				window.location.replace('facebook-ok.php?c=EU');
-			}
+			if (alike.rtrim(resp) != alike.site) alike.result = 'EE';
+			else if (alike.state == 'N') alike.result = 'EA';
+			else if (alike.state == 'U') alike.result = 'Y';
+			else alike.result = 'EU';
+			window.location.replace(alike.get_url());
 		},
 		unlike: function(resp) {
 			if (alike.rtrim(resp) == alike.site)
@@ -128,6 +122,9 @@
 			if (!ar_txt) return txt;
 			return ar_txt[1];
 		},
+		get_url: function() {
+			return 'facebook-ok.php?c='+alike.result+'&p2=<?=$param2?>';
+		}
 	};
 
 	alike.init('<?=$siteurl?>');
