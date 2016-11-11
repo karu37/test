@@ -56,17 +56,14 @@
 		do {
 
 			$ar_param = json_decode(base64_decode($param), true);
-echo 'A';
 			if (!$ar_param) break;
 
 			$userdata = $ar_param['u'];
 			$md5 = $ar_param['m'];
-echo 'B';
 			if (md5('aline-done' . $userdata) != $md5) break;
 
 			$conn = dbConn();
 
-echo 'C';
 			simple_user_app_saving_fail($userdata, '-4001', $display_txt, $conn);
 
 		} while(false);
