@@ -1,4 +1,5 @@
 <?
+
 	$where = "";
 	$day = $_REQUEST['day'];
 	if (!$day) $day = date("Y-m-d");
