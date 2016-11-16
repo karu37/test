@@ -1,12 +1,12 @@
 <?/*
 
-// Column Sorting 
+// Column Sorting
 $orderby = "ORDER BY " . ifempty($_REQUEST['orderby'], 'app.id') . " " . ifempty($_REQUEST['order'], 'DESC');
 <a href='#' onclick="window.location.href=window.location.href.set_url_param('orderby', 'app.id').set_url_param('order', '<?=($_REQUEST['orderby']=="app.id"&&$_REQUEST['order']=="DESC")?"ASC":"DESC"?>').del_url_param('page')">Idx</a>
 
 
 //-----------------------------------
-ALine - °³¹ßÈ¯°æ ¼³Á¤
+ALine - ê°œë°œí™˜ê²½ ì„¤ì •
 //-----------------------------------
 
 127.0.0.1		admin.aline-soft.kr image.aline-soft.kr
@@ -17,12 +17,12 @@ ALine - °³¹ßÈ¯°æ ¼³Á¤
 	ServerAlias admin.aline-soft.kr
 	ServerAdmin a@localhost
 	DocumentRoot "D:\Develope_Web\www.aline-soft.kr\admin\home"
-	
+
 	<Directory />
 		Options FollowSymLinks
 		AllowOverride FileInfo
 		Require all granted
-	</Directory>	
+	</Directory>
 </VirtualHost>
 
 <VirtualHost *:80>
@@ -35,57 +35,57 @@ ALine - °³¹ßÈ¯°æ ¼³Á¤
 		Options FollowSymLinks
 		AllowOverride FileInfo
 		Require all granted
-	</Directory>	
+	</Directory>
 </VirtualHost>
 
 //-----------------------------------
-ALine - ±¤°í °ø±ŞµÇ´Â Á¶°Ç
+ALine - ê´‘ê³  ê³µê¸‰ë˜ëŠ” ì¡°ê±´
 //-----------------------------------
 
 // ----------------------------------------------
-* SQLÀÛ¼º½Ã ¾Æ·¡ÀÇ Table NickName °íÁ¤ÇÒ °Í
-  WHERE Á¶°Ç ÀÛ¼º½Ã 1°³°¡Áö°í ÀÛ¼ºÇÒ ¼ö ÀÖµµ·Ï ÇÏ±â À§ÇÔ.
+* SQLì‘ì„±ì‹œ ì•„ë˜ì˜ Table NickName ê³ ì •í•  ê²ƒ
+  WHERE ì¡°ê±´ ì‘ì„±ì‹œ 1ê°œê°€ì§€ê³  ì‘ì„±í•  ìˆ˜ ìˆë„ë¡ í•˜ê¸° ìœ„í•¨.
 // ----------------------------------------------
 
-# ON/OFF flags Á¸ÀçÇÏ´Â Å×ÀÌºí ¸ñ·Ï
-	al_partner_t.is_mactive						: [°ü¸®ÀÚ]°¡ Partner ID È°¼º/ÁßÁö/»èÁ¦ ( Y/N/D )
-	
-	1¹ø al_app_t.is_mactive						: [°ü¸®ÀÚ]°¡ ÇØ´ç ±¤°í È°¼º/ÁßÁö/»èÁ¦ ( Y/N/D/T )	: T´Â Å×½ºÆ®¿ë ¾Û (°úÁ¤ ·Î±ë¸¸ÇÏ°í ³ª¸ÓÁö´Â ¸ğµÎ ¹«½ÃµÊ)
-	2¹ø al_app_t.is_active						: [Merchant]°¡ ÇØ´ç ±¤°í È°¼º/ÁßÁö ( Y/N )
-	
-	3¹ø al_merchant_t.is_mactive				: [°ü¸®ÀÚ]°¡ Merchant Code È°¼º/Å×½ºÆ®/ÁßÁö/»èÁ¦ ( Y/T/N/D )
-	4¹ø al_publisher_t.is_mactive				: [°ü¸®ÀÚ]°¡ Publisher Code È°¼º/Å×½ºÆ®/ÁßÁö/»èÁ¦ ( Y/T/N/D )
-	
-	5¹ø al_publisher_app_t.is_mactive 			: [°ü¸®ÀÚ]°¡ Publisher¿¡°Ô app°ø±Ş È°¼º/ÁßÁö/»èÁ¦ ( Y/N/D )
-	6¹ø al_publisher_app_t.publisher_disabled 	: [Publisher]°¡ ±¤°í ¹Ş±â¸¦ ÁßÁö ( Y )
+# ON/OFF flags ì¡´ì¬í•˜ëŠ” í…Œì´ë¸” ëª©ë¡
+	al_partner_t.is_mactive						: [ê´€ë¦¬ì]ê°€ Partner ID í™œì„±/ì¤‘ì§€/ì‚­ì œ ( Y/N/D )
 
-	7¹ø al_app_t.publisher_level				: Publisher °ø±Ş ·¹º§ ÁöÁ¤
-			al_publisher_t.level				: 	appÀÇ °ø±Ş·¹º§º¸´Ù ³·Àº °æ¿ì(¼ıÀÚ·Î´Â ³ôÀº°æ¿ì) °ø±Ş Â÷´Ü
-		
-	8¹ø al_app_t.is_public_mode					: [Merchant]ÀÇ public ¸ğµå ¼³Á¤
-			al_publisher_app_t.merchant_disabled: is_public_mode = YÀÎ °æ¿ì Âü°íÇÔ 'N'ÀÌ¸é Â÷´Ü
-			al_publisher_app_t.merchant_enabled	: is_public_mode = NÀÎ °æ¿ì Âü°íÇÔ 'Y'ÀÌ¸é Â÷´Ü
-			
-	9¹ø al_merchant_publisher_t.is_mactive		: [°ü¸®ÀÚ]°¡ ÁöÁ¤ MerchantÀÇ ±¤°í¿¡ ´ëÇØ Publisher Á¦°øÀ» Çã¿ë/Â÷´Ü
+	1ë²ˆ al_app_t.is_mactive						: [ê´€ë¦¬ì]ê°€ í•´ë‹¹ ê´‘ê³  í™œì„±/ì¤‘ì§€/ì‚­ì œ ( Y/N/D/T )	: TëŠ” í…ŒìŠ¤íŠ¸ìš© ì•± (ê³¼ì • ë¡œê¹…ë§Œí•˜ê³  ë‚˜ë¨¸ì§€ëŠ” ëª¨ë‘ ë¬´ì‹œë¨)
+	2ë²ˆ al_app_t.is_active						: [Merchant]ê°€ í•´ë‹¹ ê´‘ê³  í™œì„±/ì¤‘ì§€ ( Y/N )
 
-	-- ±¤°í ÀÚÃ¼ ¿ÀÇÂ ½Ã°£ Á¶Á¤ (¾Æ·¡Á¶°ÇÀº ¸ğµÎ AND)
+	3ë²ˆ al_merchant_t.is_mactive				: [ê´€ë¦¬ì]ê°€ Merchant Code í™œì„±/í…ŒìŠ¤íŠ¸/ì¤‘ì§€/ì‚­ì œ ( Y/T/N/D )
+	4ë²ˆ al_publisher_t.is_mactive				: [ê´€ë¦¬ì]ê°€ Publisher Code í™œì„±/í…ŒìŠ¤íŠ¸/ì¤‘ì§€/ì‚­ì œ ( Y/T/N/D )
 
-	 	al_app_t.exec_stime ~ exec_etime		: ±¤°í¿¡ ¼³Á¤µÈ ±¤°í ½ÃÀÛ ½Ã°£
-	
-	 	al_publisher_app_t.active_time			: ±¤°í È°¼º ½Ã°£ - °ü¸®ÀÚ°¡ ¼³Á¤ÇÔ - ÇØ´ç Publisher & ±¤°í¸¦ Çã¿ë/±İÁö
-	 	
-	 	al_app_t.exec_edate						: end ½Ã°£º¸´Ù ÀÌÀüÀÏ ¶§¿¡¸¸ µ¿ÀÛ
-		
+	5ë²ˆ al_publisher_app_t.is_mactive 			: [ê´€ë¦¬ì]ê°€ Publisherì—ê²Œ appê³µê¸‰ í™œì„±/ì¤‘ì§€/ì‚­ì œ ( Y/N/D )
+	6ë²ˆ al_publisher_app_t.publisher_disabled 	: [Publisher]ê°€ ê´‘ê³  ë°›ê¸°ë¥¼ ì¤‘ì§€ ( Y )
+
+	7ë²ˆ al_app_t.publisher_level				: Publisher ê³µê¸‰ ë ˆë²¨ ì§€ì •
+			al_publisher_t.level				: 	appì˜ ê³µê¸‰ë ˆë²¨ë³´ë‹¤ ë‚®ì€ ê²½ìš°(ìˆ«ìë¡œëŠ” ë†’ì€ê²½ìš°) ê³µê¸‰ ì°¨ë‹¨
+
+	8ë²ˆ al_app_t.is_public_mode					: [Merchant]ì˜ public ëª¨ë“œ ì„¤ì •
+			al_publisher_app_t.merchant_disabled: is_public_mode = Yì¸ ê²½ìš° ì°¸ê³ í•¨ 'N'ì´ë©´ ì°¨ë‹¨
+			al_publisher_app_t.merchant_enabled	: is_public_mode = Nì¸ ê²½ìš° ì°¸ê³ í•¨ 'Y'ì´ë©´ ì°¨ë‹¨
+
+	9ë²ˆ al_merchant_publisher_t.is_mactive		: [ê´€ë¦¬ì]ê°€ ì§€ì • Merchantì˜ ê´‘ê³ ì— ëŒ€í•´ Publisher ì œê³µì„ í—ˆìš©/ì°¨ë‹¨
+
+	-- ê´‘ê³  ìì²´ ì˜¤í”ˆ ì‹œê°„ ì¡°ì • (ì•„ë˜ì¡°ê±´ì€ ëª¨ë‘ AND)
+
+	 	al_app_t.exec_stime ~ exec_etime		: ê´‘ê³ ì— ì„¤ì •ëœ ê´‘ê³  ì‹œì‘ ì‹œê°„
+
+	 	al_publisher_app_t.active_time			: ê´‘ê³  í™œì„± ì‹œê°„ - ê´€ë¦¬ìê°€ ì„¤ì •í•¨ - í•´ë‹¹ Publisher & ê´‘ê³ ë¥¼ í—ˆìš©/ê¸ˆì§€
+
+	 	al_app_t.exec_edate						: end ì‹œê°„ë³´ë‹¤ ì´ì „ì¼ ë•Œì—ë§Œ ë™ì‘
+
 		al_publisher_app_t.exec_hour_max_cnt or al_app_t.exec_hour_max_cnt <vs> al_app_exec_stat_t.exec_hour_cnt
 		al_publisher_app_t.exec_day_max_cnt or al_app_t.exec_day_max_cnt <vs> al_app_exec_stat_t.exec_day_cnt
 	 	al_publisher_app_t.exec_tot_max_cnt or al_app_t.exec_tot_max_cnt <vs> al_app_exec_stat_t.exec_tot_cnt
-	
-		# ÇÊÅÍ¸µ Á¤º¸´Â Publisher¿¡°Ô ±×´ë·Î Àü´ŞÇÑ´Ù.
+
+		# í•„í„°ë§ ì •ë³´ëŠ” Publisherì—ê²Œ ê·¸ëŒ€ë¡œ ì „ë‹¬í•œë‹¤.
 			al_app_t.app_gender, app_agefrom, app_ageto
-	
-		# al_user_app_t ¿¡ Âü¿© ¿Ï·á/ºÒ°¡ ±â·Ï Âü°íÇØ¼­ 
-	
-# Table NICK - a,b,c,d ±îÁö´Â Reserved
+
+		# al_user_app_t ì— ì°¸ì—¬ ì™„ë£Œ/ë¶ˆê°€ ê¸°ë¡ ì°¸ê³ í•´ì„œ
+
+# Table NICK - a,b,c,d ê¹Œì§€ëŠ” Reserved
 	al_app_t			v
 	al_publisher_app_t	pa
 	al_merchant_t		m
@@ -94,22 +94,22 @@ ALine - ±¤°í °ø±ŞµÇ´Â Á¶°Ç
 	al_user_app_t		u
 
 
-# Publisher¿¡°Ô ±¤°í ¼±ÅÃ½Ã
+# Publisherì—ê²Œ ê´‘ê³  ì„ íƒì‹œ
 
-	al_merchant_t.is_mactive		: °ü¸®ÀÚ°¡ Merchant Code È°¼º/ÁßÁö/»èÁ¦ ( Y/N/D )
-	al_publisher_t.is_mactive		: °ü¸®ÀÚ°¡ Publisher Code È°¼º/ÁßÁö/»èÁ¦ ( Y/N/D )
-	
-	al_app_t.is_mactive				: °ü¸®ÀÚ°¡ ÇØ´ç ±¤°í È°¼º/ÁßÁö/»èÁ¦ ( Y/N/D )
-	al_app_t.is_active				: [Merchant]°¡ ÇØ´ç ±¤°í È°¼º/ÁßÁö
+	al_merchant_t.is_mactive		: ê´€ë¦¬ìê°€ Merchant Code í™œì„±/ì¤‘ì§€/ì‚­ì œ ( Y/N/D )
+	al_publisher_t.is_mactive		: ê´€ë¦¬ìê°€ Publisher Code í™œì„±/ì¤‘ì§€/ì‚­ì œ ( Y/N/D )
 
-	al_publisher_app_t.is_mactive 	: °ü¸®ÀÚ°¡ Publisher¿¡°Ô app°ø±Ş È°¼º/ÁßÁö/»èÁ¦ ( Y/N/D )
-	
-		-- ÀÌÅ×ÀÌºí Á¤º¸¸¸ ¹«½Ã al_publisher_app_t.publisher_active : [Publisher]°¡ ±¤°í ¹Ş±â¸¦ È°¼º/ÁßÁö ( Y/N )
-	
-	al_app_t.is_public_mode					: [Merchant]ÀÇ public ¸ğµå ¼³Á¤
-	al_publisher_app_t.merchant_disabled: is_public_mode = YÀÎ °æ¿ì Âü°íÇÔ 'N'ÀÌ¸é Â÷´Ü
-	al_publisher_app_t.merchant_enabled	: is_public_mode = NÀÎ °æ¿ì Âü°íÇÔ 'Y'ÀÌ¸é Â÷´Ü
-	
+	al_app_t.is_mactive				: ê´€ë¦¬ìê°€ í•´ë‹¹ ê´‘ê³  í™œì„±/ì¤‘ì§€/ì‚­ì œ ( Y/N/D )
+	al_app_t.is_active				: [Merchant]ê°€ í•´ë‹¹ ê´‘ê³  í™œì„±/ì¤‘ì§€
+
+	al_publisher_app_t.is_mactive 	: ê´€ë¦¬ìê°€ Publisherì—ê²Œ appê³µê¸‰ í™œì„±/ì¤‘ì§€/ì‚­ì œ ( Y/N/D )
+
+		-- ì´í…Œì´ë¸” ì •ë³´ë§Œ ë¬´ì‹œ al_publisher_app_t.publisher_active : [Publisher]ê°€ ê´‘ê³  ë°›ê¸°ë¥¼ í™œì„±/ì¤‘ì§€ ( Y/N )
+
+	al_app_t.is_public_mode					: [Merchant]ì˜ public ëª¨ë“œ ì„¤ì •
+	al_publisher_app_t.merchant_disabled: is_public_mode = Yì¸ ê²½ìš° ì°¸ê³ í•¨ 'N'ì´ë©´ ì°¨ë‹¨
+	al_publisher_app_t.merchant_enabled	: is_public_mode = Nì¸ ê²½ìš° ì°¸ê³ í•¨ 'Y'ì´ë©´ ì°¨ë‹¨
+
 
 
 */?>
