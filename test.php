@@ -1,3 +1,3 @@
 <?php
-echo "asdftest";
+echo "asdftest2";
 ?>
