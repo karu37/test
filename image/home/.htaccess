@@ -1,7 +1,0 @@
-<IfModule mod_rewrite.c>
-# ErrorDocument 404 /error.php
-# ErrorDocument 403 /error.php
-</IfModule>
-
-RewriteEngine On
-RewriteRule	^campaign\/(\d+)\.jpg$			/image.php?file=$1
