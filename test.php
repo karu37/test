@@ -1,3 +1,4 @@
 <?php
-echo "asdfghj";
+echo "asdf";
+echo "qwer";
 ?>
